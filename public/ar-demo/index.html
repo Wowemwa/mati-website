@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Demo • Mati ARBio</title>
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.5.0/dist/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      html, body { margin: 0; height: 100%; }
+      .hint { position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 8px 10px; border-radius: 6px; font-family: Arial, sans-serif; font-size: 13px; }
+      .hint a { color: #7cf; }
+    </style>
+  </head>
+  <body>
+    <div class="hint">
+      Point your camera at the target image to see the 3D model.
+      <span>Sample target:</span> <a href="https://raw.githubusercontent.com/MindAR-js/aframe-examples/master/image-tracking/assets/card-example/card.png" target="_blank" rel="noreferrer">Open</a>
+      <span>• If you added your own marker, place it as <code>images/pitcher.jpg</code> and compile <code>targets.mind</code> here.</span>
+    </div>
+    <div id="app"></div>
+
+    <script>
+      (async () => {
+        const qs = new URLSearchParams(location.search);
+        const forceLocal = qs.get('local') === '1';
+        const localMind = './targets.mind';
+        const hostedMind = 'https://raw.githubusercontent.com/MindAR-js/aframe-examples/master/image-tracking/assets/card-example/card.mind';
+        let src = hostedMind;
+        if (forceLocal) {
+          src = localMind;
+        } else {
+          try {
+            const res = await fetch(localMind, { method: 'HEAD' });
+            if (res.ok) src = localMind;
+          } catch (e) {}
+        }
+
+        const html = `
+          <a-scene
+            mindar-image="imageTargetSrc: ${src}; uiLoading: yes;"
+            embedded
+            color-space="sRGB"
+            renderer="colorManagement: true, physicallyCorrectLights"
+            vr-mode-ui="enabled: false"
+            device-orientation-permission-ui="enabled: true">
+
+            <a-assets>
+              <a-asset-item id="model" src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Duck/glTF-Binary/Duck.glb"></a-asset-item>
+            </a-assets>
+
+            <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+            <a-entity mindar-image-target="targetIndex: 0">
+              <a-gltf-model src="#model" position="0 0 0" rotation="0 0 0" scale="0.2 0.2 0.2"></a-gltf-model>
+            </a-entity>
+          </a-scene>
+        `;
+        document.getElementById('app').innerHTML = html;
+      })();
+    </script>
+  </body>
+</html>
