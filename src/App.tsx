@@ -67,16 +67,28 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/10 backdrop-blur-sm text-sm font-medium hover:scale-105 transition-all duration-300 shadow-sm hover:shadow-md"
+      className="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl border-2 border-white/40 dark:border-white/20 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:scale-110 transition-all duration-500 shadow-lg hover:shadow-xl overflow-hidden"
       aria-label="Toggle dark mode"
     >
-      <span className="text-lg transition-transform group-hover:rotate-12">
-        {theme === 'dark' ? '🌙' : '☀️'}
-      </span>
-      <span className="hidden sm:inline text-gray-700 dark:text-gray-200">
-        {theme === 'dark' ? 'Dark' : 'Light'}
-      </span>
-      <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-r from-green-600/0 via-blue-600/0 to-purple-600/0 group-hover:from-green-600/10 group-hover:via-blue-600/10 group-hover:to-purple-600/10 transition-all" />
+      {/* Background gradient effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-orange-400/20 to-blue-600/20 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-slate-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      {/* Icon container */}
+      <div className="relative z-10 transition-all duration-500 group-hover:scale-110">
+        <div className={`text-2xl transition-all duration-700 ${
+          theme === 'dark' 
+            ? 'rotate-0 opacity-100' 
+            : '-rotate-180 opacity-100'
+        }`}>
+          {theme === 'dark' ? '🌙' : '☀️'}
+        </div>
+      </div>
+      
+      {/* Tooltip */}
+      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap">
+        {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-white"></div>
+      </div>
     </button>
   )
 }
@@ -86,10 +98,10 @@ function Navbar() {
   const scrolled = useScrollPosition(8)
   const location = useLocation()
   const navItems = [
-    { to: '/explore', label: 'Explore', icon: <WaveIcon className="w-5 h-5" /> },
-    { to: '/biodiversity', label: 'Biodiversity', icon: <SpeciesIcon className="w-5 h-5" /> },
-    { to: '/ar', label: 'AR Demo', icon: <ARIcon className="w-5 h-5" /> },
-    { to: '/about', label: 'About', icon: <InfoIcon className="w-5 h-5" /> },
+    { to: '/explore', label: 'Explore', icon: <WaveIcon className="w-5 h-5" />, badge: '🗺️' },
+    { to: '/biodiversity', label: 'Biodiversity', icon: <SpeciesIcon className="w-5 h-5" />, badge: '🌿' },
+    { to: '/ar', label: 'AR Demo', icon: <ARIcon className="w-5 h-5" />, badge: '✨' },
+    { to: '/about', label: 'About', icon: <InfoIcon className="w-5 h-5" />, badge: '💡' },
   ]
   const pillRefs = useRef<HTMLDivElement[]>([])
   const [pillStyle, setPillStyle] = useState<{width:number; left:number}>({width:0,left:0})
@@ -99,42 +111,186 @@ function Navbar() {
     if (target) setPillStyle({ width: target.offsetWidth, left: target.offsetLeft })
   }, [location.pathname, open])
   const progress = typeof window !== 'undefined' ? (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100 : 0
+  
   return (
-    <nav className={`site-header py-4 sticky top-0 z-50 transition-all duration-500 ${scrolled ? 'backdrop-blur-md bg-white/75 dark:bg-slate-900/80 shadow-lg shadow-black/5' : 'bg-transparent'}`}>
-      <div className="flex items-center justify-between gap-6">
-        <Link to="/" className="font-extrabold text-3xl bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight hover:scale-105 transition-transform" onClick={()=>setOpen(false)}>Mati <span className="text-green-600">AR</span>Bio</Link>
-        <button aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)} className={`sm:hidden inline-flex items-center justify-center p-3 rounded-xl border-2 text-gray-700 dark:text-gray-200 hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-300 transform hover:scale-105 ${open ? 'rotate-180 bg-gradient-to-r from-green-50 to-blue-50 dark:from-slate-700 dark:to-slate-600' : ''}`}> <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 transition-transform duration-300 ${open ? 'rotate-45' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} /></svg></button>
-        <div className="hidden sm:flex items-center gap-6">
-          <div className="nav-links px-2 py-1" aria-label="Primary navigation">
-            <div className="nav-active-pill" style={{ width: pillStyle.width, left: pillStyle.left }} />
-            {navItems.map((item, i) => (
-              <div key={item.to} ref={el => { if (el) pillRefs.current[i] = el }}>
-                <NavLink to={item.to} onClick={()=>setOpen(false)} className={()=>'nav-link-item text-gray-700 dark:text-slate-200'}>
-                  <span aria-hidden className="text-gray-600 dark:text-slate-300">{item.icon}</span>{item.label}
-                </NavLink>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'py-3' : 'py-6'}`}>
+      {/* Main Navigation Container */}
+      <div className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${scrolled ? 'scale-95' : 'scale-100'}`}>
+        <nav className={`relative overflow-hidden rounded-2xl backdrop-blur-2xl transition-all duration-700 ${
+          scrolled 
+            ? 'bg-white/90 dark:bg-slate-900/90 shadow-2xl shadow-black/10 border border-white/20 dark:border-white/10' 
+            : 'bg-white/60 dark:bg-slate-900/60 shadow-xl border border-white/30 dark:border-white/15'
+        }`}>
+          
+          {/* Gradient Border Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-purple-500/20 opacity-0 transition-opacity duration-500 hover:opacity-100 pointer-events-none" />
+          
+          <div className="relative px-8 py-4">
+            <div className="flex items-center justify-between">
+              
+              {/* Logo Section */}
+              <Link 
+                to="/" 
+                className="group relative flex items-center gap-3 font-black text-2xl lg:text-3xl tracking-tight hover:scale-105 transition-all duration-500" 
+                onClick={() => setOpen(false)}
+              >
+                <div className="relative">
+                  <span className="bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Mati
+                  </span>
+                  <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent ml-1">
+                    AR
+                  </span>
+                  <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                    Bio
+                  </span>
+                  
+                  {/* Floating badge */}
+                  <div className="absolute -top-1 -right-2 w-3 h-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-full animate-pulse opacity-60 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                {/* Tagline */}
+                <div className="hidden xl:block text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-300 dark:border-gray-600 pl-3 ml-1">
+                  Biodiversity Explorer
+                </div>
+              </Link>
+              
+              {/* Mobile Menu Button */}
+              <button 
+                aria-label="Toggle menu" 
+                aria-expanded={open} 
+                onClick={() => setOpen(!open)} 
+                className={`lg:hidden relative p-3 rounded-2xl border-2 transition-all duration-500 hover:scale-110 ${
+                  open 
+                    ? 'bg-gradient-to-r from-green-500 to-blue-500 border-transparent text-white rotate-180 shadow-lg' 
+                    : 'border-white/40 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                }`}
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className={`h-6 w-6 transition-transform duration-300 ${open ? 'rotate-45' : ''}`} 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} 
+                  />
+                </svg>
+              </button>
+              
+              {/* Desktop Navigation */}
+              <div className="hidden lg:flex items-center gap-8">
+                
+                {/* Navigation Links */}
+                <div className="relative flex items-center gap-2 p-2 rounded-2xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/30 dark:border-white/15">
+                  {/* Active indicator */}
+                  <div 
+                    className="absolute top-2 bottom-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl transition-all duration-500 shadow-lg"
+                    style={{ 
+                      width: pillStyle.width ? `${pillStyle.width}px` : '0px', 
+                      left: `${pillStyle.left + 8}px` 
+                    }}
+                  />
+                  
+                  {navItems.map((item, i) => (
+                    <div key={item.to} ref={el => { if (el) pillRefs.current[i] = el }}>
+                      <NavLink 
+                        to={item.to} 
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) => `
+                          relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105
+                          ${isActive 
+                            ? 'text-white shadow-md' 
+                            : 'text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400'
+                          }
+                        `}
+                      >
+                        <span className="text-lg">{item.badge}</span>
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Search Bar */}
+                <div className="relative hidden xl:block">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search species, sites..."
+                    className="w-64 pl-12 pr-4 py-3 bg-white/70 dark:bg-slate-800/70 border border-white/40 dark:border-white/20 rounded-2xl backdrop-blur-xl text-sm font-medium text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 hover:bg-white/80 dark:hover:bg-slate-700/80"
+                  />
+                </div>
+                
+                {/* Theme Toggle */}
+                <ThemeToggle />
+                
+                {/* CTA Button */}
+                <Link 
+                  to="/ar" 
+                  className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-110 hover:-rotate-1"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    <ARIcon className="w-4 h-4" />
+                    <span>Try AR</span>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </Link>
               </div>
-            ))}
+            </div>
+            
+            {/* Mobile Navigation Menu */}
+            <div className={`lg:hidden overflow-hidden transition-all duration-500 ${
+              open ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+            }`}>
+              <div className="space-y-2 p-4 bg-white/50 dark:bg-slate-800/50 rounded-2xl backdrop-blur-xl border border-white/30 dark:border-white/15">
+                {navItems.map(item => (
+                  <NavLink 
+                    key={item.to} 
+                    to={item.to} 
+                    className={({ isActive }) => `
+                      flex items-center gap-4 p-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105
+                      ${isActive 
+                        ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' 
+                        : 'hover:bg-white/60 dark:hover:bg-slate-700/60 text-gray-700 dark:text-gray-200'
+                      }
+                    `}
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="text-2xl">{item.badge}</span>
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+                
+                {/* Mobile Search & Theme */}
+                <div className="flex items-center gap-3 pt-4 mt-4 border-t border-white/30 dark:border-white/15">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="flex-1 px-4 py-3 bg-white/70 dark:bg-slate-800/70 border border-white/40 dark:border-white/20 rounded-xl backdrop-blur-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                  />
+                  <ThemeToggle />
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="nav-search hidden lg:block">
-            <span className="icon">🔍</span>
-            <input placeholder="Search" aria-label="Search (placeholder)" className="pl-7 pr-3 py-2 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-white/50 dark:border-white/10 shadow-inner focus:outline-none focus:ring-2 focus:ring-green-500/50" />
-          </div>
-          <ThemeToggle />
-        </div>
+          
+          {/* Scroll Progress Bar */}
+          <div 
+            className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 transition-all duration-300 rounded-full"
+            style={{ width: `${Math.min(100, progress)}%` }}
+          />
+        </nav>
       </div>
-      <div className={`${open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'} sm:hidden mt-4 border-2 rounded-2xl p-4 bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-slate-800/90 dark:to-slate-700/90 backdrop-blur-lg space-y-3 text-sm font-medium transition-all duration-300 transform`}>
-        {navItems.map(n => (
-          <NavLink key={n.to} to={n.to} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/60 dark:hover:bg-slate-600/60 transition-all duration-200 transform hover:scale-105" onClick={()=>setOpen(false)}>
-            <span className="text-gray-600 dark:text-slate-300">{n.icon}</span>{n.label}
-          </NavLink>
-        ))}
-        <div className="pt-3 flex items-center gap-3">
-          <input placeholder="Search" className="flex-1 px-3 py-2 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-white/40 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-green-500/50 text-sm" />
-          <ThemeToggle />
-        </div>
-      </div>
-      <div className="scroll-progress" style={{ width: `${Math.min(100, progress)}%` }} />
-    </nav>
+    </header>
   )
 }
 
@@ -723,57 +879,59 @@ function ARDemo() {
   
   return (
     <div className="space-y-8 min-h-screen">
-      <div className={`transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="text-center space-y-6">
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <h2 className="text-4xl font-bold gradient-text-brand flex items-center gap-3"><ARIcon className="w-8 h-8" /> AR Experience</h2>
-            <div className="animate-bounce text-3xl"><StarIcon className="w-8 h-8" /></div>
-          </div>
+      <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className="text-center">
+          <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <AnimatedText text="AR Experience" />
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Experience Mati's biodiversity through cutting-edge augmented reality technology
+          </p>
+        </div>
+        
+        <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl"></div>
           
-          <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl"></div>
+          <div className="relative z-10 space-y-6">
+            <div className="text-6xl animate-pulse mb-6"><CameraIcon className="w-16 h-16" /></div>
             
-            <div className="relative z-10 space-y-6">
-              <div className="text-6xl animate-pulse mb-6"><CameraIcon className="w-16 h-16" /></div>
-              
-              <h3 className="text-2xl font-bold text-gray-800">Immersive AR Demo</h3>
-              
-              <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
-                Experience Mati's biodiversity like never before! Our augmented reality demo uses cutting-edge 
-                MindAR + A-Frame technology to bring species to life in your environment.
-              </p>
-              
-              <div className="grid md:grid-cols-3 gap-6 my-8">
-                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
-                  <div className="text-3xl mb-3"><CameraIcon className="w-8 h-8" /></div>
-                  <h4 className="font-bold mb-2">Camera Access</h4>
-                  <p className="text-sm text-gray-600">Allow camera permission for the best AR experience</p>
-                </div>
-                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
-                  <div className="text-3xl mb-3"><TargetIcon className="w-8 h-8" /></div>
-                  <h4 className="font-bold mb-2">Target Recognition</h4>
-                  <p className="text-sm text-gray-600">Point your camera at target images to see AR content</p>
-                </div>
-                <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
-                  <div className="text-3xl mb-3"><StarIcon className="w-8 h-8" /></div>
-                  <h4 className="font-bold mb-4">Interactive 3D</h4>
-                  <p className="text-sm text-gray-600">Interact with 3D models of Mati's amazing species</p>
-                </div>
+            <h3 className="text-2xl font-bold text-gray-800">Immersive AR Demo</h3>
+            
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+              Experience Mati's biodiversity like never before! Our augmented reality demo uses cutting-edge 
+              MindAR + A-Frame technology to bring species to life in your environment.
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-6 my-8">
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+                <div className="text-3xl mb-3"><CameraIcon className="w-8 h-8" /></div>
+                <h4 className="font-bold mb-2">Camera Access</h4>
+                <p className="text-sm text-gray-600">Allow camera permission for the best AR experience</p>
               </div>
-              
-              <a 
-                className="group inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 hover:rotate-1" 
-                href="/ar-demo/" 
-                target="_blank" 
-                rel="noreferrer"
-              >
-                <span className="text-2xl group-hover:animate-bounce"><ARIcon className="w-6 h-6" /></span>
-                Launch AR Demo
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+                <div className="text-3xl mb-3"><TargetIcon className="w-8 h-8" /></div>
+                <h4 className="font-bold mb-2">Target Recognition</h4>
+                <p className="text-sm text-gray-600">Point your camera at target images to see AR content</p>
+              </div>
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+                <div className="text-3xl mb-3"><StarIcon className="w-8 h-8" /></div>
+                <h4 className="font-bold mb-4">Interactive 3D</h4>
+                <p className="text-sm text-gray-600">Interact with 3D models of Mati's amazing species</p>
+              </div>
             </div>
+            
+            <a 
+              className="group inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/25 transform hover:scale-105 transition-all duration-300 hover:rotate-1" 
+              href="/ar-demo/" 
+              target="_blank" 
+              rel="noreferrer"
+            >
+              <span className="text-2xl group-hover:animate-bounce"><ARIcon className="w-6 h-6" /></span>
+              Launch AR Demo
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
           </div>
         </div>
       </div>
@@ -790,12 +948,14 @@ function About() {
   
   return (
     <div className="space-y-12 min-h-screen">
-      <div className={`transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <h2 className="text-4xl font-bold gradient-text-brand flex items-center gap-3"><InfoIcon className="w-8 h-8" /> About Mati ARBio</h2>
-            <div className="animate-pulse text-3xl"><LeafIcon className="w-8 h-8" /></div>
-          </div>
+      <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className="text-center">
+          <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <AnimatedText text="About Mati ARBio" />
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Discover our mission to preserve biodiversity through innovative technology and education
+          </p>
         </div>
         
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -900,7 +1060,7 @@ export default function App() {
         <div className="app relative z-10">
           <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
           <Navbar />
-          <main id="main" className="mt-8">
+          <main id="main" className="pt-24 lg:pt-32">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/explore" element={<Explore />} />

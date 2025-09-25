@@ -28,9 +28,15 @@ export default function BiodiversityExplorer() {
 
   return (
     <div className="space-y-10">
-      <header className="space-y-6">
-        <h1 className="text-5xl font-extrabold tracking-tight gradient-text-brand"><AnimatedText text="Biodiversity Explorer" /></h1>
-        <p className="text-gray-600 dark:text-gray-300 max-w-3xl">Search, filter, and explore consolidated flora & fauna records for the Mati City region (scaffold dataset). Add authoritative data sources for production use.</p>
+      <header className="space-y-8">
+        <div className="text-center">
+          <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <AnimatedText text="Biodiversity Explorer" />
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Search, filter, and explore consolidated flora & fauna records for the Mati City region
+          </p>
+        </div>
         <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
           <div className="flex-1 relative">
             <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search species (common, scientific, habitat)..." className="w-full px-5 py-4 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-white/40 dark:border-white/10 shadow-inner focus:outline-none focus:ring-2 focus:ring-green-500/40" />
