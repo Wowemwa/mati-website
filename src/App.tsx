@@ -140,41 +140,63 @@ function Navbar() {
 
 function Footer() {
   return (
-    <footer className="relative mt-16 py-12 bg-gradient-to-br from-green-50/50 to-blue-50/50 backdrop-blur-sm border-t border-white/20">
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <div className="animate-pulse text-2xl">🌊</div>
-          <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Mati ARBio
+    <footer className="relative mt-20 overflow-hidden">
+      <div className="relative rounded-t-[3rem] backdrop-blur-xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 dark:from-slate-900/95 dark:to-slate-800/95 border-t border-white/20 py-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10" />
+        
+        <div className="relative z-10 text-center space-y-8">
+          <div className="flex items-center justify-center gap-6 mb-8">
+            <div className="animate-pulse text-3xl">🌊</div>
+            <div className="text-4xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              Mati ARBio
+            </div>
+            <div className="animate-pulse text-3xl">🦋</div>
           </div>
-          <div className="animate-pulse text-2xl">🦋</div>
+          
+          <div className="max-w-2xl mx-auto">
+            <p className="text-xl text-gray-200 font-medium mb-6">
+              Connecting nature, technology, and conservation for a sustainable future
+            </p>
+            <p className="text-gray-400">
+              © {new Date().getFullYear()} Mati ARBio • Web-based educational & eco-tourism platform
+            </p>
+          </div>
+          
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="group p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl mb-3 group-hover:animate-bounce">🌱</div>
+              <h4 className="font-bold text-green-400 mb-2">Biodiversity Protection</h4>
+              <p className="text-sm text-gray-400">Preserving ecosystems for future generations</p>
+            </div>
+            
+            <div className="group p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl mb-3 group-hover:animate-bounce">🔬</div>
+              <h4 className="font-bold text-blue-400 mb-2">Education & Research</h4>
+              <p className="text-sm text-gray-400">Learning through interactive experiences</p>
+            </div>
+            
+            <div className="group p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl mb-3 group-hover:animate-bounce">🚀</div>
+              <h4 className="font-bold text-purple-400 mb-2">AR Innovation</h4>
+              <p className="text-sm text-gray-400">Cutting-edge augmented reality technology</p>
+            </div>
+          </div>
+          
+          <div className="pt-8 border-t border-white/10">
+            <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+              <span>Made with</span>
+              <span className="text-red-400 animate-pulse">❤️</span>
+              <span>for environmental conservation and education</span>
+            </p>
+          </div>
         </div>
         
-        <p className="text-gray-700 font-medium">
-          © {new Date().getFullYear()} Mati ARBio • Web-based educational & eco-tourism platform
-        </p>
-        
-        <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-          <span className="flex items-center gap-2 hover:text-green-600 transition-colors duration-300">
-            🌱 Protecting Biodiversity
-          </span>
-          <span className="flex items-center gap-2 hover:text-blue-600 transition-colors duration-300">
-            🔬 Education & Research
-          </span>
-          <span className="flex items-center gap-2 hover:text-purple-600 transition-colors duration-300">
-            🚀 AR Technology
-          </span>
+        {/* Floating decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl animate-pulse delay-1000"></div>
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gradient-to-br from-purple-400/20 to-green-400/20 rounded-full blur-xl animate-pulse delay-500"></div>
         </div>
-        
-        <div className="mt-6 text-xs text-gray-500">
-          Made with ❤️ for environmental conservation and education
-        </div>
-      </div>
-      
-      {/* Floating decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-gradient-to-br from-green-300/20 to-blue-300/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gradient-to-br from-blue-300/20 to-purple-300/20 rounded-full blur-xl animate-pulse delay-1000"></div>
       </div>
     </footer>
   )
@@ -200,132 +222,164 @@ function Home() {
   return (
     <div className="space-y-12 min-h-screen">
       {/* Hero Section with enhanced animations */}
-      <section className={`glass-hero glass-base transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="hero-layout relative z-10">
-          <div className="space-y-4">
+      <section className={`relative overflow-hidden rounded-[3rem] backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/60 to-white/40 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-700/40 border border-white/40 dark:border-white/20 shadow-2xl transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-blue-500/5 to-purple-500/5" />
+        <div className="hero-layout relative z-10 p-12 lg:p-16">
+          <div className="space-y-8">
             <div className="hero-icon-cluster">
-              <div className="hero-icon-pill pill-marine"><WaveIcon className="w-4 h-4" /> Marine</div>
-              <div className="hero-icon-pill pill-terrestrial"><MountainIcon className="w-4 h-4" /> Terrestrial</div>
-              <div className="hero-icon-pill pill-ar"><ARIcon className="w-4 h-4" /> AR Mapping</div>
-              <div className="hero-icon-pill pill-species"><SpeciesIcon className="w-4 h-4" /> Species Data</div>
+              <div className="hero-icon-pill pill-marine"><WaveIcon className="w-4 h-4" /> Marine Ecosystems</div>
+              <div className="hero-icon-pill pill-terrestrial"><MountainIcon className="w-4 h-4" /> Terrestrial Life</div>
+              <div className="hero-icon-pill pill-ar"><ARIcon className="w-4 h-4" /> AR Experience</div>
+              <div className="hero-icon-pill pill-species"><SpeciesIcon className="w-4 h-4" /> Species Database</div>
             </div>
-            <AnimatedText as="h1" className="display-title" text="Mati ARBio" />
-            <AnimatedText as="div" className="display-subtitle" text="An Augmented Reality Guide to Coastal and Terrestrial Ecosystems." />
-            <p className="display-subtitle !mt-4 text-base md:text-lg !font-normal opacity-90">
-              Explore immersive maps, species narratives, and interactive 3D experiences that inspire local conservation and ecological awareness.
-            </p>
-            <div className="hero-actions">
-              <button 
-                className="group relative overflow-hidden bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 text-white px-7 py-4 rounded-2xl font-semibold text-base shadow-xl hover:shadow-green-500/30 transform hover:scale-[1.04] transition-all duration-300"
+            
+            <div className="space-y-6">
+              <AnimatedText as="h1" className="display-title !text-5xl lg:!text-7xl" text="Mati ARBio" />
+              <AnimatedText as="div" className="display-subtitle !text-xl lg:!text-2xl !font-medium" text="Discover Mati's Biodiversity Through Augmented Reality" />
+              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
+                Immerse yourself in the rich ecosystems of Mati City with interactive maps, detailed species profiles, 
+                and cutting-edge AR experiences that bring conservation to life.
+              </p>
+            </div>
+            
+            <div className="hero-actions flex flex-col sm:flex-row gap-4">
+              <Button 
+                variant="primary"
                 onClick={() => navigate('/explore')}
+                className="flex items-center gap-3"
               >
-                <span className="flex items-center gap-2">
-                  <span className="text-lg">🚀</span> Start Exploring
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                </span>
-              </button>
-              <Link 
-                to="/about" 
-                className="group px-7 py-4 rounded-2xl border-2 border-white/60 dark:border-white/15 hover:border-green-500 font-semibold text-base bg-white/55 dark:bg-slate-800/40 backdrop-blur-xl hover:bg-white/75 dark:hover:bg-slate-700/60 transition-all duration-300 transform hover:scale-[1.04]"
-              >
-                <span className="flex items-center gap-2 text-gray-700 dark:text-slate-200 group-hover:text-green-700 dark:group-hover:text-green-300">
-                  <InfoIcon className="w-5 h-5" /> Learn More
-                </span>
+                <span className="text-2xl">🌟</span> 
+                <span>Start Your Journey</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Button>
+              
+              <Link to="/about">
+                <Button variant="secondary" className="flex items-center gap-3">
+                  <InfoIcon className="w-5 h-5" /> 
+                  <span>Learn More</span>
+                </Button>
               </Link>
             </div>
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <h4>Sites</h4>
-                <div className="value">{SITES.length}</div>
-                <small>Mapped Areas</small>
+            
+            <div className="hero-stats grid grid-cols-3 gap-6 pt-8 border-t border-white/30 dark:border-white/10">
+              <div className="hero-stat text-center">
+                <div className="text-4xl font-black bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                  {SITES.length}
+                </div>
+                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Biodiversity Sites
+                </h4>
               </div>
-              <div className="hero-stat">
-                <h4>Species</h4>
-                <div className="value">{SPECIES.length}</div>
-                <small>Catalogued</small>
+              <div className="hero-stat text-center">
+                <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  {SPECIES.length}+
+                </div>
+                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Species Catalogued
+                </h4>
               </div>
-              <div className="hero-stat">
-                <h4>Experiences</h4>
-                <div className="value">AR</div>
-                <small>Interactive</small>
+              <div className="hero-stat text-center">
+                <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-green-600 bg-clip-text text-transparent mb-2">
+                  AR
+                </div>
+                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Interactive Experience
+                </h4>
               </div>
             </div>
           </div>
+          
           <div className="hero-visual">
             <div className="hero-visual-inner">
               <div className="hero-orb hero-orb--1" />
               <div className="hero-orb hero-orb--2" />
               <div className="hero-orb hero-orb--3" />
-              <div className="relative z-10 flex flex-col items-center gap-6">
-                <div className="w-52 h-52 rounded-[2.25rem] bg-gradient-to-br from-green-400/40 via-blue-500/35 to-purple-500/35 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-2xl flex items-center justify-center">
-                  <div className="w-36 h-36 rounded-2xl bg-gradient-to-tr from-white/80 to-white/40 dark:from-slate-700/60 dark:to-slate-600/40 backdrop-blur-xl border border-white/50 dark:border-white/10 flex items-center justify-center">
-                    <SpeciesIcon className="w-20 h-20 text-green-600 dark:text-green-300" />
+              <div className="relative z-10 flex flex-col items-center gap-8">
+                <div className="group w-64 h-64 lg:w-80 lg:h-80 rounded-[3rem] bg-gradient-to-br from-green-400/30 via-blue-500/25 to-purple-500/30 backdrop-blur-3xl border-2 border-white/50 dark:border-white/20 shadow-2xl flex items-center justify-center transition-all duration-700 hover:scale-105 hover:rotate-3">
+                  <div className="w-44 h-44 lg:w-56 lg:h-56 rounded-3xl bg-gradient-to-tr from-white/90 to-white/50 dark:from-slate-700/70 dark:to-slate-600/50 backdrop-blur-2xl border-2 border-white/60 dark:border-white/20 flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                    <SpeciesIcon className="w-24 h-24 lg:w-32 lg:h-32 text-green-600 dark:text-green-300 group-hover:scale-110 transition-transform duration-500" />
                   </div>
                 </div>
-                <div className="flex gap-4">
-                  <div className="px-4 py-2 rounded-xl text-xs font-medium tracking-wide bg-white/60 dark:bg-slate-700/50 border border-white/40 dark:border-white/10 backdrop-blur-xl flex items-center gap-2"><MapIcon className="w-4 h-4" /> Dynamic Mapping</div>
-                  <div className="px-4 py-2 rounded-xl text-xs font-medium tracking-wide bg-white/60 dark:bg-slate-700/50 border border-white/40 dark:border-white/10 backdrop-blur-xl flex items-center gap-2"><ConservationIcon className="w-4 h-4" /> Sustainability</div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Badge className="flex items-center gap-2"><MapIcon className="w-4 h-4" /> Interactive Mapping</Badge>
+                  <Badge className="flex items-center gap-2"><ConservationIcon className="w-4 h-4" /> Conservation Focus</Badge>
                 </div>
               </div>
               <div className="scroll-hint">
-                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" stroke="currentColor"><path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <span>SCROLL</span>
+                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" stroke="currentColor">
+                  <path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>Discover More</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="hero-divider-fade" />
       </section>
 
       {/* Enhanced Featured Sites */}
       <section className={`transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <SectionTitle icon="📍">Featured Sites</SectionTitle>
+        <SectionTitle icon="📍">Featured Biodiversity Sites</SectionTitle>
         
-        <div className="grid sm:grid-cols-2 gap-8">
+        <div className="grid sm:grid-cols-2 gap-10">
           {SITES.map((s, index) => {
-            const shadowClass = s.type === 'marine' ? 'hover:shadow-blue-500/20' : 'hover:shadow-green-500/20'
+            const shadowClass = s.type === 'marine' ? 'hover:shadow-blue-500/25' : 'hover:shadow-green-500/25'
             return (
-            <SoftCard
+            <Card
               key={s.id}
-              className={`group relative p-6 overflow-hidden ${shadowClass} transform hover:scale-[1.02] hover:-rotate-1 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-              style={{ transitionDelay: `${(index + 1) * 160}ms` }}
+              className={`group relative p-8 ${shadowClass} ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+              style={{ transitionDelay: `${(index + 1) * 200}ms` }}
             >
-              <div className="absolute -top-4 -right-4 icon-badge">
-                {s.type === 'marine' ? <WaveIcon /> : <MountainIcon />}
+              <div className="absolute top-6 right-6 p-3 rounded-2xl bg-white/30 dark:bg-slate-700/50 backdrop-blur-md border border-white/40 dark:border-white/20">
+                {s.type === 'marine' ? <WaveIcon className="w-6 h-6 text-blue-600" /> : <MountainIcon className="w-6 h-6 text-green-600" />}
               </div>
               
               {s.image && (
-                <MediaThumb src={s.image} alt={`${s.name} photo`} className="mb-6" />
+                <MediaThumb src={s.image} alt={`${s.name} photo`} className="mb-8" />
               )}
               
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition-colors duration-300">{s.name}</h3>
-                <span className={`text-sm px-3 py-1 rounded-full font-medium ${s.type === 'marine' ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700' : 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700'} group-hover:animate-pulse`}>
-                  {s.type}
-                </span>
-              </div>
-              
-              <p className="text-gray-600 mb-4 leading-relaxed">{s.summary}</p>
-              
-              <div className="flex items-center justify-between">
-                <Link 
-                  to={`/site/${s.id}`} 
-                  className="group/link flex items-center gap-2 text-green-700 font-semibold hover:text-green-800 transition-colors duration-300"
-                >
-                  View details
-                  <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-                <div className="flex gap-1">
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors duration-300 mb-2">
+                      {s.name}
+                    </h3>
+                    <Badge tone={s.type === 'marine' ? 'marine' : 'terrestrial'} className="mb-3">
+                      {s.type === 'marine' ? '🌊 Marine Ecosystem' : '🏔️ Terrestrial Ecosystem'}
+                    </Badge>
+                  </div>
+                </div>
+                
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+                  {s.summary}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-6">
                   {s.tags.map((tag, i) => (
-                    <span key={i} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                    <span key={i} className="text-xs px-3 py-1.5 bg-gradient-to-r from-gray-100/80 to-gray-200/80 dark:from-slate-600/50 dark:to-slate-500/50 text-gray-700 dark:text-gray-200 rounded-full font-medium border border-gray-200/50 dark:border-slate-400/30">
                       #{tag}
                     </span>
                   ))}
                 </div>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200/50 dark:border-slate-600/50">
+                  <Link 
+                    to={`/site/${s.id}`} 
+                    className="group/link flex items-center gap-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    <span>Explore Site</span>
+                    <svg className="w-5 h-5 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <MapIcon className="w-4 h-4" />
+                    <span>{s.lat.toFixed(3)}°, {s.lng.toFixed(3)}°</span>
+                  </div>
+                </div>
               </div>
-            </SoftCard>
+            </Card>
             )})}
         </div>
       </section>
@@ -368,38 +422,50 @@ function Explore() {
   
   return (
     <div className="space-y-8">
-      {/* Header with animated filters */}
-      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="flex items-center gap-4">
-          <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            <AnimatedText text="Explore Map" />
+      {/* Header with enhanced filters */}
+      <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className="text-center">
+          <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <AnimatedText text="Explore Interactive Map" />
           </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Discover Mati's biodiversity hotspots through our interactive mapping experience
+          </p>
         </div>
         
-        <div className="flex gap-3 text-sm font-medium">
-          {[
-            { key: 'all', label: 'All Sites', icon: '🌐', count: SITES.length },
-            { key: 'marine', label: 'Marine', icon: '🌊', count: SITES.filter(s => s.type === 'marine').length },
-            { key: 'terrestrial', label: 'Terrestrial', icon: '🏔️', count: SITES.filter(s => s.type === 'terrestrial').length }
-          ].map((item) => (
-            <button 
-              key={item.key}
-              className={`group px-5 py-3 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
-                filter === item.key
-                  ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white border-transparent shadow-lg' 
-                  : 'hover:bg-gradient-to-r hover:from-green-50 hover:to-blue-50 border-gray-200 hover:border-green-300'
-              }`} 
-              onClick={() => setFilter(item.key as any)}
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-lg group-hover:animate-bounce">{item.icon}</span>
-                {item.label}
-                <span className={`px-2 py-0.5 rounded-full text-xs ${filter === item.key ? 'bg-white/20' : 'bg-gray-100 text-gray-600'}`}>
-                  {item.count}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-2 p-2 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/30 dark:border-white/15 shadow-lg">
+            {[
+              { key: 'all', label: 'All Sites', icon: '🌐', count: SITES.length },
+              { key: 'marine', label: 'Marine', icon: '🌊', count: SITES.filter(s => s.type === 'marine').length },
+              { key: 'terrestrial', label: 'Terrestrial', icon: '🏔️', count: SITES.filter(s => s.type === 'terrestrial').length }
+            ].map((item) => (
+              <button 
+                key={item.key}
+                className={`group relative px-6 py-3 rounded-xl font-semibold transition-all duration-500 transform hover:scale-105 ${
+                  filter === item.key
+                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-lg scale-105' 
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-slate-700/40'
+                }`} 
+                onClick={() => setFilter(item.key as any)}
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-xl group-hover:animate-bounce">{item.icon}</span>
+                  <span>{item.label}</span>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                    filter === item.key 
+                      ? 'bg-white/25 text-white' 
+                      : 'bg-gray-100 dark:bg-slate-600 text-gray-600 dark:text-gray-300'
+                  }`}>
+                    {item.count}
+                  </span>
                 </span>
-              </span>
-            </button>
-          ))}
+                {filter === item.key && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-600/20 to-blue-600/20 rounded-xl blur animate-pulse" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       
