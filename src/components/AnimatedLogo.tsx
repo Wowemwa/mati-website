@@ -28,11 +28,11 @@ export default function AnimatedLogo({ className, size = 'md' }: AnimatedLogoPro
   return (
     <div
       className={clsx(
-        'relative flex items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500/20 via-ocean-500/15 to-accent-500/20 backdrop-blur-md border border-white/30 dark:border-white/15 shadow-soft hover:shadow-medium transition-all duration-700 hover:scale-110 cursor-pointer group',
+        'relative flex items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500/20 via-ocean-500/15 to-accent-500/20 backdrop-blur-md border border-white/30 dark:border-white/15 shadow-soft hover:shadow-medium transition-transform duration-500 ease-out cursor-pointer group',
         sizeClasses[size],
         {
-          'animate-pulse-slow': isAnimating,
-          'hover:rotate-12': !isAnimating,
+          'animate-pulse-soft': isAnimating,
+          'group-hover:scale-[1.03]': !isAnimating,
         },
         className
       )}
@@ -40,26 +40,26 @@ export default function AnimatedLogo({ className, size = 'md' }: AnimatedLogoPro
     >
       {/* Rotating rings */}
       <div className={clsx(
-        'absolute inset-1 rounded-xl border-2 border-dashed border-brand-400/40 transition-all duration-1000',
+        'absolute inset-1 rounded-xl border-2 border-dashed border-brand-400/40 transition-transform duration-700 ease-out',
         {
-          'animate-spin': isAnimating,
+          'animate-spin-slow': isAnimating,
           'group-hover:border-brand-500/60': !isAnimating,
         }
       )} />
       
       <div className={clsx(
-        'absolute inset-2 rounded-lg border border-ocean-400/30 transition-all duration-1500 delay-200',
+        'absolute inset-2 rounded-lg border border-ocean-400/30 transition-transform duration-800 ease-out delay-200',
         {
-          'animate-spin': isAnimating,
+          'animate-spin-slow': isAnimating,
           'group-hover:border-ocean-500/50': !isAnimating,
         }
       )} style={{ animationDirection: 'reverse' }} />
       
       {/* Center icon */}
       <div className={clsx(
-        'relative z-10 text-brand-600 dark:text-brand-400 transition-all duration-500',
+  'relative z-10 text-brand-600 dark:text-brand-400 transition-transform duration-300 ease-out',
         {
-          'animate-bounce': isAnimating,
+          'animate-pop-soft': isAnimating,
           'group-hover:text-brand-700 dark:group-hover:text-brand-300': !isAnimating,
         }
       )}>

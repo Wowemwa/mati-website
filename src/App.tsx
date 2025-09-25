@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, NavLink, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import L from 'leaflet'
 import useTheme from './useTheme'
 import { Card, SoftCard, Badge, Button, SectionTitle, MediaThumb } from './components/UI'
@@ -8,84 +8,31 @@ import { WaveIcon, MountainIcon, SpeciesIcon, ARIcon, InfoIcon, MapIcon, CameraI
 import BiodiversityExplorer from './pages/BiodiversityExplorer'
 import SpeciesDetail from './pages/SpeciesDetail'
 import useScrollPosition from './hooks/useScrollPosition'
-import { dataset } from './data/sample'
+import { HOTSPOTS, SPECIES } from './data/hotspots'
 
-// Mock data (replace with Firestore later)
-const SITES = [
-  {
-    id: 'pujada',
-    name: 'Pujada Bay',
-    type: 'marine',
-    lat: 6.955,
-    lng: 126.234,
-    tags: ['bay', 'marine'],
-    summary: 'Marine biodiversity hotspot in Mati City.',
-    image:
-      'https://images.unsplash.com/photo-1505839673365-e3971f8d9184?auto=format&fit=crop&w=1200&q=60',
-  },
-  {
-    id: 'hamiguitan',
-    name: 'Mount Hamiguitan',
-    type: 'terrestrial',
-    lat: 6.814,
-    lng: 126.168,
-    tags: ['mountain', 'forest'],
-    summary: 'UNESCO World Heritage Site with diverse flora and fauna.',
-    image:
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=60',
-  },
-]
-
-const SPECIES = [
-  {
-    id: 'dugong',
-    commonName: 'Dugong',
-    scientificName: 'Dugong dugon',
-    siteIds: ['pujada'],
-    status: 'VU',
-    blurb: 'Gentle marine mammal often found in seagrass beds. A flagship species for marine conservation.',
-    images: [
-      'https://images.unsplash.com/photo-1558980664-10ab6cc18c79?auto=format&fit=crop&w=800&q=60',
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60'
-    ]
-  },
-  {
-    id: 'pitcher',
-    commonName: 'Pitcher Plant',
-    scientificName: 'Nepenthes hamiguitanensis',
-    siteIds: ['hamiguitan'],
-    status: 'EN',
-    blurb: 'Endemic carnivorous plant of Mt. Hamiguitan.',
-    images: [
-      'https://images.unsplash.com/photo-1604395131153-fc0f5a2c46e2?auto=format&fit=crop&w=800&q=60'
-    ]
-  },
-]
+const SITES = HOTSPOTS
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
   return (
     <button
       onClick={toggleTheme}
-      className="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl border-2 border-white/40 dark:border-white/20 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:scale-110 transition-all duration-500 shadow-lg hover:shadow-xl overflow-hidden"
+      className="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl border-2 border-white/40 dark:border-white/20 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:scale-105 transition-all duration-300 ease-out shadow-lg hover:shadow-xl overflow-hidden"
       aria-label="Toggle dark mode"
     >
-      {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-orange-400/20 to-blue-600/20 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-slate-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      {/* Icon container */}
-      <div className="relative z-10 transition-all duration-500 group-hover:scale-110">
-        <div className={`text-2xl transition-all duration-700 ${
-          theme === 'dark' 
-            ? 'rotate-0 opacity-100' 
-            : '-rotate-180 opacity-100'
-        }`}>
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-orange-400/20 to-blue-600/20 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-slate-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+      <div className="relative z-10 transition-transform duration-300 ease-out group-hover:scale-105">
+        <div
+          className={`text-2xl transition-transform duration-500 ease-out ${
+            theme === 'dark'
+              ? 'rotate-0 opacity-100'
+              : '-rotate-180 opacity-100'
+          }`}
+        >
           {theme === 'dark' ? '🌙' : '☀️'}
         </div>
       </div>
-      
-      {/* Tooltip */}
-      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap">
+  <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-out pointer-events-none whitespace-nowrap">
         {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-white"></div>
       </div>
@@ -98,197 +45,212 @@ function Navbar() {
   const scrolled = useScrollPosition(8)
   const location = useLocation()
   const navItems = [
-    { to: '/explore', label: 'Explore', icon: <WaveIcon className="w-5 h-5" />, badge: '🗺️' },
-    { to: '/biodiversity', label: 'Biodiversity', icon: <SpeciesIcon className="w-5 h-5" />, badge: '🌿' },
-    { to: '/ar', label: 'AR Demo', icon: <ARIcon className="w-5 h-5" />, badge: '✨' },
-    { to: '/about', label: 'About', icon: <InfoIcon className="w-5 h-5" />, badge: '💡' },
+    { to: '/explore', label: 'Explore', badge: '🗺️' },
+    { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
+    { to: '/ar', label: 'AR Demo', badge: '✨' },
+    { to: '/about', label: 'About', badge: '💡' },
   ]
-  const pillRefs = useRef<HTMLDivElement[]>([])
-  const [pillStyle, setPillStyle] = useState<{width:number; left:number}>({width:0,left:0})
+  const marineCount = useMemo(() => SITES.filter((site) => site.type === 'marine').length, [])
+  const terrestrialCount = useMemo(() => SITES.filter((site) => site.type === 'terrestrial').length, [])
+
   useEffect(() => {
-    const idx = navItems.findIndex(i => location.pathname.startsWith(i.to))
-    const target = pillRefs.current[idx >= 0 ? idx : 0]
-    if (target) setPillStyle({ width: target.offsetWidth, left: target.offsetLeft })
-  }, [location.pathname, open])
-  const progress = typeof window !== 'undefined' ? (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100 : 0
-  
+    setOpen(false)
+  }, [location.pathname])
+
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${scrolled ? 'py-3' : 'py-6'}`}>
-      {/* Main Navigation Container */}
-      <div className={`mx-auto max-w-7xl px-6 transition-all duration-700 ${scrolled ? 'scale-95' : 'scale-100'}`}>
-        <nav className={`relative overflow-hidden rounded-2xl backdrop-blur-2xl transition-all duration-700 ${
-          scrolled 
-            ? 'bg-white/90 dark:bg-slate-900/90 shadow-2xl shadow-black/10 border border-white/20 dark:border-white/10' 
-            : 'bg-white/60 dark:bg-slate-900/60 shadow-xl border border-white/30 dark:border-white/15'
-        }`}>
-          
-          {/* Gradient Border Effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 via-blue-500/20 to-purple-500/20 opacity-0 transition-opacity duration-500 hover:opacity-100 pointer-events-none" />
-          
-          <div className="relative px-8 py-4">
-            <div className="flex items-center justify-between">
-              
-              {/* Logo Section */}
-              <Link 
-                to="/" 
-                className="group relative flex items-center gap-3 font-black text-2xl lg:text-3xl tracking-tight hover:scale-105 transition-all duration-500" 
-                onClick={() => setOpen(false)}
+    <header className="sticky top-0 z-40">
+      <div
+        className={`relative border-b transition-all duration-500 ${
+          scrolled
+            ? 'bg-white/90 dark:bg-slate-900/90 border-white/40 dark:border-white/15 shadow-xl backdrop-blur'
+            : 'bg-white/70 dark:bg-slate-900/70 border-transparent'
+        }`}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/15 via-blue-500/10 to-purple-500/15" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-60 dark:via-white/10" />
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              to="/"
+              className="group relative flex items-center gap-3 font-black text-2xl lg:text-3xl tracking-tight transition-transform duration-300 hover:scale-[1.02]"
+              onClick={() => setOpen(false)}
+            >
+              <div className="relative">
+                <span className="bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Mati
+                </span>
+                <span className="ml-1 bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                  AR
+                </span>
+                <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  Bio
+                </span>
+                <div className="absolute -top-1 -right-2 h-3 w-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 opacity-70 transition-opacity group-hover:opacity-100" />
+              </div>
+              <div className="hidden sm:flex flex-col leading-tight text-left text-xs text-gray-500 dark:text-gray-400">
+                <span className="font-semibold">Biodiversity Explorer</span>
+                <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500">MindAR • Leaflet • Eco-tourism</span>
+              </div>
+            </Link>
+
+            <div className="hidden md:flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
+                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
+                  <WaveIcon className="h-4 w-4 text-blue-500" />
+                  {marineCount} marine
+                </span>
+                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
+                  <MountainIcon className="h-4 w-4 text-emerald-500" />
+                  {terrestrialCount} terrestrial
+                </span>
+                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
+                  <SpeciesIcon className="h-4 w-4 text-purple-500" />
+                  {SPECIES.length}+ species
+                </span>
+              </div>
+              <ThemeToggle />
+              <Link
+                to="/ar"
+                className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform duration-300 ease-out hover:scale-[1.02]"
               >
-                <div className="relative">
-                  <span className="bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Mati
-                  </span>
-                  <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent ml-1">
-                    AR
-                  </span>
-                  <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                    Bio
-                  </span>
-                  
-                  {/* Floating badge */}
-                  <div className="absolute -top-1 -right-2 w-3 h-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-full animate-pulse opacity-60 group-hover:opacity-100 transition-opacity" />
-                </div>
-                
-                {/* Tagline */}
-                <div className="hidden xl:block text-xs font-medium text-gray-500 dark:text-gray-400 border-l border-gray-300 dark:border-gray-600 pl-3 ml-1">
-                  Biodiversity Explorer
-                </div>
+                <span className="relative z-10 flex items-center gap-2">
+                  <ARIcon className="h-4 w-4" />
+                  <span>Launch AR</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100" />
               </Link>
-              
-              {/* Mobile Menu Button */}
-              <button 
-                aria-label="Toggle menu" 
-                aria-expanded={open} 
-                onClick={() => setOpen(!open)} 
-                className={`lg:hidden relative p-3 rounded-2xl border-2 transition-all duration-500 hover:scale-110 ${
-                  open 
-                    ? 'bg-gradient-to-r from-green-500 to-blue-500 border-transparent text-white rotate-180 shadow-lg' 
-                    : 'border-white/40 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                }`}
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className={`h-6 w-6 transition-transform duration-300 ${open ? 'rotate-45' : ''}`} 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} 
-                  />
-                </svg>
-              </button>
-              
-              {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center gap-8">
-                
-                {/* Navigation Links */}
-                <div className="relative flex items-center gap-2 p-2 rounded-2xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-xl border border-white/30 dark:border-white/15">
-                  {/* Active indicator */}
-                  <div 
-                    className="absolute top-2 bottom-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl transition-all duration-500 shadow-lg"
-                    style={{ 
-                      width: pillStyle.width ? `${pillStyle.width}px` : '0px', 
-                      left: `${pillStyle.left + 8}px` 
-                    }}
-                  />
-                  
-                  {navItems.map((item, i) => (
-                    <div key={item.to} ref={el => { if (el) pillRefs.current[i] = el }}>
-                      <NavLink 
-                        to={item.to} 
-                        onClick={() => setOpen(false)}
-                        className={({ isActive }) => `
-                          relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105
-                          ${isActive 
-                            ? 'text-white shadow-md' 
-                            : 'text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400'
-                          }
-                        `}
-                      >
-                        <span className="text-lg">{item.badge}</span>
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Search Bar */}
-                <div className="relative hidden xl:block">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Search species, sites..."
-                    className="w-64 pl-12 pr-4 py-3 bg-white/70 dark:bg-slate-800/70 border border-white/40 dark:border-white/20 rounded-2xl backdrop-blur-xl text-sm font-medium text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all duration-300 hover:bg-white/80 dark:hover:bg-slate-700/80"
-                  />
-                </div>
-                
-                {/* Theme Toggle */}
-                <ThemeToggle />
-                
-                {/* CTA Button */}
-                <Link 
-                  to="/ar" 
-                  className="group relative overflow-hidden bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-110 hover:-rotate-1"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <ARIcon className="w-4 h-4" />
-                    <span>Try AR</span>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </Link>
-              </div>
             </div>
-            
-            {/* Mobile Navigation Menu */}
-            <div className={`lg:hidden overflow-hidden transition-all duration-500 ${
-              open ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-            }`}>
-              <div className="space-y-2 p-4 bg-white/50 dark:bg-slate-800/50 rounded-2xl backdrop-blur-xl border border-white/30 dark:border-white/15">
-                {navItems.map(item => (
-                  <NavLink 
-                    key={item.to} 
-                    to={item.to} 
-                    className={({ isActive }) => `
-                      flex items-center gap-4 p-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg' 
-                        : 'hover:bg-white/60 dark:hover:bg-slate-700/60 text-gray-700 dark:text-gray-200'
-                      }
-                    `}
-                    onClick={() => setOpen(false)}
+
+            <button
+              aria-label="Toggle menu"
+              aria-expanded={open}
+              onClick={() => setOpen((prev) => !prev)}
+              className={`md:hidden inline-flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-colors duration-300 ease-out ${
+                open
+                  ? 'bg-gradient-to-r from-green-500 to-blue-500 border-transparent text-white shadow-lg'
+                  : 'border-white/60 text-gray-700 hover:bg-white/70 dark:border-white/20 dark:text-gray-200 dark:hover:bg-slate-800/70'
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-6 w-6 transition-transform duration-200 ease-out ${open ? 'rotate-45' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+              </svg>
+            </button>
+          </div>
+
+          <div className="hidden lg:flex items-center justify-between gap-6">
+            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+              <span className="rounded-full border border-emerald-500/40 bg-emerald-100/60 px-3 py-1 uppercase tracking-wide text-emerald-700 dark:border-emerald-300/40 dark:bg-emerald-900/30 dark:text-emerald-200">
+                Live beta
+              </span>
+            </div>
+            <div className="relative flex items-center gap-3 rounded-full border border-white/50 bg-white/75 px-3 py-2 shadow-lg shadow-emerald-500/10 backdrop-blur-xl dark:border-white/15 dark:bg-slate-800/70 dark:shadow-black/30 overflow-hidden">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
+              <div className="pointer-events-none absolute inset-0 border border-white/40 rounded-full mix-blend-soft-light dark:border-white/10" />
+              {navItems.map((item) => {
+                const isActive = location.pathname.startsWith(item.to)
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className={`group relative z-10 inline-flex items-center gap-4 rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-colors duration-300 ease-out ${
+                      isActive
+                        ? 'text-white drop-shadow-lg'
+                        : 'text-slate-700 dark:text-slate-200 hover:text-emerald-500 dark:hover:text-emerald-300'
+                    }`}
                   >
-                    <span className="text-2xl">{item.badge}</span>
-                    <span>{item.label}</span>
+                    <span className={`relative flex h-9 w-9 items-center justify-center rounded-full text-lg transition-transform duration-300 ease-out ${
+                      isActive
+                        ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-blue-500 text-white shadow-[0_16px_34px_-18px_rgba(37,99,235,0.55)]'
+                        : 'border border-white/60 bg-white/75 text-slate-600 shadow-[0_10px_30px_-24px_rgba(15,118,110,0.45)] group-hover:border-emerald-200 group-hover:bg-white'
+                    }`}
+                    >
+                      <span className="relative z-10">{item.badge}</span>
+                      <span className={`pointer-events-none absolute inset-0 rounded-full border ${
+                        isActive ? 'border-white/60 opacity-70' : 'border-white/70 opacity-50'
+                      }`} />
+                      {!isActive && (
+                        <span className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/10 via-teal-400/5 to-blue-400/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                      )}
+                    </span>
+                    <span className="flex flex-col leading-tight">
+                      <span>{item.label}</span>
+                      <span className={`mt-1 h-[2px] w-full rounded-full transition-colors duration-300 ease-out ${
+                        isActive
+                          ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500'
+                          : 'bg-emerald-400/0 group-hover:bg-emerald-400/60'
+                      }`} />
+                    </span>
+                    <span className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full">
+                      <span className={`absolute inset-[1px] rounded-full transition-opacity duration-300 ease-out ${
+                        isActive
+                          ? 'bg-gradient-to-r from-emerald-400/90 via-teal-400/80 to-blue-500/90 opacity-90'
+                          : 'bg-white/40 opacity-70 group-hover:bg-white/70 group-hover:opacity-100'
+                      }`} />
+                      <span className="absolute inset-0 rounded-full border border-white/45 mix-blend-soft-light" />
+                    </span>
+                    <span className={`pointer-events-none absolute -inset-[7px] -z-20 rounded-full blur-2xl transition-opacity duration-500 ease-out ${
+                      isActive
+                        ? 'bg-gradient-to-r from-emerald-300/40 via-teal-300/35 to-blue-400/40 opacity-90'
+                        : 'bg-gradient-to-r from-emerald-300/20 via-teal-200/15 to-blue-300/20 opacity-0 group-hover:opacity-70'
+                    }`} />
                   </NavLink>
-                ))}
-                
-                {/* Mobile Search & Theme */}
-                <div className="flex items-center gap-3 pt-4 mt-4 border-t border-white/30 dark:border-white/15">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="flex-1 px-4 py-3 bg-white/70 dark:bg-slate-800/70 border border-white/40 dark:border-white/20 rounded-xl backdrop-blur-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50"
-                  />
-                  <ThemeToggle />
-                </div>
-              </div>
+                )
+              })}
+            </div>
+            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+              <MapIcon className="h-4 w-4 text-blue-500" />
+              Mati, Davao Oriental
             </div>
           </div>
-          
-          {/* Scroll Progress Bar */}
-          <div 
-            className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 transition-all duration-300 rounded-full"
-            style={{ width: `${Math.min(100, progress)}%` }}
-          />
-        </nav>
+
+          <div className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="space-y-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur dark:border-white/15 dark:bg-slate-900/90">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => `flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-200 ease-out ${
+                    isActive
+                      ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-white hover:shadow-md dark:hover:bg-slate-800'
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="text-xl">{item.badge}</span>
+                    {item.label}
+                  </span>
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </NavLink>
+              ))}
+
+              <div className="flex items-center gap-3 border-t border-white/50 pt-3 dark:border-white/15">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="flex-1 rounded-xl border border-white/60 bg-white/85 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40 dark:border-white/15 dark:bg-slate-800/80"
+                />
+                <ThemeToggle />
+              </div>
+
+              <Link
+                to="/ar"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-green-500 to-blue-500 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+              >
+                <ARIcon className="h-4 w-4" /> Try AR Demo
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   )
@@ -362,181 +324,321 @@ function Home() {
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
 
-  // Example: dataset metadata available for future UI integration
-  useEffect(() => {
-    // This is only a development aid; remove or replace with proper state usage later
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.log('[Biodiversity dataset]', dataset.metadata, `Flora: ${dataset.flora.length}`, `Fauna: ${dataset.fauna.length}`)
-    }
-  }, [])
-  
   useEffect(() => {
     setIsVisible(true)
   }, [])
-  
+
+  const marineSites = useMemo(() => SITES.filter((site) => site.type === 'marine').length, [])
+  const terrestrialSites = useMemo(() => SITES.filter((site) => site.type === 'terrestrial').length, [])
+  const discoveryGoal = 60
+  const discoveryProgress = Math.min(100, Math.round((SPECIES.length / discoveryGoal) * 100))
+
+  const heroHighlights = [
+    {
+      title: 'Marine + terrestrial sync',
+      description: `${marineSites} marine / ${terrestrialSites} terrestrial locations keep the navbar counters alive.`,
+      icon: <WaveIcon className="h-5 w-5 text-sky-500" />,
+    },
+    {
+      title: 'Species ledger in the header',
+      description: `${SPECIES.length}+ species totals surface in the sticky header and throughout the home layout.`,
+      icon: <SpeciesIcon className="h-5 w-5 text-purple-500" />,
+    },
+    {
+      title: 'Unified AR actions',
+      description: 'Hero CTAs mirror the Launch AR button in the navbar so journeys feel continuous.',
+      icon: <ARIcon className="h-5 w-5 text-teal-500" />,
+    },
+  ]
+
+  const heroMetrics = [
+    {
+      label: 'Marine coverage',
+      value: `${marineSites} sites`,
+      gradient: 'from-cyan-500 to-sky-500',
+    },
+    {
+      label: 'Terrestrial coverage',
+      value: `${terrestrialSites} sites`,
+      gradient: 'from-emerald-500 to-lime-500',
+    },
+    {
+      label: 'Species logged',
+      value: `${SPECIES.length}+`,
+      gradient: 'from-purple-500 to-fuchsia-500',
+    },
+  ]
+
+  const featureCards = [
+    {
+      icon: '🧭',
+      title: 'Navigation-first flow',
+      description: 'Navbar stats repeat at each section so orientation stays intact from header to hero to map.',
+    },
+    {
+      icon: '🪟',
+      title: 'Glassmorphic surface',
+      description: 'Cards, filters, and CTAs borrow the header’s frosted gradients for a cohesive visual language.',
+    },
+    {
+      icon: '🧠',
+      title: 'Contextual CTAs',
+      description: 'Primary actions match the sticky Launch AR button, promoting a predictable, guided journey.',
+    },
+  ]
+
+  const missionPillars = [
+    {
+      title: 'Habitat guardianship',
+      description: 'Celebrate blue carbon mangroves, coral gardens, and upland forests through guided storytelling.',
+      icon: <LeafIcon className="h-6 w-6 text-emerald-400" />,
+    },
+    {
+      title: 'Education-first journeys',
+      description: 'Teachers and learners get aligned cues—from nav counters to species cards—when exploring.',
+      icon: <EducationIcon className="h-6 w-6 text-sky-400" />,
+    },
+    {
+      title: 'Lightweight AR technology',
+      description: 'MindAR-powered demos and the sticky Launch AR CTA keep immersive tools just one tap away.',
+      icon: <TechIcon className="h-6 w-6 text-teal-400" />,
+    },
+    {
+      title: 'Conservation outcomes',
+      description: 'Data cards spotlight protected areas so responsible travel choices are obvious and actionable.',
+      icon: <ConservationIcon className="h-6 w-6 text-purple-400" />,
+    },
+  ]
+
+  const typeMeta = {
+    marine: {
+      label: 'Marine site',
+      gradient: 'from-cyan-500 via-sky-500 to-blue-500',
+      chip: 'bg-sky-500/15 text-sky-700 dark:text-sky-200',
+      iconBg: 'bg-sky-500/20',
+      icon: <WaveIcon className="h-5 w-5 text-sky-100" />,
+    },
+    terrestrial: {
+      label: 'Terrestrial site',
+      gradient: 'from-emerald-500 via-green-500 to-lime-500',
+      chip: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-200',
+      iconBg: 'bg-emerald-500/20',
+      icon: <MountainIcon className="h-5 w-5 text-emerald-100" />,
+    },
+  } as const
+
   return (
-    <div className="space-y-12 min-h-screen">
-      {/* Hero Section with enhanced animations */}
-      <section className={`relative overflow-hidden rounded-[3rem] backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/60 to-white/40 dark:from-slate-800/80 dark:via-slate-800/60 dark:to-slate-700/40 border border-white/40 dark:border-white/20 shadow-2xl transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-blue-500/5 to-purple-500/5" />
-        <div className="hero-layout relative z-10 p-12 lg:p-16">
-          <div className="space-y-8">
-            <div className="hero-icon-cluster">
-              <div className="hero-icon-pill pill-marine"><WaveIcon className="w-4 h-4" /> Marine Ecosystems</div>
-              <div className="hero-icon-pill pill-terrestrial"><MountainIcon className="w-4 h-4" /> Terrestrial Life</div>
-              <div className="hero-icon-pill pill-ar"><ARIcon className="w-4 h-4" /> AR Experience</div>
-              <div className="hero-icon-pill pill-species"><SpeciesIcon className="w-4 h-4" /> Species Database</div>
-            </div>
-            
+    <div className="space-y-16 min-h-screen">
+      <section className={`relative overflow-hidden rounded-[36px] border border-white/40 bg-white/80 shadow-2xl transition-all duration-700 dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
+        <div className="relative grid gap-12 p-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:p-16">
+          <div className="space-y-10">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-blue-500" />
+              Live beta experience
+            </span>
             <div className="space-y-6">
-              <AnimatedText as="h1" className="display-title !text-5xl lg:!text-7xl" text="Mati ARBio" />
-              <AnimatedText as="div" className="display-subtitle !text-xl lg:!text-2xl !font-medium" text="Discover Mati's Biodiversity Through Augmented Reality" />
-              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
-                Immerse yourself in the rich ecosystems of Mati City with interactive maps, detailed species profiles, 
-                and cutting-edge AR experiences that bring conservation to life.
+              <AnimatedText as="h1" className="!text-5xl lg:!text-7xl font-black tracking-tight text-slate-900 dark:text-white" text="Mati ARBio" />
+              <AnimatedText as="div" className="!text-xl lg:!text-2xl !font-medium text-slate-600 dark:text-slate-200" text="Discover Mati's biodiversity with a navigation system that reflects the ecosystems it protects." />
+              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl">
+                The redesigned interface takes cues from the navbar—glass surfaces, live counters, and AR-forward cues—to guide every visitor from orientation to action.
               </p>
             </div>
-            
-            <div className="hero-actions flex flex-col sm:flex-row gap-4">
-              <Button 
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Button
                 variant="primary"
                 onClick={() => navigate('/explore')}
                 className="flex items-center gap-3"
               >
-                <span className="text-2xl">🌟</span> 
-                <span>Start Your Journey</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="text-2xl">🌊</span>
+                <span>Explore the map</span>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Button>
-              
-              <Link to="/about">
+              <Link to="/ar">
                 <Button variant="secondary" className="flex items-center gap-3">
-                  <InfoIcon className="w-5 h-5" /> 
-                  <span>Learn More</span>
+                  <ARIcon className="h-5 w-5" />
+                  <span>Launch AR demo</span>
                 </Button>
               </Link>
             </div>
-            
-            <div className="hero-stats grid grid-cols-3 gap-6 pt-8 border-t border-white/30 dark:border-white/10">
-              <div className="hero-stat text-center">
-                <div className="text-4xl font-black bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                  {SITES.length}
-                </div>
-                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Biodiversity Sites
-                </h4>
-              </div>
-              <div className="hero-stat text-center">
-                <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                  {SPECIES.length}+
-                </div>
-                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Species Catalogued
-                </h4>
-              </div>
-              <div className="hero-stat text-center">
-                <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-green-600 bg-clip-text text-transparent mb-2">
-                  AR
-                </div>
-                <h4 className="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                  Interactive Experience
-                </h4>
-              </div>
-            </div>
-          </div>
-          
-          <div className="hero-visual">
-            <div className="hero-visual-inner">
-              <div className="hero-orb hero-orb--1" />
-              <div className="hero-orb hero-orb--2" />
-              <div className="hero-orb hero-orb--3" />
-              <div className="relative z-10 flex flex-col items-center gap-8">
-                <div className="group w-64 h-64 lg:w-80 lg:h-80 rounded-[3rem] bg-gradient-to-br from-green-400/30 via-blue-500/25 to-purple-500/30 backdrop-blur-3xl border-2 border-white/50 dark:border-white/20 shadow-2xl flex items-center justify-center transition-all duration-700 hover:scale-105 hover:rotate-3">
-                  <div className="w-44 h-44 lg:w-56 lg:h-56 rounded-3xl bg-gradient-to-tr from-white/90 to-white/50 dark:from-slate-700/70 dark:to-slate-600/50 backdrop-blur-2xl border-2 border-white/60 dark:border-white/20 flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                    <SpeciesIcon className="w-24 h-24 lg:w-32 lg:h-32 text-green-600 dark:text-green-300 group-hover:scale-110 transition-transform duration-500" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {heroHighlights.map((item) => (
+                <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur dark:border-white/15 dark:bg-slate-900/60">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/15 to-blue-500/25 text-lg">
+                    {item.icon}
+                  </span>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-semibold text-slate-800 dark:text-white">{item.title}</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-300">{item.description}</p>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Badge className="flex items-center gap-2"><MapIcon className="w-4 h-4" /> Interactive Mapping</Badge>
-                  <Badge className="flex items-center gap-2"><ConservationIcon className="w-4 h-4" /> Conservation Focus</Badge>
-                </div>
-              </div>
-              <div className="scroll-hint">
-                <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" stroke="currentColor">
-                  <path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>Discover More</span>
-              </div>
+              ))}
             </div>
           </div>
+          <aside className="relative overflow-hidden rounded-3xl border border-white/30 bg-white/75 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/15 via-blue-500/15 to-purple-500/20" />
+            <div className="relative z-10 space-y-6 p-8">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">Navbar data stream</p>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Stats mirrored in navigation</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-300">The header, hero, and map filters now share the same counters, so you never lose context as you explore.</p>
+              </div>
+              <div className="space-y-3">
+                {heroMetrics.map((metric) => (
+                  <div key={metric.label} className="flex items-center justify-between rounded-2xl border border-white/40 bg-white/80 px-4 py-3 shadow-sm dark:border-white/10 dark:bg-slate-900/60">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">{metric.label}</p>
+                      <p className="text-lg font-semibold text-slate-800 dark:text-white">{metric.value}</p>
+                    </div>
+                    <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${metric.gradient} opacity-80 shadow-inner`} />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-sm font-semibold text-slate-600 dark:text-slate-200">
+                  <span>Discovery roadmap</span>
+                  <span>{discoveryProgress}%</span>
+                </div>
+                <div className="mt-3 h-2 rounded-full bg-white/50 dark:bg-white/10">
+                  <div className="h-full rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500" style={{ width: `${discoveryProgress}%` }} />
+                </div>
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-300">
+                  Catalogued {SPECIES.length} of {discoveryGoal}+ priority species for Year&nbsp;1 AR experiences.
+                </p>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 
-      {/* Enhanced Featured Sites */}
-      <section className={`transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <SectionTitle icon="📍">Featured Biodiversity Sites</SectionTitle>
-        
-        <div className="grid sm:grid-cols-2 gap-10">
-          {SITES.map((s, index) => {
-            const shadowClass = s.type === 'marine' ? 'hover:shadow-blue-500/25' : 'hover:shadow-green-500/25'
+      <section className={`transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <SectionTitle icon="🧭">Navigation-aligned experience</SectionTitle>
+        <p className="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-300">
+          Every surface references the navbar: same gradients, counters, and action hierarchy. Cards reinforce the story so visitors know where to go next.
+        </p>
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {featureCards.map((card) => (
+            <div key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-6 shadow-lg backdrop-blur transition-transform duration-300 hover:-translate-y-1 dark:border-white/15 dark:bg-slate-900/70">
+              <div className="absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <div className="text-3xl">{card.icon}</div>
+              <h4 className="mt-4 text-lg font-semibold text-slate-800 dark:text-white">{card.title}</h4>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{card.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={`transform transition-all duration-700 delay-100 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <SectionTitle icon="📍">Featured biodiversity sites</SectionTitle>
+        <p className="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-300">
+          These signatures appear in both the navbar counters and the map module. Cards inherit the same frosted gradients so the information feels connected.
+        </p>
+        <div className="mt-10 grid gap-8 md:grid-cols-2">
+          {SITES.map((site, index) => {
+            const meta = typeMeta[site.type]
             return (
-            <Card
-              key={s.id}
-              className={`group relative p-8 ${shadowClass} ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-              style={{ transitionDelay: `${(index + 1) * 200}ms` }}
-            >
-              <div className="absolute top-6 right-6 p-3 rounded-2xl bg-white/30 dark:bg-slate-700/50 backdrop-blur-md border border-white/40 dark:border-white/20">
-                {s.type === 'marine' ? <WaveIcon className="w-6 h-6 text-blue-600" /> : <MountainIcon className="w-6 h-6 text-green-600" />}
-              </div>
-              
-              {s.image && (
-                <MediaThumb src={s.image} alt={`${s.name} photo`} className="mb-8" />
-              )}
-              
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-300 transition-colors duration-300 mb-2">
-                      {s.name}
+              <Card
+                key={site.id}
+                className={`group relative overflow-hidden border border-white/40 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                style={{ transitionDelay: `${index * 120}ms` }}
+              >
+                <div className={`absolute inset-x-6 top-0 h-1 rounded-full bg-gradient-to-r ${meta.gradient}`} />
+                <div className="flex items-start justify-between gap-4 pt-4">
+                  <div className="space-y-3">
+                    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${meta.chip}`}>
+                      <span className={`flex h-6 w-6 items-center justify-center rounded-full ${meta.iconBg}`}>{meta.icon}</span>
+                      {meta.label}
+                    </span>
+                    <h3 className="text-2xl font-semibold text-slate-900 transition-colors duration-300 group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300">
+                      {site.name}
                     </h3>
-                    <Badge tone={s.type === 'marine' ? 'marine' : 'terrestrial'} className="mb-3">
-                      {s.type === 'marine' ? '🌊 Marine Ecosystem' : '🏔️ Terrestrial Ecosystem'}
-                    </Badge>
+                    <p className="text-sm text-slate-600 dark:text-slate-300">{site.summary}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2 text-right text-xs text-slate-400 dark:text-slate-500">
+                    <span>{site.lat.toFixed(3)}°</span>
+                    <span>{site.lng.toFixed(3)}°</span>
                   </div>
                 </div>
-                
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-                  {s.summary}
-                </p>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {s.tags.map((tag, i) => (
-                    <span key={i} className="text-xs px-3 py-1.5 bg-gradient-to-r from-gray-100/80 to-gray-200/80 dark:from-slate-600/50 dark:to-slate-500/50 text-gray-700 dark:text-gray-200 rounded-full font-medium border border-gray-200/50 dark:border-slate-400/30">
+                {site.image && (
+                  <MediaThumb src={site.image} alt={`${site.name} photo`} className="my-6 h-44 rounded-3xl" />
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {site.tags.map((tag) => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 transition-colors duration-200 dark:bg-slate-700 dark:text-slate-200">
                       #{tag}
                     </span>
                   ))}
                 </div>
-                
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200/50 dark:border-slate-600/50">
-                  <Link 
-                    to={`/site/${s.id}`} 
-                    className="group/link flex items-center gap-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-500 hover:to-blue-500 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                <div className="mt-6 flex items-center justify-between border-t border-white/40 pt-4 dark:border-white/10">
+                  <Link
+                    to={`/site/${site.id}`}
+                    className="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:gap-3 hover:shadow-xl"
                   >
-                    <span>Explore Site</span>
-                    <svg className="w-5 h-5 group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Explore site
+                    <svg className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <MapIcon className="w-4 h-4" />
-                    <span>{s.lat.toFixed(3)}°, {s.lng.toFixed(3)}°</span>
-                  </div>
+                  <Link to="/explore" className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
+                    Map view
+                  </Link>
+                </div>
+              </Card>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className={`transform transition-all duration-700 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <div className="rounded-[32px] border border-white/40 bg-white/80 p-10 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl space-y-4">
+              <SectionTitle icon="🌿">Mission pillars</SectionTitle>
+              <p className="text-sm text-slate-500 dark:text-slate-300">
+                The navbar, hero, and content decks all ladder up to the same conservation story—blending tourism, education, and tech for Mati’s ecosystems.
+              </p>
+            </div>
+            <Link to="/about" className="inline-flex items-center gap-3 rounded-2xl border border-white/50 bg-white/70 px-6 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:border-white/80 hover:bg-white/90 dark:border-white/10 dark:bg-slate-800/60 dark:text-emerald-300 dark:hover:bg-slate-800/80">
+              <InfoIcon className="h-4 w-4" />
+              Learn about the project
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            {missionPillars.map((pillar) => (
+              <div key={pillar.title} className="flex gap-4 rounded-2xl border border-white/40 bg-white/75 p-5 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-900/60">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500/15 to-blue-500/20">
+                  {pillar.icon}
+                </span>
+                <div className="space-y-1.5">
+                  <h4 className="text-base font-semibold text-slate-800 dark:text-white">{pillar.title}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-300">{pillar.description}</p>
                 </div>
               </div>
-            </Card>
-            )})}
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={`transform transition-all duration-700 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <div className="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 p-8 text-white shadow-2xl sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-xl space-y-2">
+            <h3 className="text-2xl font-bold">Stay oriented with Mati ARBio</h3>
+            <p className="text-sm text-white/80">
+              The navbar is your compass—jump into the AR demo or continue exploring data-driven stories of Mati City’s biodiversity.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/ar" className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+              <ARIcon className="h-4 w-4" />
+              Launch AR
+            </Link>
+            <Link to="/biodiversity" className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+              <SpeciesIcon className="h-4 w-4" />
+              Browse species
+            </Link>
+          </div>
         </div>
       </section>
     </div>
@@ -695,11 +797,11 @@ function Explore() {
                     {s.type}
                   </span>
                   
-                  <p className="text-sm text-gray-600 leading-relaxed">{s.summary}</p>
+                  <p className="text-sm text-gray-600 leading-relaxed break-words">{s.summary}</p>
                   
-                  <div className="flex gap-1 mt-3">
+                  <div className="flex flex-wrap gap-1 mt-3">
                     {s.tags.map((tag, i) => (
-                      <span key={i} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-green-100 hover:text-green-700 transition-colors duration-200">
+                      <span key={i} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-green-100 hover:text-green-700 transition-colors duration-200 break-words">
                         #{tag}
                       </span>
                     ))}
@@ -717,18 +819,240 @@ function Explore() {
 function SitePage() {
   const { id } = useParams()
   const site = SITES.find((s) => s.id === id)
-  const siteSpecies = SPECIES.filter((sp) => sp.siteIds.includes(id || ''))
+
   if (!site) return <p>Site not found.</p>
+
+  const highlightSpecies = SPECIES.filter((sp) => site.highlightSpeciesIds.includes(sp.id))
+  const flora = SPECIES.filter((sp) => site.floraIds.includes(sp.id))
+  const fauna = SPECIES.filter((sp) => site.faunaIds.includes(sp.id))
+  const associatedSpecies = SPECIES.filter((sp) => sp.siteIds.includes(site.id) && !site.highlightSpeciesIds.includes(sp.id) && !site.floraIds.includes(sp.id) && !site.faunaIds.includes(sp.id))
+
+  const locationText = [site.barangay, site.city, site.province].filter(Boolean).join(', ')
+
+  const formatCoordinate = (value: number, axis: 'lat' | 'lng') => {
+    const cardinal = axis === 'lat' ? (value >= 0 ? 'N' : 'S') : value >= 0 ? 'E' : 'W'
+    return `${Math.abs(value).toFixed(3)}°${cardinal}`
+  }
+
+  const statusMeta: Record<string, { label: string; classes: string }> = {
+    CR: { label: 'Critically Endangered', classes: 'bg-gradient-to-r from-red-200 to-rose-100 text-red-800 border border-red-200/60' },
+    EN: { label: 'Endangered', classes: 'bg-gradient-to-r from-amber-200 to-orange-100 text-orange-800 border border-orange-200/60' },
+    VU: { label: 'Vulnerable', classes: 'bg-gradient-to-r from-yellow-100 to-lime-100 text-lime-800 border border-lime-200/60' },
+    NT: { label: 'Near Threatened', classes: 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border border-emerald-200/60' },
+    LC: { label: 'Least Concern', classes: 'bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200/60' },
+    DD: { label: 'Data Deficient', classes: 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/60' },
+  }
+
+  const typeBadge = site.type === 'marine'
+    ? 'bg-gradient-to-r from-sky-500/90 to-blue-600/90 text-white shadow-lg shadow-blue-900/30'
+    : 'bg-gradient-to-r from-emerald-500/90 to-green-600/90 text-white shadow-lg shadow-emerald-900/30'
+
+  const infoCards = [
+    {
+      title: 'Location',
+      value: locationText || 'Mati City, Davao Oriental',
+      sub: `Coordinates · ${formatCoordinate(site.lat, 'lat')} · ${formatCoordinate(site.lng, 'lng')}`,
+      icon: site.type === 'marine' ? '🌊' : '⛰️',
+    },
+    {
+      title: 'Protection Status',
+      value: site.designation,
+      sub: site.areaHectares ? `≈ ${site.areaHectares.toLocaleString()} ha protected landscape` : undefined,
+      icon: '🛡️',
+    },
+    {
+      title: 'Ecological Highlights',
+      value: `${site.features.length} signature features`,
+      sub: `${highlightSpecies.length} flagship species`,
+      icon: '✨',
+    },
+    {
+      title: 'Visitor Notes',
+      value: site.visitorNotes || 'Coordinate with local guides for responsible visits.',
+      sub: 'Respect carrying capacity and wildlife guidelines.',
+      icon: '🧭',
+    },
+  ]
+
   return (
-    <div className="space-y-3">
-      <h2 className="text-2xl font-semibold">{site.name}</h2>
-      <p>{site.summary}</p>
-      <h3 className="text-xl font-semibold mt-4">Species here</h3>
-      <ul className="list-disc pl-6">
-        {siteSpecies.map((sp) => (
-          <li key={sp.id}><Link to={`/species/${sp.id}`}>{sp.commonName}</Link> <span className="text-gray-600">({sp.scientificName})</span></li>
+    <div className="space-y-12">
+      <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-slate-900 text-white shadow-2xl">
+        {site.image && (
+          <img
+            src={site.image}
+            alt={`${site.name} landscape`}
+            className="absolute inset-0 h-full w-full object-cover opacity-70"
+            loading="lazy"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/75 to-slate-900/90" />
+        <div className="relative space-y-6 p-8 sm:p-12">
+          <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1 text-sm font-semibold uppercase tracking-wide ${typeBadge}`}>
+            {site.type === 'marine' ? 'Marine Protected Area' : 'Terrestrial Wildlife Sanctuary'}
+          </span>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-black sm:text-5xl">{site.name}</h1>
+            <p className="text-lg text-slate-200 sm:max-w-3xl break-words">{site.summary}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300/80">{site.designation}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {site.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-100"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {infoCards.map((card) => (
+          <div
+            key={card.title}
+            className="group relative overflow-hidden rounded-2xl border border-white/30 bg-white/70 p-6 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/60"
+          >
+            <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-gradient-to-br from-white/40 to-transparent blur-2xl transition-opacity duration-500 group-hover:opacity-70" />
+            <div className="relative space-y-2">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
+                <span className="text-lg">{card.icon}</span>
+                {card.title}
+              </span>
+              <p className="text-lg font-bold text-slate-800 dark:text-slate-100 break-words">{card.value}</p>
+              {card.sub && <p className="text-sm text-slate-500 dark:text-slate-300/80 break-words">{card.sub}</p>}
+            </div>
+          </div>
         ))}
-      </ul>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Why it matters</h2>
+  <p className="text-slate-600 dark:text-slate-300/90 break-words">{site.description}</p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {site.features.map((feature) => (
+            <div
+              key={feature}
+              className="flex gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 text-slate-700 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200"
+            >
+              <span className="mt-1 text-xl">🌿</span>
+              <p className="text-sm leading-relaxed break-words">{feature}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {highlightSpecies.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Flagship species</h2>
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200">
+              {highlightSpecies.length} highlighted
+            </span>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {highlightSpecies.map((sp) => {
+              const status = statusMeta[sp.status] ?? statusMeta.LC
+              const heroImage = sp.images?.[0]
+              return (
+                <Link
+                  key={sp.id}
+                  to={`/species/${sp.id}`}
+                  className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 shadow-xl transition-transform hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-slate-900/70"
+                >
+                  {heroImage && (
+                    <img
+                      src={heroImage}
+                      alt={`${sp.commonName} in habitat`}
+                      className="absolute inset-0 h-full w-full object-cover opacity-60 transition-opacity duration-500 group-hover:opacity-80"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-white/80 to-white/40 dark:from-slate-950/80 dark:via-slate-950/70 dark:to-slate-900/40" />
+                  <div className="relative space-y-3 p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">{sp.category === 'flora' ? 'Flora' : 'Fauna'}</span>
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${status.classes}`}>
+                        <span>{sp.status}</span>
+                        <span className="hidden sm:inline">{status.label}</span>
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{sp.commonName}</p>
+                      <p className="text-sm italic text-slate-500 dark:text-slate-300">{sp.scientificName}</p>
+                    </div>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300/90 break-words">{sp.blurb}</p>
+                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 transition-colors group-hover:text-emerald-700 dark:text-emerald-300 dark:group-hover:text-emerald-200">
+                      <span>Read species profile</span>
+                      <span>→</span>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {(flora.length > 0 || fauna.length > 0) && (
+        <section className="grid gap-6 md:grid-cols-2">
+          {[
+            { title: 'Key flora assemblage', data: flora },
+            { title: 'Key fauna assemblage', data: fauna },
+          ].map((bucket) => (
+            <div
+              key={bucket.title}
+              className="space-y-4 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/60"
+            >
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{bucket.title}</h3>
+              <div className="flex flex-wrap gap-2">
+                {bucket.data.map((species) => (
+                  <Link
+                    to={`/species/${species.id}`}
+                    key={species.id}
+                    className="inline-flex flex-col rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-left text-xs font-semibold text-slate-700 shadow-sm transition-transform hover:-translate-y-0.5 hover:border-emerald-200 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-200 break-words"
+                  >
+                    <span>{species.commonName}</span>
+                    <span className="text-[10px] font-normal italic text-slate-500 dark:text-slate-400">{species.scientificName}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {associatedSpecies.length > 0 && (
+        <section className="space-y-4">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Other species recorded here</h3>
+          <div className="flex flex-wrap gap-2">
+            {associatedSpecies.map((species) => (
+              <Link
+                to={`/species/${species.id}`}
+                key={species.id}
+                className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-left text-xs font-semibold text-slate-600 hover:border-emerald-200 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300 break-words"
+              >
+                <span>{species.commonName}</span>
+                <span className="text-[10px] italic text-slate-500 dark:text-slate-400">{species.scientificName}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/60">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Stewardship and management</h3>
+          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300/90 break-words">{site.stewardship}</p>
+        </div>
+        <div className="space-y-3 rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/60">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Responsible visitation</h3>
+          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300/90 break-words">
+            {site.visitorNotes || 'Coordinate with the local tourism office for accredited guides, observe leave-no-trace ethics, and respect wildlife distances during your visit.'}
+          </p>
+        </div>
+      </section>
     </div>
   )
 }
@@ -889,7 +1213,7 @@ function ARDemo() {
           </p>
         </div>
         
-        <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm">
+  <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl"></div>
           
           <div className="relative z-10 space-y-6">
@@ -903,17 +1227,17 @@ function ARDemo() {
             </p>
             
             <div className="grid md:grid-cols-3 gap-6 my-8">
-              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30 overflow-hidden">
                 <div className="text-3xl mb-3"><CameraIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold mb-2">Camera Access</h4>
                 <p className="text-sm text-gray-600">Allow camera permission for the best AR experience</p>
               </div>
-              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30 overflow-hidden">
                 <div className="text-3xl mb-3"><TargetIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold mb-2">Target Recognition</h4>
                 <p className="text-sm text-gray-600">Point your camera at target images to see AR content</p>
               </div>
-              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30">
+              <div className="bg-white/60 rounded-2xl p-6 backdrop-blur-sm border border-white/30 overflow-hidden">
                 <div className="text-3xl mb-3"><StarIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold mb-4">Interactive 3D</h4>
                 <p className="text-sm text-gray-600">Interact with 3D models of Mati's amazing species</p>
@@ -960,7 +1284,7 @@ function About() {
         
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className={`space-y-6 transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-x-0 opacity-100' : '-translate-x-8 opacity-0'}`}>
-            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-green-100/50 to-blue-100/50 border-2 border-white/30 backdrop-blur-sm">
+            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-green-100/50 to-blue-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"><MissionIcon className="w-6 h-6" /> Our Mission</h3>
               <p className="text-gray-700 leading-relaxed">
                 Mati ARBio is an innovative web-based educational and eco-tourism platform designed to showcase 
@@ -969,7 +1293,7 @@ function About() {
               </p>
             </div>
             
-            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-blue-100/50 to-purple-100/50 border-2 border-white/30 backdrop-blur-sm">
+            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-blue-100/50 to-purple-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"><ConservationIcon className="w-6 h-6" /> Conservation Impact</h3>
               <p className="text-gray-700 leading-relaxed">
                 Through interactive maps, detailed species profiles, and immersive AR experiences, we aim to 
@@ -980,32 +1304,32 @@ function About() {
           
           <div className={`space-y-6 transform transition-all duration-1000 delay-500 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <div className="text-3xl mb-2"><MapIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold text-lg mb-1">Interactive Maps</h4>
                 <p className="text-sm text-gray-600">Explore biodiversity hotspots</p>
               </div>
               
-              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <div className="text-3xl mb-2"><SpeciesIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold text-lg mb-1">Species Database</h4>
                 <p className="text-sm text-gray-600">Comprehensive species profiles</p>
               </div>
               
-              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <div className="text-3xl mb-2"><TechIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold text-lg mb-1">AR Technology</h4>
                 <p className="text-sm text-gray-600">Immersive 3D experiences</p>
               </div>
               
-              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300">
+              <div className="bg-white/60 rounded-2xl p-6 text-center backdrop-blur-sm border border-white/30 hover:scale-105 transition-transform duration-300 overflow-hidden">
                 <div className="text-3xl mb-2"><EducationIcon className="w-8 h-8" /></div>
                 <h4 className="font-bold text-lg mb-1">Education</h4>
                 <p className="text-sm text-gray-600">Learn about conservation</p>
               </div>
             </div>
             
-            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm">
+            <div className="relative rounded-3xl p-8 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2"><TechIcon className="w-6 h-6" /> Technology Stack</h3>
               <div className="flex flex-wrap gap-2">
                 {['React', 'TypeScript', 'Tailwind CSS', 'Leaflet Maps', 'MindAR', 'A-Frame'].map((tech, i) => (
@@ -1019,7 +1343,7 @@ function About() {
         </div>
         
         <div className={`text-center transform transition-all duration-1000 delay-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="relative rounded-3xl p-12 bg-gradient-to-br from-green-400/20 via-blue-400/20 to-purple-400/20 border-2 border-white/30 backdrop-blur-sm">
+          <div className="relative rounded-3xl p-12 bg-gradient-to-br from-green-400/20 via-blue-400/20 to-purple-400/20 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
             <h3 className="text-3xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
               Join Our Conservation Mission
             </h3>
@@ -1060,28 +1384,30 @@ export default function App() {
         <div className="app relative z-10">
           <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
           <Navbar />
-          <main id="main" className="pt-24 lg:pt-32">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path="/site/:id" element={<SitePage />} />
-              <Route path="/species" element={<SpeciesList />} />
-              <Route path="/species/:id" element={<SpeciesPage />} />
-              <Route path="/biodiversity" element={<BiodiversityExplorer />} />
-              <Route path="/biodiversity/:id" element={<SpeciesDetail />} />
-              <Route path="/ar" element={<ARDemo />} />
-              <Route path="/about" element={<About />} />
-              <Route path="*" element={
-                <div className="text-center py-16">
-                  <div className="text-6xl mb-4">🔍</div>
-                  <h2 className="text-2xl font-bold text-gray-700 mb-2">Page not found</h2>
-                  <p className="text-gray-600 mb-6">The page you're looking for doesn't exist.</p>
-                  <Link to="/" className="btn-primary inline-block">
-                    🏠 Go Home
-                  </Link>
-                </div>
-              } />
-            </Routes>
+          <main id="main" className="pt-12 lg:pt-16">
+            <div className="w-full px-4 pb-16 sm:px-6 lg:px-12 xl:px-16">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/site/:id" element={<SitePage />} />
+                <Route path="/species" element={<SpeciesList />} />
+                <Route path="/species/:id" element={<SpeciesPage />} />
+                <Route path="/biodiversity" element={<BiodiversityExplorer />} />
+                <Route path="/biodiversity/:id" element={<SpeciesDetail />} />
+                <Route path="/ar" element={<ARDemo />} />
+                <Route path="/about" element={<About />} />
+                <Route path="*" element={
+                  <div className="text-center py-16">
+                    <div className="text-6xl mb-4">🔍</div>
+                    <h2 className="text-2xl font-bold text-gray-700 mb-2">Page not found</h2>
+                    <p className="text-gray-600 mb-6">The page you're looking for doesn't exist.</p>
+                    <Link to="/" className="btn-primary inline-block">
+                      🏠 Go Home
+                    </Link>
+                  </div>
+                } />
+              </Routes>
+            </div>
           </main>
           <Footer />
         </div>

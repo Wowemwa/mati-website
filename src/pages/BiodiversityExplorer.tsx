@@ -66,7 +66,7 @@ export default function BiodiversityExplorer() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {results.map(s => (
-          <div key={s.id} className="group soft-surface p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+          <div key={s.id} className="group soft-surface overflow-hidden p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-300 transition-colors">{s.commonName}</h3>
               <span className="text-xs px-3 py-1 rounded-full font-medium bg-white/60 dark:bg-slate-700/60 border border-white/40 dark:border-white/10">{s.type}</span>

@@ -5,7 +5,7 @@ type BaseProps = { className?: string; children: ReactNode; style?: CSSPropertie
 
 export function Card({ className, children, style, ...rest }: BaseProps) {
   return (
-    <div {...rest} style={style} className={clsx('group relative rounded-3xl backdrop-blur-xl bg-white/75 dark:bg-slate-800/70 border border-white/30 dark:border-white/15 shadow-xl hover:shadow-2xl transition-all duration-700 hover:-translate-y-2 hover:rotate-1 overflow-hidden', className)}>
+    <div {...rest} style={style} className={clsx('group relative rounded-3xl backdrop-blur-xl bg-white/75 dark:bg-slate-800/70 border border-white/30 dark:border-white/15 shadow-xl hover:shadow-2xl transition-all duration-700 hover:-translate-y-2 hover:rotate-1 overflow-hidden break-words hyphens-auto', className)}>
       <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative z-10">
         {children}
@@ -16,7 +16,7 @@ export function Card({ className, children, style, ...rest }: BaseProps) {
 
 export function SoftCard({ className, children, style, ...rest }: BaseProps) {
   return (
-    <div {...rest} style={style} className={clsx('group relative rounded-3xl bg-gradient-to-br from-white/85 to-gray-50/50 dark:from-slate-800/75 dark:to-slate-700/50 border border-white/40 dark:border-white/20 backdrop-blur-xl shadow-xl transition-all duration-700 hover:shadow-2xl hover:-translate-y-1 overflow-hidden', className)}>
+    <div {...rest} style={style} className={clsx('group relative rounded-3xl bg-gradient-to-br from-white/85 to-gray-50/50 dark:from-slate-800/75 dark:to-slate-700/50 border border-white/40 dark:border-white/20 backdrop-blur-xl shadow-xl transition-all duration-700 hover:shadow-2xl hover:-translate-y-1 overflow-hidden break-words hyphens-auto', className)}>
       <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 via-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="absolute inset-0 border border-gradient-to-r from-green-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="relative z-10">

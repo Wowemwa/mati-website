@@ -51,6 +51,22 @@ body.dark .soft-surface{background:linear-gradient(145deg,rgba(30,41,59,.85),rgb
   100% { background-position: 200% 0; }
 }
 
+@keyframes pulse-soft {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.02); }
+  60% { transform: scale(1.03); }
+}
+
+@keyframes spin-soft {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pop-soft {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
 * { 
   box-sizing: border-box; 
 }
@@ -240,8 +256,8 @@ body.dark .display-divider {box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 4px 16
 @media (max-width:640px){.hero-actions{gap:.75rem}}
 
 /* AnimatedText characters */
-.animated-text .char{opacity:0;transform:translateY(.8em) rotate(6deg);animation:charIn .75s cubic-bezier(.34,1.56,.64,1) forwards;filter:blur(3px)}
-@keyframes charIn{0%{opacity:0;transform:translateY(.8em) rotate(6deg);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translateY(0) rotate(0);filter:blur(0)}}
+.animated-text .char{opacity:0;transform:translateY(.5em) rotate(3deg);animation:charIn .65s cubic-bezier(.33,.9,.3,1.1) forwards;filter:blur(2px)}
+@keyframes charIn{0%{opacity:0;transform:translateY(.5em) rotate(3deg);filter:blur(2px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:translateY(0) rotate(0);filter:blur(0)}}
 @media (prefers-reduced-motion:reduce){.animated-text .char{animation:none;opacity:1;transform:none;filter:none}}
 
 /* Icon badges */
@@ -258,7 +274,7 @@ body.dark .icon-badge{background:linear-gradient(135deg,rgba(16,185,129,.25),rgb
 .hero-orb--1{top:-10%;left:-5%;width:240px;height:240px;background:radial-gradient(circle,#10b98155,#2563eb11)}
 .hero-orb--2{bottom:-15%;right:-10%;width:320px;height:320px;background:radial-gradient(circle,#2563eb55,#7e22ce11);animation-delay:3s}
 .hero-orb--3{top:35%;left:55%;width:180px;height:180px;background:radial-gradient(circle,#7e22ce55,#10b98111);animation-delay:6s}
-@keyframes orbFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(0,-25px,0) scale(1.07)}}
+@keyframes orbFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(0,-15px,0) scale(1.04)}}
 .hero-icon-cluster{position:relative;display:flex;gap:.85rem;flex-wrap:wrap}
 .hero-icon-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1rem;border-radius:999px;font-size:.85rem;font-weight:500;letter-spacing:.5px;background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.35));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.5);box-shadow:0 4px 18px -6px rgba(16,185,129,.25),0 4px 24px -8px rgba(59,130,246,.25)}
 body.dark .hero-icon-pill{background:linear-gradient(145deg,rgba(30,41,59,.65),rgba(30,41,59,.35));border:1px solid rgba(255,255,255,.15)}
@@ -308,6 +324,18 @@ body.dark .hero-divider-fade{background:linear-gradient(to bottom,rgba(15,23,42,
   animation: gradient-x 3s ease infinite;
 }
 
+.animate-pulse-soft {
+  animation: pulse-soft 7s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-soft 14s linear infinite;
+}
+
+.animate-pop-soft {
+  animation: pop-soft 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 .animate-shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   background-size: 200% 100%;
@@ -350,9 +378,9 @@ body.dark .glass-card {
 }
 
 .glass-card:hover {
-  transform: translateY(-8px) rotate(1deg);
-  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2), 0 10px 30px rgba(59, 130, 246, 0.2);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-4px) rotate(0.35deg);
+  box-shadow: 0 16px 34px rgba(16, 185, 129, 0.18), 0 10px 26px rgba(59, 130, 246, 0.18);
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.45s ease-out;
 }
 
 body.dark .glass-card:hover {
@@ -375,7 +403,7 @@ body.dark .glass-card:hover {
 
 /* Enhanced buttons */
 .btn-primary { 
-  @apply bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-500 hover:via-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl transform transition-all duration-500 hover:scale-110 hover:-rotate-1;
+  @apply bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 hover:from-green-500 hover:via-blue-500 hover:to-purple-500 text-white px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl transform transition-transform duration-300 hover:scale-105;
   background-size: 200% 200%;
   position: relative;
   overflow: hidden;

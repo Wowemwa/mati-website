@@ -18,7 +18,7 @@ export default function SpeciesDetail() {
         </div>
       </header>
 
-      <section className="soft-surface p-6 space-y-4">
+  <section className="soft-surface overflow-hidden p-6 space-y-4">
         <h2 className="text-lg font-bold">Overview</h2>
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{record.description}</p>
         {record.keyFacts && record.keyFacts.length > 0 && (
@@ -29,7 +29,7 @@ export default function SpeciesDetail() {
       </section>
 
       {record.ecology && (
-        <section className="soft-surface p-6 space-y-4">
+  <section className="soft-surface overflow-hidden p-6 space-y-4">
           <h2 className="text-lg font-bold">Ecology</h2>
           <div className="grid sm:grid-cols-2 gap-6 text-sm">
             <div>
@@ -52,7 +52,7 @@ export default function SpeciesDetail() {
       )}
 
       {record.threats && (
-        <section className="soft-surface p-6 space-y-4">
+  <section className="soft-surface overflow-hidden p-6 space-y-4">
           <h2 className="text-lg font-bold">Threats & Conservation</h2>
           <div className="grid sm:grid-cols-2 gap-6 text-sm">
             <div>
@@ -79,7 +79,7 @@ export default function SpeciesDetail() {
         </section>
       )}
 
-      <section className="soft-surface p-6 space-y-4">
+  <section className="soft-surface overflow-hidden p-6 space-y-4">
         <h2 className="text-lg font-bold">Distribution</h2>
         <div className="grid sm:grid-cols-2 gap-6 text-sm">
           {record.distribution.map((d,i) => {
@@ -101,7 +101,7 @@ export default function SpeciesDetail() {
       </section>
 
       {record.references && record.references.length>0 && (
-        <section className="soft-surface p-6 space-y-4">
+  <section className="soft-surface overflow-hidden p-6 space-y-4">
           <h2 className="text-lg font-bold">References</h2>
           <ul className="list-disc pl-6 text-sm space-y-1">
             {record.references.map(r => <li key={r}>{r}</li>)}
