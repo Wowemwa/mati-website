@@ -11,6 +11,7 @@ import useScrollPosition from './hooks/useScrollPosition'
 import { DataProvider, useData } from './context/DataContext'
 import { AdminProvider, useAdmin } from './context/AdminContext'
 import DetailedGISMap from './components/DetailedGISMap'
+import GISMapPage from './components/GISMapPage'
 
 // Lazy load heavy components
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
@@ -496,7 +497,7 @@ function Home() {
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button
                 variant="primary"
-                onClick={() => navigate('/explore')}
+                onClick={() => navigate('/gis')}
                 className="flex items-center gap-3"
               >
                 <span className="text-2xl">🌊</span>
@@ -661,7 +662,7 @@ function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </Link>
-                    <Link to="/explore" className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
+                    <Link to="/gis" className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
                       Map view
                     </Link>
                   </div>
@@ -731,7 +732,7 @@ function Home() {
 }
 
 function GISMap() {
-  return <DetailedGISMap />
+  return <GISMapPage />
 }
 
 function SitePage() {
@@ -796,7 +797,7 @@ function SitePage() {
         <h2 className="mb-3 text-2xl font-bold text-slate-800 dark:text-white">Site not found</h2>
         <p className="text-sm">We couldn’t locate that hotspot. It may have been renamed or isn’t part of the current dataset yet.</p>
         <div className="mt-6 flex justify-center gap-3">
-          <Link to="/explore" className="btn-primary inline-flex items-center gap-2">
+          <Link to="/gis" className="btn-primary inline-flex items-center gap-2">
             <MapIcon className="h-4 w-4" />
             Back to map
           </Link>
@@ -1567,7 +1568,7 @@ function About() {
               Start exploring today and become part of the conservation community!
             </p>
             <Link 
-              to="/explore" 
+              to="/gis" 
               className="group inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-green-500/25 transform hover:scale-105 transition-all duration-300"
             >
               <span className="text-2xl group-hover:animate-bounce">🌟</span>
