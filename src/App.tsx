@@ -12,6 +12,7 @@ import { AdminProvider, useAdmin } from './context/AdminContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceMonitor from './components/PerformanceMonitor'
 import { PageLoadingFallback, ComponentLoadingFallback, MapLoadingFallback } from './components/LoadingSpinner'
+import { initProgressiveEnhancement } from './utils/progressive-enhancement'
 
 // Lazy load all heavy components for better code splitting and performance
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
@@ -1605,6 +1606,11 @@ function About() {
 export default function App() {
   // Ensure hook initialized so initial theme applied early
   useTheme()
+  
+  // Initialize progressive enhancements
+  useEffect(() => {
+    initProgressiveEnhancement()
+  }, [])
   
   return (
     <ErrorBoundary>
