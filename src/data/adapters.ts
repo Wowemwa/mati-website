@@ -1,5 +1,5 @@
-import { dataset } from './sample'
-import type { SpeciesRecord, SiteRecord, BiodiversityDataset, FloraRecord, FaunaRecord } from './schema'
+import { MATI_HOTSPOTS, MATI_SPECIES } from './mati-hotspots'
+import type { SpeciesRecord, SiteRecord, BiodiversityDataset } from './schema'
 
 export interface UnifiedSpecies {
   id: string
@@ -14,42 +14,70 @@ export interface UnifiedSpecies {
   siteIds: string[]
 }
 
-export function getDataset(): BiodiversityDataset { return dataset }
-
-export function getSites(): SiteRecord[] { return dataset.sites }
-
-export function getUnifiedSpecies(): UnifiedSpecies[] {
-  const flora: UnifiedSpecies[] = dataset.flora.map(f => ({
-    id: f.id,
-    commonName: f.commonName,
-    scientificName: f.taxonomy.scientificName,
-    status: f.status,
-    endemic: f.endemic,
-    type: 'flora',
-    taxonomy: f.taxonomy,
-    description: f.description,
-    habitats: Array.from(new Set(f.distribution.map(d => d.habitatType).filter(Boolean) as string[])),
-    siteIds: Array.from(new Set(f.distribution.map(d => d.siteId)))
+// Convert Mati hotspots to SiteRecord format
+export function getSites(): SiteRecord[] { 
+  return MATI_HOTSPOTS.map(hotspot => ({
+    id: hotspot.id,
+    name: hotspot.name,
+    type: hotspot.type as any,
+    summary: hotspot.summary,
+    lat: hotspot.lat,
+    lng: hotspot.lng,
+    coordinates: { lat: hotspot.lat, lng: hotspot.lng },
+    description: hotspot.summary,
+    conservation: {
+      status: hotspot.designation,
+      area: hotspot.areaHectares || 0,
+      stewardship: hotspot.stewardship
+    }
   }))
-  const fauna: UnifiedSpecies[] = dataset.fauna.map(f => ({
-    id: f.id,
-    commonName: f.commonName,
-    scientificName: f.taxonomy.scientificName,
-    status: f.status,
-    endemic: f.endemic,
-    type: 'fauna',
-    taxonomy: f.taxonomy,
-    description: f.description,
-    habitats: Array.from(new Set(f.distribution.map(d => d.habitatType).filter(Boolean) as string[])),
-    siteIds: Array.from(new Set(f.distribution.map(d => d.siteId)))
-  }))
-  return [...flora, ...fauna]
 }
 
-export function findSpeciesById(id: string): FloraRecord | FaunaRecord | undefined {
-  return dataset.flora.find(f => f.id === id) || dataset.fauna.find(f => f.id === id)
+// Convert to legacy format for compatibility  
+export function getDataset(): BiodiversityDataset { 
+  return {
+    metadata: {
+      region: "Davao Oriental",
+      city: "Mati City", 
+      lastUpdated: new Date().toISOString(),
+      sources: ["DENR-BMB", "UNESCO", "Local Research"],
+      notes: "Comprehensive biodiversity data for Mati City conservation areas"
+    },
+    sites: getSites(),
+    flora: [],
+    fauna: []
+  }
+}
+
+// Convert Mati species to UnifiedSpecies format
+export function getUnifiedSpecies(): UnifiedSpecies[] {
+  return MATI_SPECIES.map(species => ({
+    id: species.id,
+    commonName: species.commonName,
+    scientificName: species.scientificName,
+    status: species.status,
+    endemic: species.commonName.includes('Hamiguitan') || species.scientificName.includes('hamiguitanensis'),
+    type: species.category,
+    taxonomy: {
+      kingdom: species.category === 'flora' ? 'Plantae' : 'Animalia',
+      phylum: species.category === 'flora' ? 'Tracheophyta' : 'Chordata',
+      class: species.category === 'flora' ? 'Magnoliopsida' : 'Aves',
+      order: 'Unknown',
+      family: 'Unknown',
+      genus: species.scientificName.split(' ')[0],
+      species: species.scientificName.split(' ')[1] || '',
+      scientificName: species.scientificName
+    },
+    description: species.blurb,
+    habitats: [species.habitat],
+    siteIds: species.siteIds
+  }))
+}
+
+export function findSpeciesById(id: string): any {
+  return MATI_SPECIES.find(s => s.id === id)
 }
 
 export function findSiteById(id: string): SiteRecord | undefined {
-  return dataset.sites.find(s => s.id === id)
+  return getSites().find(s => s.id === id)
 }

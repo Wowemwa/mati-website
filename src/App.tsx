@@ -10,6 +10,7 @@ import { WaveIcon, MountainIcon, SpeciesIcon, ARIcon, InfoIcon, MapIcon, CameraI
 import useScrollPosition from './hooks/useScrollPosition'
 import { DataProvider, useData } from './context/DataContext'
 import { AdminProvider, useAdmin } from './context/AdminContext'
+import DetailedGISMap from './components/DetailedGISMap'
 
 // Lazy load heavy components
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
@@ -50,7 +51,7 @@ function Navbar() {
   const scrolled = useScrollPosition(8)
   const location = useLocation()
   const navItems = useMemo(() => [
-    { to: '/explore', label: 'Explore', badge: '🗺️' },
+    { to: '/gis', label: 'GIS Map', badge: '🗺️' },
     { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
     { to: '/ar', label: 'AR Demo', badge: '✨', comingSoon: !isAdmin },
     { to: '/virtual-tour', label: 'Virtual Tour', badge: '🎥', comingSoon: true },
@@ -729,205 +730,8 @@ function Home() {
   )
 }
 
-function Explore() {
-  const { hotspots, loading: dataLoading } = useData()
-  const [filter, setFilter] = useState<'all'|'marine'|'terrestrial'>('all')
-  const [isVisible, setIsVisible] = useState(false)
-  const [mapLoading, setMapLoading] = useState(true)
-
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
-
-  useEffect(() => {
-    if (hotspots.length === 0) {
-      if (!dataLoading) {
-        setMapLoading(false)
-      }
-      return
-    }
-
-    let map: L.Map | null = null
-    const timer = window.setTimeout(() => {
-      map = L.map('map').setView([6.93, 126.2], 10)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
-      }).addTo(map)
-
-      hotspots.forEach((s) => {
-        const icon = L.divIcon({
-          html: `<div class="animate-bounce">${s.type === 'marine' ? '🌊' : '🏔️'}</div>`,
-          className: 'custom-marker',
-          iconSize: [30, 30],
-        })
-        L.marker([s.lat, s.lng], { icon })
-          .addTo(map!)
-          .bindPopup(`<div class="p-2"><b class="text-green-700">${s.name}</b><br/><span class="text-sm">${s.summary}</span></div>`)
-      })
-
-      setMapLoading(false)
-    }, 400)
-
-    return () => {
-      window.clearTimeout(timer)
-      map?.remove()
-    }
-  }, [hotspots, dataLoading])
-
-  const filtered = useMemo(
-    () => hotspots.filter((s) => (filter === 'all' ? true : s.type === filter)),
-    [filter, hotspots]
-  )
-
-  const counts = useMemo(
-    () => ({
-      all: hotspots.length,
-      marine: hotspots.filter((s) => s.type === 'marine').length,
-      terrestrial: hotspots.filter((s) => s.type === 'terrestrial').length,
-    }),
-    [hotspots]
-  )
-
-  const filterOptions: Array<{ key: 'all' | 'marine' | 'terrestrial'; label: string; icon: string; count: string }> = [
-    { key: 'all', label: 'All Sites', icon: '🌐', count: dataLoading ? '•••' : `${counts.all}` },
-    { key: 'marine', label: 'Marine', icon: '🌊', count: dataLoading ? '•••' : `${counts.marine}` },
-    { key: 'terrestrial', label: 'Terrestrial', icon: '🏔️', count: dataLoading ? '•••' : `${counts.terrestrial}` },
-  ]
-  
-  return (
-    <div className="space-y-8">
-      {/* Header with enhanced filters */}
-      <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <div className="text-center">
-          <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            <AnimatedText text="Explore Interactive Map" />
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Discover Mati's biodiversity hotspots through our interactive mapping experience
-          </p>
-        </div>
-        
-        <div className="flex justify-center">
-          <div className="inline-flex items-center gap-2 p-2 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/30 dark:border-white/15 shadow-lg">
-            {filterOptions.map((item) => (
-              <button 
-                key={item.key}
-                className={`group relative px-6 py-3 rounded-xl font-semibold transition-all duration-500 transform hover:scale-105 ${
-                  filter === item.key
-                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-lg scale-105' 
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-white/40 dark:hover:bg-slate-700/40'
-                }`} 
-                onClick={() => setFilter(item.key as any)}
-              >
-                <span className="flex items-center gap-3">
-                  <span className="text-xl group-hover:animate-bounce">{item.icon}</span>
-                  <span>{item.label}</span>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    filter === item.key 
-                      ? 'bg-white/25 text-white' 
-                      : 'bg-gray-100 dark:bg-slate-600 text-gray-600 dark:text-gray-300'
-                  }`}>
-                    {item.count}
-                  </span>
-                </span>
-                {filter === item.key && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-600/20 to-blue-600/20 rounded-xl blur animate-pulse" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* Enhanced Map Container */}
-      <div className={`relative rounded-3xl overflow-hidden border-4 border-white/30 shadow-2xl transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <Atmosphere variant="hero" className="opacity-60" />
-  {mapLoading && (
-          <div className="absolute inset-0 z-20 bg-gradient-to-br from-green-50/90 to-blue-50/90 backdrop-blur-sm flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin text-5xl mb-4 text-green-600">⟳</div>
-              <p className="text-xl font-semibold text-gray-700">Loading interactive map...</p>
-            </div>
-          </div>
-        )}
-        <div id="map" style={{ height: '70vh', width: '100%' }} className="relative z-10 rounded-3xl" />
-        
-        {/* Floating stats */}
-        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg">
-          <div className="text-sm font-semibold text-gray-700">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="animate-pulse text-green-600">•</span>
-              {dataLoading ? 'Syncing live hotspot data…' : `Showing ${filtered.length} sites`}
-            </div>
-            <div className="text-xs text-gray-500">Click markers for details</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Site List */}
-      <div className={`transform transition-all duration-1000 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
-          <span>Featured Locations</span>
-          <span className="text-sm font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-slate-700 dark:text-slate-200">{filtered.length}</span>
-        </h3>
-        
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((s, index) => (
-            <div 
-              key={s.id} 
-              className="group relative border-2 border-white/30 rounded-3xl p-6 bg-gradient-to-br from-white/80 to-gray-50/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Floating type indicator */}
-              <div className="absolute -top-3 -right-3 w-12 h-12 bg-gradient-to-br from-green-400 to-blue-400 rounded-2xl flex items-center justify-center text-2xl shadow-lg group-hover:animate-bounce">
-                {s.type === 'marine' ? <WaveIcon className="w-7 h-7" /> : <MountainIcon className="w-7 h-7" />}
-              </div>
-              
-              <div className="flex items-start gap-4">
-                {s.image && (
-                  <div className="relative overflow-hidden rounded-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-                    <img
-                      src={s.image}
-                      alt={`${s.name} thumbnail`}
-                      className="w-24 h-20 object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
-                )}
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <Link 
-                      to={`/site/${s.id}`} 
-                      className="font-bold text-lg text-gray-800 hover:text-green-700 transition-colors duration-300 group-hover:scale-105 transform inline-block"
-                    >
-                      {s.name}
-                    </Link>
-                  </div>
-                  
-                  <span className={`inline-block text-sm px-3 py-1 rounded-full font-medium mb-3 ${s.type === 'marine' ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700' : 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700'}`}>
-                    {s.type}
-                  </span>
-                  
-                  <p className="text-sm text-gray-600 leading-relaxed break-words">{s.summary}</p>
-                  
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {s.tags.map((tag, i) => (
-                      <span key={i} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-green-100 hover:text-green-700 transition-colors duration-200 break-words">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+function GISMap() {
+  return <DetailedGISMap />
 }
 
 function SitePage() {
@@ -1801,7 +1605,7 @@ export default function App() {
                 <div className="w-full px-2 pb-8 sm:px-4 lg:px-6 xl:px-8">
                   <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/explore" element={<Explore />} />
+                <Route path="/gis" element={<GISMap />} />
                 <Route path="/site/:id" element={<SitePage />} />
                 <Route path="/species" element={<SpeciesList />} />
                 <Route path="/species/:id" element={<SpeciesPage />} />

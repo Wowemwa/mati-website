@@ -46,6 +46,8 @@
 
 A colorful React + Vite + TypeScript app with Leaflet maps, species pages, and an AR demo scaffold (MindAR + A‑Frame).
 
+> **🗺️ GIS Technology:** This system utilizes Geographic Information System (GIS) capabilities through Leaflet.js for interactive mapping, spatial data visualization, and location-based biodiversity exploration. The platform integrates geospatial data to provide accurate positioning of marine and terrestrial biodiversity hotspots across Mati City.
+
 ## Release snapshot
 
 - **Version:** v0.3.0
@@ -72,6 +74,39 @@ Requirements: Node.js 18+ (tested on Node 20), npm 9+.
 Optional: Build for production
 - `npm run build` (outputs to `dist/`)
 - `npm run preview` to locally preview the production build
+
+## GIS Integration
+
+This system leverages **Geographic Information System (GIS)** technology for spatial data management and visualization:
+
+### Core GIS Features:
+- **Interactive Mapping**: Leaflet.js-powered maps with zoom, pan, and layer controls
+- **Spatial Data Visualization**: Biodiversity hotspot positioning with coordinate accuracy
+- **Geospatial Analysis**: Location-based filtering and species distribution mapping
+- **Multi-layer Support**: Marine and terrestrial ecosystem layer separation
+- **Responsive Cartography**: Mobile-optimized map interactions and touch controls
+
+### Technical Implementation:
+- **Mapping Library**: Leaflet.js (lightweight, mobile-friendly GIS library)
+- **Coordinate System**: WGS84 (World Geodetic System) for global compatibility
+- **Data Format**: GeoJSON for structured geographic data representation
+- **Tile Layers**: OpenStreetMap integration for base mapping services
+- **Custom Markers**: Species-specific icons with popup data integration
+
+### GIS Data Structure:
+```javascript
+// Hotspot location format
+{
+  id: string,
+  name: string,
+  coordinates: [latitude, longitude],
+  type: 'marine' | 'terrestrial',
+  species: Array<Species>,
+  description: string
+}
+```
+
+The GIS implementation enables precise geographic referencing of Mati City's biodiversity, supporting both educational exploration and scientific data visualization.
 
 ## AR Demo
 

@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
-import { HOTSPOTS, SPECIES, Hotspot, SpeciesDetail } from '../data/hotspots'
+import { MATI_HOTSPOTS as HOTSPOTS, MATI_SPECIES as SPECIES, Hotspot, SpeciesDetail } from '../data/mati-hotspots'
 
 type DataContextValue = {
   hotspots: Hotspot[]
