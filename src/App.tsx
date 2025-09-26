@@ -109,18 +109,18 @@ function Navbar() {
             </Link>
 
             <div className="hidden md:flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
-                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
-                  <WaveIcon className="h-4 w-4 text-blue-500" />
-                  {marineCount} marine
+              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold">
+                <span className="flex items-center gap-2 rounded-xl border border-blue-200/60 bg-blue-50/80 px-3 py-1.5 text-blue-700 shadow-sm backdrop-blur dark:border-blue-700/40 dark:bg-blue-900/30 dark:text-blue-300">
+                  <WaveIcon className="h-4 w-4" />
+                  <span>{marineCount} marine</span>
                 </span>
-                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
-                  <MountainIcon className="h-4 w-4 text-emerald-500" />
-                  {terrestrialCount} terrestrial
+                <span className="flex items-center gap-2 rounded-xl border border-emerald-200/60 bg-emerald-50/80 px-3 py-1.5 text-emerald-700 shadow-sm backdrop-blur dark:border-emerald-700/40 dark:bg-emerald-900/30 dark:text-emerald-300">
+                  <MountainIcon className="h-4 w-4" />
+                  <span>{terrestrialCount} terrestrial</span>
                 </span>
-                <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
-                  <SpeciesIcon className="h-4 w-4 text-purple-500" />
-                  {loading ? '—' : `${species.length}+`} species
+                <span className="flex items-center gap-2 rounded-xl border border-purple-200/60 bg-purple-50/80 px-3 py-1.5 text-purple-700 shadow-sm backdrop-blur dark:border-purple-700/40 dark:bg-purple-900/30 dark:text-purple-300">
+                  <SpeciesIcon className="h-4 w-4" />
+                  <span>{loading ? '—' : `${species.length}+`} species</span>
                 </span>
               </div>
               <ThemeToggle />
@@ -168,14 +168,17 @@ function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center justify-between gap-6">
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              <span className="rounded-full border border-emerald-500/40 bg-emerald-100/60 px-3 py-1 uppercase tracking-wide text-emerald-700 dark:border-emerald-300/40 dark:bg-emerald-900/30 dark:text-emerald-200">
-                Live beta
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-100/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700 shadow-sm dark:border-emerald-400/30 dark:bg-emerald-900/40 dark:text-emerald-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Beta
               </span>
             </div>
-            <div className="relative flex items-center gap-4 rounded-full border border-white/50 bg-white/75 px-4 py-2 shadow-lg shadow-emerald-500/10 backdrop-blur-xl dark:border-white/15 dark:bg-slate-800/70 dark:shadow-black/30 overflow-hidden">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
-              <div className="pointer-events-none absolute inset-0 border border-white/40 rounded-full mix-blend-soft-light dark:border-white/10" />
+            <div className="relative flex items-center gap-2 rounded-full border-2 border-emerald-300/60 bg-gradient-to-r from-emerald-100/95 via-teal-100/95 to-blue-100/95 px-3 py-2 shadow-2xl backdrop-blur-3xl dark:border-emerald-400/50 dark:bg-gradient-to-r dark:from-emerald-800/70 dark:via-teal-800/70 dark:to-blue-800/70">
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-emerald-500/25 via-teal-500/25 to-blue-500/25 rounded-full animate-[gradient_6s_ease-in-out_infinite]" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-blue-400/20 via-purple-400/20 to-emerald-400/20 rounded-full animate-[gradient_8s_ease-in-out_infinite_reverse]" />
+              <div className="pointer-events-none absolute inset-0 bg-white/10 dark:bg-white/5 rounded-full shadow-inner" />
+              
               {navItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.to)
                 const showSoon = item.comingSoon && !isAdmin
@@ -183,89 +186,97 @@ function Navbar() {
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className={`group relative z-10 inline-flex min-w-[130px] items-center gap-4 rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-all duration-300 ease-out ${
+                    className={`group relative z-10 inline-flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-out ${
                       isActive
-                        ? 'text-white drop-shadow-[0_10px_25px_-12px_rgba(16,185,129,0.65)]'
-                        : 'text-slate-700 dark:text-slate-200 hover:text-emerald-500 dark:hover:text-emerald-300'
+                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 text-white shadow-lg scale-105'
+                        : showSoon 
+                          ? 'text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                          : 'text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/60'
                     }`}
                   >
-                    <span className={`relative flex h-9 w-9 items-center justify-center rounded-full text-lg transition-transform duration-300 ease-out ${
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-full text-base transition-all duration-300 ${
                       isActive
-                        ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-blue-500 text-white shadow-[0_20px_45px_-18px_rgba(16,185,129,0.75)]'
-                        : 'border border-white/60 bg-white/80 text-slate-600 shadow-[0_12px_32px_-26px_rgba(15,118,110,0.55)] group-hover:border-emerald-200 group-hover:bg-white'
-                    }`}
-                    >
-                      <span className="relative z-10">{item.badge}</span>
-                      <span className={`pointer-events-none absolute inset-0 rounded-full border ${
-                        isActive ? 'border-white/60 opacity-70' : 'border-white/70 opacity-50'
-                      }`} />
-                      {!isActive && (
-                        <span className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/10 via-teal-400/5 to-blue-400/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                      )}
+                        ? 'bg-white/20 text-white'
+                        : showSoon
+                          ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
+                          : 'bg-white/60 dark:bg-slate-600/60 border border-white/80 dark:border-slate-500/60 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/30'
+                    }`}>
+                      {item.badge}
                     </span>
-                    <span className="flex flex-col leading-tight">
-                      <span>{item.label}</span>
+                    
+                    <div className="flex flex-col items-start">
+                      <span className="leading-tight">{item.label}</span>
                       {showSoon && (
-                        <span className="mt-1 inline-flex items-center justify-center self-start rounded-full bg-emerald-100/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-emerald-600 shadow-sm dark:bg-emerald-500/20 dark:text-emerald-200">
-                          Soon
+                        <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-700/50">
+                          SOON
                         </span>
                       )}
-                      <span className={`mt-1 h-[2px] w-full rounded-full transition-colors duration-300 ease-out ${
-                        isActive
-                          ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500'
-                          : 'bg-emerald-400/0 group-hover:bg-emerald-400/60'
-                      }`} />
-                    </span>
-                    <span className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full">
-                      <span className={`absolute inset-[1px] rounded-full transition-opacity duration-300 ease-out ${
-                        isActive
-                          ? 'bg-gradient-to-r from-emerald-400/90 via-teal-400/80 to-blue-500/90 opacity-90'
-                          : 'bg-white/40 opacity-70 group-hover:bg-white/70 group-hover:opacity-100'
-                      }`} />
-                      <span className="absolute inset-0 rounded-full border border-white/45 mix-blend-soft-light" />
-                    </span>
-                    <span className={`pointer-events-none absolute -inset-[7px] -z-20 rounded-full blur-2xl transition-opacity duration-500 ease-out ${
-                      isActive
-                        ? 'bg-gradient-to-r from-emerald-300/40 via-teal-300/35 to-blue-400/40 opacity-90'
-                        : 'bg-gradient-to-r from-emerald-300/20 via-teal-200/15 to-blue-300/20 opacity-0 group-hover:opacity-70'
-                    }`} />
+                    </div>
+
+                    {/* Active indicator */}
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-blue-500/20 blur-lg" />
+                    )}
                   </NavLink>
                 )
               })}
             </div>
-            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm dark:border-blue-700/40 dark:bg-blue-900/30 dark:text-blue-300">
               <MapIcon className="h-4 w-4 text-blue-500" />
-              Mati, Davao Oriental
+              <span>Mati, Davao Oriental</span>
             </div>
           </div>
 
           <div className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="space-y-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur dark:border-white/15 dark:bg-slate-900/90">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  className={({ isActive }) => `flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-200 ease-out ${
-                    isActive
-                      ? 'bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg'
-                      : 'text-gray-700 dark:text-gray-200 hover:bg-white hover:shadow-md dark:hover:bg-slate-800'
-                  }`}
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="text-xl">{item.badge}</span>
-                    <span className="flex flex-col leading-tight">
-                      <span>{item.label}</span>
-                      {item.comingSoon && !isAdmin && (
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-600">Soon</span>
-                      )}
-                    </span>
-                  </span>
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </NavLink>
-              ))}
+            <div className="space-y-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-slate-900/90">
+              {navItems.map((item) => {
+                const showSoon = item.comingSoon && !isAdmin
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className={({ isActive }) => {
+                      return `flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300 ease-out ${
+                        isActive
+                          ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg scale-[1.02]'
+                          : showSoon
+                            ? 'text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed'
+                            : 'text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:shadow-md'
+                      }`
+                    }}
+                    onClick={() => setOpen(false)}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <span className={`flex h-8 w-8 items-center justify-center rounded-full text-lg ${
+                            isActive 
+                              ? 'bg-white/20 text-white' 
+                              : showSoon
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-400'
+                                : 'bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600'
+                          }`}>
+                            {item.badge}
+                          </span>
+                          <div className="flex flex-col leading-tight">
+                            <span>{item.label}</span>
+                            {showSoon && (
+                              <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                                SOON
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {!showSoon && (
+                          <svg className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                )
+              })}
 
               <div className="flex items-center gap-3 border-t border-white/50 pt-3 dark:border-white/15">
                 <input

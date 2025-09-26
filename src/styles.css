@@ -558,3 +558,19 @@ a:focus {
 .text-gradient-purple {
   @apply bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent;
 }
+
+/* Gradient animations */
+@keyframes gradient {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.03) rotate(1deg);
+  }
+  66% {
+    opacity: 0.6;
+    transform: scale(1.01) rotate(-0.5deg);
+  }
+}
