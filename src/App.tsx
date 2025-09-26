@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, NavLink, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
 import L from 'leaflet'
 import useTheme from './useTheme'
 import { Card, SoftCard, Badge, Button, SectionTitle, MediaThumb } from './components/UI'
@@ -7,11 +7,13 @@ import AnimatedText from './components/AnimatedText'
 import Atmosphere from './components/Atmosphere'
 import ComingSoon from './components/ComingSoon'
 import { WaveIcon, MountainIcon, SpeciesIcon, ARIcon, InfoIcon, MapIcon, CameraIcon, TargetIcon, StarIcon, MissionIcon, EducationIcon, TechIcon, ConservationIcon, LeafIcon } from './components/Icons'
-import BiodiversityExplorer from './pages/BiodiversityExplorer'
-import SpeciesDetail from './pages/SpeciesDetail'
 import useScrollPosition from './hooks/useScrollPosition'
 import { DataProvider, useData } from './context/DataContext'
 import { AdminProvider, useAdmin } from './context/AdminContext'
+
+// Lazy load heavy components
+const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
+const SpeciesDetail = lazy(() => import('./pages/SpeciesDetail'))
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -47,13 +49,14 @@ function Navbar() {
   const [open, setOpen] = useState(false)
   const scrolled = useScrollPosition(8)
   const location = useLocation()
-  const navItems: Array<{ to: string; label: string; badge: string; comingSoon?: boolean }> = [
+  const navItems = useMemo(() => [
     { to: '/explore', label: 'Explore', badge: '🗺️' },
     { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
     { to: '/ar', label: 'AR Demo', badge: '✨', comingSoon: !isAdmin },
     { to: '/virtual-tour', label: 'Virtual Tour', badge: '🎥', comingSoon: true },
     { to: '/about', label: 'About', badge: '💡' },
-  ]
+  ], [isAdmin])
+  
   const marineCount = useMemo(
     () => hotspots.filter((site) => site.type === 'marine').length,
     [hotspots]
@@ -78,7 +81,7 @@ function Navbar() {
       >
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/15 via-blue-500/10 to-purple-500/15" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-60 dark:via-white/10" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex max-w-none flex-col gap-2 px-3 py-3 sm:px-4 lg:px-6 xl:px-8">
           <div className="flex items-center justify-between gap-4">
             <Link
               to="/"
@@ -95,7 +98,7 @@ function Navbar() {
                 <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                   Bio
                 </span>
-                <div className="absolute -top-1 -right-2 h-3 w-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 opacity-70 transition-opacity group-hover:opacity-100" />
+                <div className="absolute -top-1 -right-2 h-3 w-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 opacity-70 transition-opacity group-hover:opacity-100 animate-pulse" />
               </div>
               <div className="hidden sm:flex flex-col leading-tight text-left text-xs text-gray-500 dark:text-gray-400">
                 <span className="font-semibold">Biodiversity Explorer</span>
@@ -472,15 +475,11 @@ function Home() {
   const featuredSites = useMemo(() => hotspots.slice(0, 4), [hotspots])
 
   return (
-    <div className="space-y-16 min-h-screen">
-      <section className={`relative overflow-hidden rounded-[36px] border border-white/40 bg-white/80 shadow-2xl transition-all duration-700 dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+    <div className="space-y-8 min-h-screen">
+      <section className={`relative overflow-hidden rounded-[24px] border border-white/40 bg-white/80 shadow-2xl transition-all duration-700 dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
         <Atmosphere variant="hero" className="hidden md:block" />
-        <div className="absolute -top-10 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-full border border-white/50 bg-white/80 px-5 py-2 text-xs font-semibold text-emerald-600 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:text-emerald-300 md:flex">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400/80 to-blue-500/80 text-white shadow-md">✨</span>
-          <span>Fresh visual pass · Glass aurora surfaces · Smoother motion</span>
-        </div>
-        <div className="relative z-10 grid gap-12 p-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:p-16">
+        <div className="relative z-10 grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:p-12 xl:p-16">
           <div className="space-y-10">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
               <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-blue-500" />
@@ -488,7 +487,7 @@ function Home() {
             </span>
             <div className="space-y-6">
               <AnimatedText as="h1" className="!text-5xl lg:!text-7xl font-black tracking-tight text-slate-900 dark:text-white" text="Mati ARBio" />
-              <AnimatedText as="div" className="!text-xl lg:!text-2xl !font-medium text-slate-600 dark:text-slate-200" text="Discover Mati's biodiversity with a navigation system that reflects the ecosystems it protects." />
+              <AnimatedText as="div" className="!text-xl lg:!text-2xl !font-semibold text-slate-800 dark:text-slate-100" text="Explore biodiversity through maps, data, and AR experiences." />
               <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl">
                 The redesigned interface takes cues from the navbar—glass surfaces, live counters, and AR-forward cues—to guide every visitor from orientation to action.
               </p>
@@ -526,10 +525,10 @@ function Home() {
               ))}
             </div>
           </div>
-          <aside className="relative overflow-hidden rounded-3xl border border-white/30 bg-white/75 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+          <aside className="relative overflow-hidden rounded-2xl border border-white/30 bg-white/75 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/15 via-blue-500/15 to-purple-500/20" />
             <Atmosphere variant="soft" className="opacity-90" />
-            <div className="relative z-10 space-y-6 p-8">
+            <div className="relative z-10 space-y-4 p-6">
               <div className="space-y-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">Navbar data stream</p>
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Stats mirrored in navigation</h3>
@@ -1038,7 +1037,7 @@ function SitePage() {
   ]
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-6">
       <section className="relative overflow-hidden rounded-3xl border border-white/20 bg-slate-900 text-white shadow-2xl">
         {site.image && (
           <img
@@ -1683,7 +1682,7 @@ function About() {
   }, [])
   
   return (
-    <div className="space-y-12 min-h-screen">
+    <div className="space-y-8 min-h-screen">
       <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         <div className="text-center">
           <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -1787,7 +1786,7 @@ export default function App() {
     <AdminProvider>
       <DataProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+          <div className="min-h-screen w-full bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
             {/* Animated background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
               <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
@@ -1798,16 +1797,24 @@ export default function App() {
             <div className="app relative z-10">
               <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
               <Navbar />
-              <main id="main" className="pt-12 lg:pt-16">
-                <div className="w-full px-4 pb-16 sm:px-6 lg:px-12 xl:px-16">
+              <main id="main" className="pt-4 lg:pt-6">
+                <div className="w-full px-2 pb-8 sm:px-4 lg:px-6 xl:px-8">
                   <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/site/:id" element={<SitePage />} />
                 <Route path="/species" element={<SpeciesList />} />
                 <Route path="/species/:id" element={<SpeciesPage />} />
-                <Route path="/biodiversity" element={<BiodiversityExplorer />} />
-                <Route path="/biodiversity/:id" element={<SpeciesDetail />} />
+                <Route path="/biodiversity" element={
+                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div></div>}>
+                    <BiodiversityExplorer />
+                  </Suspense>
+                } />
+                <Route path="/biodiversity/:id" element={
+                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div></div>}>
+                    <SpeciesDetail />
+                  </Suspense>
+                } />
                 <Route path="/ar" element={<ARDemo />} />
                 <Route path="/virtual-tour" element={<VirtualTour />} />
                 <Route path="/admin/preview" element={<AdminPreview />} />

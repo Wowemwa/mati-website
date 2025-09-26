@@ -1,5 +1,7 @@
 # Mati ARBio (MVP)
 
+> **📝 Note:** This project title is subject to change for the final capstone submission. Current working title: "Mati ARBio: An Interactive Biodiversity Explorer Platform Using Augmented Reality and Web-Based Mapping for Environmental Education and Eco-Tourism"
+
 A colorful React + Vite + TypeScript app with Leaflet maps, species pages, and an AR demo scaffold (MindAR + A‑Frame).
 
 ## Release snapshot
