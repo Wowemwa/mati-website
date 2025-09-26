@@ -740,7 +740,7 @@ function Home() {
       </section>
     </div>
   )
-}
+})
 
 function GISMap() {
   return <GISMapPage />
