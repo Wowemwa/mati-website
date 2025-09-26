@@ -71,16 +71,16 @@ function Navbar() {
   }, [location.pathname])
 
   return (
-    <header className="sticky top-0 z-40">
+    <header className="sticky top-0 z-40 mx-2 mt-2 rounded-2xl overflow-hidden">
       <div
-        className={`relative border-b transition-all duration-500 ${
+        className={`relative border transition-all duration-500 ${
           scrolled
-            ? 'bg-white/90 dark:bg-slate-900/90 border-white/40 dark:border-white/15 shadow-xl backdrop-blur'
-            : 'bg-white/70 dark:bg-slate-900/70 border-transparent'
+            ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200/60 dark:border-white/20 shadow-xl backdrop-blur-md'
+            : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/40 dark:border-white/10 backdrop-blur-sm shadow-lg'
         }`}
       >
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/15 via-blue-500/10 to-purple-500/15" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent opacity-60 dark:via-white/10" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-50/30 via-white/20 to-slate-100/40 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/25" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent dark:via-white/15" />
         <div className="relative mx-auto flex max-w-none flex-col gap-2 px-3 py-3 sm:px-4 lg:px-6 xl:px-8">
           <div className="flex items-center justify-between gap-4">
             <Link
@@ -476,8 +476,8 @@ function Home() {
 
   return (
     <div className="space-y-8 min-h-screen">
-      <section className={`relative overflow-hidden rounded-[24px] border border-white/40 bg-white/80 shadow-2xl transition-all duration-700 dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
+      <section className={`relative overflow-hidden rounded-[24px] border border-slate-300/60 bg-white/95 backdrop-blur-sm shadow-2xl transition-all duration-700 dark:border-white/20 dark:bg-slate-900/85 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 via-white/30 to-slate-100/50 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/20" />
         <Atmosphere variant="hero" className="hidden md:block" />
         <div className="relative z-10 grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:p-12 xl:p-16">
           <div className="space-y-10">
@@ -513,7 +513,7 @@ function Home() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {heroHighlights.map((item) => (
-                <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur dark:border-white/15 dark:bg-slate-900/60">
+                <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 shadow-md backdrop-blur dark:border-white/20 dark:bg-slate-900/75">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/15 to-blue-500/25 text-lg">
                     {item.icon}
                   </span>
@@ -525,8 +525,8 @@ function Home() {
               ))}
             </div>
           </div>
-          <aside className="relative overflow-hidden rounded-2xl border border-white/30 bg-white/75 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/15 via-blue-500/15 to-purple-500/20" />
+          <aside className="relative overflow-hidden rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 via-white/20 to-slate-50/60 dark:from-slate-800/25 dark:via-slate-700/15 dark:to-slate-800/30" />
             <Atmosphere variant="soft" className="opacity-90" />
             <div className="relative z-10 space-y-4 p-6">
               <div className="space-y-3">
@@ -536,10 +536,10 @@ function Home() {
               </div>
               <div className="space-y-3">
                 {heroMetrics.map((metric) => (
-                  <div key={metric.label} className="flex items-center justify-between rounded-2xl border border-white/40 bg-white/80 px-4 py-3 shadow-sm dark:border-white/10 dark:bg-slate-900/60">
+                  <div key={metric.label} className="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/85 px-4 py-3 shadow-md dark:border-white/15 dark:bg-slate-900/70">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500">{metric.label}</p>
-                      <p className="text-lg font-semibold text-slate-800 dark:text-white">{metric.value}</p>
+                      <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{metric.label}</p>
+                      <p className="text-lg font-semibold text-slate-900 dark:text-white">{metric.value}</p>
                     </div>
                     <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${metric.gradient} opacity-80 shadow-inner`} />
                   </div>
