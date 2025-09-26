@@ -64,7 +64,7 @@ export const MATI_HOTSPOTS: Hotspot[] = [
       '45 orchid species with high endemism'
     ],
     stewardship: 'Protected Area Management Board (PAMB) comprising DENR, Davao Oriental LGUs, indigenous Mandaya and Kalagan communities, and scientific institutions.',
-    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Mount_Hamiguitan_Range_Wildlife_Sanctuary_%2814%29.jpg/1200px-Mount_Hamiguitan_Range_Wildlife_Sanctuary_%2814%29.jpg',
     tags: ['UNESCO World Heritage', 'Pygmy Forest', 'Endemic Species', 'Philippine Eagle', 'Pitcher Plants', 'Ultramafic Soil'],
     highlightSpeciesIds: ['philippine-eagle', 'nepenthes-hamiguitanensis', 'batomys-hamiguitan'],
     floraIds: ['nepenthes-hamiguitanensis', 'nepenthes-peltata', 'nepenthes-micramphora', 'leptospermum-flavescens', 'dacrydium-elatum', 'almaciga-tree'],
@@ -93,7 +93,7 @@ export const MATI_HOTSPOTS: Hotspot[] = [
       'Traditional fishing grounds and tourism sites'
     ],
     stewardship: 'Protected Area Management Board with DENR, Mati City LGU, coastal barangays, fisherfolk organizations, and tourism operators.',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Pujada_Bay_Mati_Davao_Oriental.jpg/1200px-Pujada_Bay_Mati_Davao_Oriental.jpg',
     tags: ['World Beautiful Bay', 'Coral Reefs', 'Mangroves', 'Seagrass', 'Islands', 'Marine Protected Area'],
     highlightSpeciesIds: ['green-sea-turtle', 'giant-clam', 'napoleon-wrasse'],
     floraIds: ['thalassia-hemprichii', 'enhalus-acoroides', 'rhizophora-mucronata', 'avicennia-marina', 'montipora-coral', 'acropora-coral'],
@@ -225,7 +225,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Primary and secondary forests, 500-1800m elevation',
     blurb: 'The Philippines\' national bird and one of the world\'s most endangered raptors. Mount Hamiguitan provides critical habitat for this apex predator.',
     siteIds: ['mount-hamiguitan-sanctuary'],
-    highlights: ['National bird of the Philippines', 'Critically endangered with <1000 individuals', 'Apex forest predator']
+    highlights: ['National bird of the Philippines', 'Critically endangered with <1000 individuals', 'Apex forest predator'],
+    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Philippine_Eagle_-_Mount_Kitanglad_Range_Natural_Park.jpg/800px-Philippine_Eagle_-_Mount_Kitanglad_Range_Natural_Park.jpg']
   },
   {
     id: 'nepenthes-hamiguitanensis',
@@ -236,7 +237,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Ultramafic soils in pygmy forest, 1200-1600m elevation',
     blurb: 'Endemic pitcher plant discovered in 2009, found only on Mount Hamiguitan\'s unique ultramafic soils.',
     siteIds: ['mount-hamiguitan-sanctuary'],
-    highlights: ['Endemic to Mount Hamiguitan', 'Discovered in 2009', 'Adapted to ultramafic soils']
+    highlights: ['Endemic to Mount Hamiguitan', 'Discovered in 2009', 'Adapted to ultramafic soils'],
+    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Nepenthes_hamiguitanensis_ASE_001.jpg/800px-Nepenthes_hamiguitanensis_ASE_001.jpg']
   },
   {
     id: 'batomys-hamiguitan',
@@ -282,7 +284,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Coral reefs and nesting beaches',
     blurb: 'Critically endangered sea turtle that nests on Dahican Beach. Protected by community conservation programs.',
     siteIds: ['dahican-beach-mayo-bay', 'pujada-bay-protected-seascape'],
-    highlights: ['Regular nester at Dahican Beach', 'Protected by Amihan sa Dahican', 'Feeds on sponges and coral']
+    highlights: ['Regular nester at Dahican Beach', 'Protected by Amihan sa Dahican', 'Feeds on sponges and coral'],
+    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Hawksbill_turtle_doeppne-081.jpg/800px-Hawksbill_turtle_doeppne-081.jpg']
   },
   {
     id: 'giant-clam',
@@ -422,7 +425,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Secondary forests and bamboo thickets',
     blurb: 'Small nocturnal primate found in Mati Protected Landscape\'s forest fragments.',
     siteIds: ['mati-protected-landscape'],
-    highlights: ['World\'s smallest primate', 'Exclusively carnivorous', 'Ultrasonic communication']
+    highlights: ['World\'s smallest primate', 'Exclusively carnivorous', 'Ultrasonic communication'],
+    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Tarsius_syrichta_2009.jpg/800px-Tarsius_syrichta_2009.jpg']
   },
   {
     id: 'bamboo-orchid',
