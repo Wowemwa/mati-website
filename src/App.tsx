@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate, NavLink, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
-import L from 'leaflet'
+import { useEffect, useMemo, useState, lazy, Suspense, memo, useCallback } from 'react'
 import useTheme from './useTheme'
 import { Card, SoftCard, Badge, Button, SectionTitle, MediaThumb } from './components/UI'
 import AnimatedText from './components/AnimatedText'
@@ -10,18 +9,26 @@ import { WaveIcon, MountainIcon, SpeciesIcon, ARIcon, InfoIcon, MapIcon, CameraI
 import useScrollPosition from './hooks/useScrollPosition'
 import { DataProvider, useData } from './context/DataContext'
 import { AdminProvider, useAdmin } from './context/AdminContext'
-import DetailedGISMap from './components/DetailedGISMap'
-import GISMapPage from './components/GISMapPage'
+import ErrorBoundary from './components/ErrorBoundary'
+import PerformanceMonitor from './components/PerformanceMonitor'
+import { PageLoadingFallback, ComponentLoadingFallback, MapLoadingFallback } from './components/LoadingSpinner'
 
-// Lazy load heavy components
+// Lazy load all heavy components for better code splitting and performance
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
 const SpeciesDetail = lazy(() => import('./pages/SpeciesDetail'))
+const DetailedGISMap = lazy(() => import('./components/DetailedGISMap'))
+const GISMapPage = lazy(() => import('./components/GISMapPage'))
 
-function ThemeToggle() {
+const ThemeToggle = memo(function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
+  
+  const handleToggle = useCallback(() => {
+    toggleTheme()
+  }, [toggleTheme])
+
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleToggle}
       className="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl border-2 border-white/40 dark:border-white/20 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:scale-105 transition-all duration-300 ease-out shadow-lg hover:shadow-xl overflow-hidden"
       aria-label="Toggle dark mode"
     >
@@ -43,9 +50,9 @@ function ThemeToggle() {
       </div>
     </button>
   )
-}
+})
 
-function Navbar() {
+const Navbar = memo(function Navbar() {
   const { hotspots, species, loading } = useData()
   const { isAdmin, logout } = useAdmin()
   const [open, setOpen] = useState(false)
@@ -300,9 +307,9 @@ function Navbar() {
       </div>
     </header>
   )
-}
+})
 
-function Footer() {
+const Footer = memo(function Footer() {
   return (
     <footer className="relative mt-20 overflow-hidden">
       <div className="relative rounded-t-[3rem] backdrop-blur-xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 dark:from-slate-900/95 dark:to-slate-800/95 border-t border-white/20 py-16">
@@ -364,9 +371,9 @@ function Footer() {
       </div>
     </footer>
   )
-}
+})
 
-function Home() {
+const Home = memo(function Home() {
   const { hotspots, species, loading } = useData()
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
@@ -740,7 +747,7 @@ function Home() {
       </section>
     </div>
   )
-}
+})
 
 function GISMap() {
   return <GISMapPage />
@@ -1596,63 +1603,90 @@ function About() {
 }
 
 export default function App() {
-  // ensure hook initialized so initial theme applied early
+  // Ensure hook initialized so initial theme applied early
   useTheme()
+  
   return (
-    <AdminProvider>
-      <DataProvider>
-        <BrowserRouter>
-          <div className="min-h-screen w-full bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-            {/* Animated background elements */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-200/10 to-green-200/10 rounded-full blur-2xl animate-bounce"></div>
-            </div>
-            
-            <div className="app relative z-10">
-              <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
-              <Navbar />
-              <main id="main" className="pt-4 lg:pt-6">
-                <div className="w-full px-2 pb-8 sm:px-4 lg:px-6 xl:px-8">
-                  <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/gis" element={<GISMap />} />
-                <Route path="/site/:id" element={<SitePage />} />
-                <Route path="/species" element={<SpeciesList />} />
-                <Route path="/species/:id" element={<SpeciesPage />} />
-                <Route path="/biodiversity" element={
-                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div></div>}>
-                    <BiodiversityExplorer />
-                  </Suspense>
-                } />
-                <Route path="/biodiversity/:id" element={
-                  <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div></div>}>
-                    <SpeciesDetail />
-                  </Suspense>
-                } />
-                <Route path="/ar" element={<ARDemo />} />
-                <Route path="/virtual-tour" element={<VirtualTour />} />
-                <Route path="/admin/preview" element={<AdminPreview />} />
-                <Route path="/about" element={<About />} />
-                <Route path="*" element={
-                  <div className="text-center py-16">
-                    <div className="text-6xl mb-4">🔍</div>
-                    <h2 className="text-2xl font-bold text-gray-700 mb-2">Page not found</h2>
-                    <p className="text-gray-600 mb-6">The page you're looking for doesn't exist.</p>
-                    <Link to="/" className="btn-primary inline-block">
-                      🏠 Go Home
-                    </Link>
+    <ErrorBoundary>
+      <AdminProvider>
+        <DataProvider>
+          <BrowserRouter>
+            <div className="min-h-screen w-full bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+              {/* Animated background elements */}
+              <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-200/10 to-green-200/10 rounded-full blur-2xl animate-bounce"></div>
+              </div>
+              
+              <div className="app relative z-10">
+                <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">
+                  Skip to content
+                </a>
+                
+                <ErrorBoundary fallback={<div className="p-4 text-center text-red-600">Navigation error</div>}>
+                  <Navbar />
+                </ErrorBoundary>
+                
+                <main id="main" className="pt-4 lg:pt-6">
+                  <div className="w-full px-2 pb-8 sm:px-4 lg:px-6 xl:px-8">
+                    <ErrorBoundary>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        
+                        <Route path="/gis" element={
+                          <Suspense fallback={<MapLoadingFallback />}>
+                            <GISMap />
+                          </Suspense>
+                        } />
+                        
+                        <Route path="/site/:id" element={<SitePage />} />
+                        <Route path="/species" element={<SpeciesList />} />
+                        <Route path="/species/:id" element={<SpeciesPage />} />
+                        
+                        <Route path="/biodiversity" element={
+                          <Suspense fallback={<PageLoadingFallback />}>
+                            <BiodiversityExplorer />
+                          </Suspense>
+                        } />
+                        
+                        <Route path="/biodiversity/:id" element={
+                          <Suspense fallback={<PageLoadingFallback />}>
+                            <SpeciesDetail />
+                          </Suspense>
+                        } />
+                        
+                        <Route path="/ar" element={<ARDemo />} />
+                        <Route path="/virtual-tour" element={<VirtualTour />} />
+                        <Route path="/admin/preview" element={<AdminPreview />} />
+                        <Route path="/about" element={<About />} />
+                        
+                        <Route path="*" element={
+                          <div className="text-center py-16">
+                            <div className="text-6xl mb-4">🔍</div>
+                            <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">Page not found</h2>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">The page you're looking for doesn't exist.</p>
+                            <Link to="/" className="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                              🏠 Go Home
+                            </Link>
+                          </div>
+                        } />
+                      </Routes>
+                    </ErrorBoundary>
                   </div>
-                } />
-                  </Routes>
-                </div>
-              </main>
-              <Footer />
+                </main>
+                
+                <ErrorBoundary fallback={<div className="p-4 text-center text-gray-600">Footer unavailable</div>}>
+                  <Footer />
+                </ErrorBoundary>
+              </div>
+              
+              {/* Performance Monitor - only in development */}
+              <PerformanceMonitor />
             </div>
-          </div>
-        </BrowserRouter>
-      </DataProvider>
-    </AdminProvider>
+          </BrowserRouter>
+        </DataProvider>
+      </AdminProvider>
+    </ErrorBoundary>
   )
 }
