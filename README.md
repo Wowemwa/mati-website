@@ -1,4 +1,46 @@
-# Mati ARBio (MVP)
+# Mati## Release snapshot
+
+- **Version:** v0.4.0
+- **Updated:** 2025-09-26 18:36 (UTC)
+
+### What changed in this drop (September 26, 2025 - 6:36 PM)
+
+#### 🚀 Performance Optimizations
+- Implemented lazy loading for `BiodiversityExplorer` and `SpeciesDetail` components with Suspense boundaries
+- Added code splitting and manual chunk configuration for better bundle management
+- Optimized Vite build configuration with Terser minification and performance settings
+- Added bundle analyzer and performance monitoring tools
+- Enhanced HTML meta tags with preconnect, DNS prefetch, and resource hints
+- Created `LazyImage` component for progressive image loading with intersection observer
+
+#### 🎨 UI/UX Improvements  
+- **Tagline Updates**: Changed from "Discover Mati's biodiversity..." to "Explore biodiversity through maps, data, and AR experiences."
+- **Typography Optimization**: Adjusted font sizes and weights for better readability and contrast
+- **Layout Enhancements**: Reduced padding/margins throughout to maximize screen utilization
+- **Responsive Design**: Optimized navbar and main content for better full-screen usage
+- **Visual Polish**: Added pulse animation to biodiversity badge, removed notification banner
+- **Color Improvements**: Enhanced light/dark mode color schemes for better visibility
+
+#### 🔧 Technical Improvements
+- Memoized navigation items and expensive computations for better performance  
+- Optimized spacing: reduced section gaps from `space-y-16` to `space-y-8`
+- Enhanced container layouts: improved grid spacing and responsive breakpoints
+- Updated build process with performance-focused configurations
+- Added development tools for bundle analysis and optimization monitoring
+
+#### 📱 Screen Utilization
+- Reduced main container padding for edge-to-edge design
+- Optimized navbar spacing and made it more compact
+- Improved content positioning to utilize full viewport height
+- Enhanced responsive typography scaling across device sizes
+
+### Previous Release (v0.3.0 - 2025-09-26 02:50 UTC)
+
+- Introduced `DataContext` to centralize hotspot and species data with a unified helper API, replacing page-level static imports.
+- Added `AdminContext` with password-gated preview mode, persistent login, and a dedicated `/admin/preview` route.
+- Created a reusable `ComingSoon` component and wired AR/Virtual Tour navigation flows to show coming-soon messaging for non-admins.
+- Refined the desktop navbar: consistent pill spacing, enhanced active-state glow, and compact "Soon" badges for unreleased features.
+- Updated hero and stats sections to surface live counts from context data, aligning with the sticky header counters.
 
 > **📝 Note:** This project title is subject to change for the final capstone submission. Current working title: "Mati ARBio: An Interactive Biodiversity Explorer Platform Using Augmented Reality and Web-Based Mapping for Environmental Education and Eco-Tourism"
 
