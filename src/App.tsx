@@ -4,13 +4,14 @@ import L from 'leaflet'
 import useTheme from './useTheme'
 import { Card, SoftCard, Badge, Button, SectionTitle, MediaThumb } from './components/UI'
 import AnimatedText from './components/AnimatedText'
+import Atmosphere from './components/Atmosphere'
+import ComingSoon from './components/ComingSoon'
 import { WaveIcon, MountainIcon, SpeciesIcon, ARIcon, InfoIcon, MapIcon, CameraIcon, TargetIcon, StarIcon, MissionIcon, EducationIcon, TechIcon, ConservationIcon, LeafIcon } from './components/Icons'
 import BiodiversityExplorer from './pages/BiodiversityExplorer'
 import SpeciesDetail from './pages/SpeciesDetail'
 import useScrollPosition from './hooks/useScrollPosition'
-import { HOTSPOTS, SPECIES } from './data/hotspots'
-
-const SITES = HOTSPOTS
+import { DataProvider, useData } from './context/DataContext'
+import { AdminProvider, useAdmin } from './context/AdminContext'
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -41,17 +42,26 @@ function ThemeToggle() {
 }
 
 function Navbar() {
+  const { hotspots, species, loading } = useData()
+  const { isAdmin, logout } = useAdmin()
   const [open, setOpen] = useState(false)
   const scrolled = useScrollPosition(8)
   const location = useLocation()
-  const navItems = [
+  const navItems: Array<{ to: string; label: string; badge: string; comingSoon?: boolean }> = [
     { to: '/explore', label: 'Explore', badge: '🗺️' },
     { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
-    { to: '/ar', label: 'AR Demo', badge: '✨' },
+    { to: '/ar', label: 'AR Demo', badge: '✨', comingSoon: !isAdmin },
+    { to: '/virtual-tour', label: 'Virtual Tour', badge: '🎥', comingSoon: true },
     { to: '/about', label: 'About', badge: '💡' },
   ]
-  const marineCount = useMemo(() => SITES.filter((site) => site.type === 'marine').length, [])
-  const terrestrialCount = useMemo(() => SITES.filter((site) => site.type === 'terrestrial').length, [])
+  const marineCount = useMemo(
+    () => hotspots.filter((site) => site.type === 'marine').length,
+    [hotspots]
+  )
+  const terrestrialCount = useMemo(
+    () => hotspots.filter((site) => site.type === 'terrestrial').length,
+    [hotspots]
+  )
 
   useEffect(() => {
     setOpen(false)
@@ -105,10 +115,19 @@ function Navbar() {
                 </span>
                 <span className="flex items-center gap-2 rounded-xl border border-white/50 bg-white/60 px-3 py-1 backdrop-blur dark:border-white/15 dark:bg-slate-800/60">
                   <SpeciesIcon className="h-4 w-4 text-purple-500" />
-                  {SPECIES.length}+ species
+                  {loading ? '—' : `${species.length}+`} species
                 </span>
               </div>
               <ThemeToggle />
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-2 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-500/15 hover:text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-200"
+                >
+                  Exit preview
+                </button>
+              )}
               <Link
                 to="/ar"
                 className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform duration-300 ease-out hover:scale-[1.02]"
@@ -149,25 +168,26 @@ function Navbar() {
                 Live beta
               </span>
             </div>
-            <div className="relative flex items-center gap-3 rounded-full border border-white/50 bg-white/75 px-3 py-2 shadow-lg shadow-emerald-500/10 backdrop-blur-xl dark:border-white/15 dark:bg-slate-800/70 dark:shadow-black/30 overflow-hidden">
+            <div className="relative flex items-center gap-4 rounded-full border border-white/50 bg-white/75 px-4 py-2 shadow-lg shadow-emerald-500/10 backdrop-blur-xl dark:border-white/15 dark:bg-slate-800/70 dark:shadow-black/30 overflow-hidden">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
               <div className="pointer-events-none absolute inset-0 border border-white/40 rounded-full mix-blend-soft-light dark:border-white/10" />
               {navItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.to)
+                const showSoon = item.comingSoon && !isAdmin
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className={`group relative z-10 inline-flex items-center gap-4 rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-colors duration-300 ease-out ${
+                    className={`group relative z-10 inline-flex min-w-[130px] items-center gap-4 rounded-full px-6 py-2.5 text-sm font-semibold tracking-wide transition-all duration-300 ease-out ${
                       isActive
-                        ? 'text-white drop-shadow-lg'
+                        ? 'text-white drop-shadow-[0_10px_25px_-12px_rgba(16,185,129,0.65)]'
                         : 'text-slate-700 dark:text-slate-200 hover:text-emerald-500 dark:hover:text-emerald-300'
                     }`}
                   >
                     <span className={`relative flex h-9 w-9 items-center justify-center rounded-full text-lg transition-transform duration-300 ease-out ${
                       isActive
-                        ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-blue-500 text-white shadow-[0_16px_34px_-18px_rgba(37,99,235,0.55)]'
-                        : 'border border-white/60 bg-white/75 text-slate-600 shadow-[0_10px_30px_-24px_rgba(15,118,110,0.45)] group-hover:border-emerald-200 group-hover:bg-white'
+                        ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-blue-500 text-white shadow-[0_20px_45px_-18px_rgba(16,185,129,0.75)]'
+                        : 'border border-white/60 bg-white/80 text-slate-600 shadow-[0_12px_32px_-26px_rgba(15,118,110,0.55)] group-hover:border-emerald-200 group-hover:bg-white'
                     }`}
                     >
                       <span className="relative z-10">{item.badge}</span>
@@ -180,6 +200,11 @@ function Navbar() {
                     </span>
                     <span className="flex flex-col leading-tight">
                       <span>{item.label}</span>
+                      {showSoon && (
+                        <span className="mt-1 inline-flex items-center justify-center self-start rounded-full bg-emerald-100/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-emerald-600 shadow-sm dark:bg-emerald-500/20 dark:text-emerald-200">
+                          Soon
+                        </span>
+                      )}
                       <span className={`mt-1 h-[2px] w-full rounded-full transition-colors duration-300 ease-out ${
                         isActive
                           ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500'
@@ -224,7 +249,12 @@ function Navbar() {
                 >
                   <span className="flex items-center gap-3">
                     <span className="text-xl">{item.badge}</span>
-                    {item.label}
+                    <span className="flex flex-col leading-tight">
+                      <span>{item.label}</span>
+                      {item.comingSoon && !isAdmin && (
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-600">Soon</span>
+                      )}
+                    </span>
                   </span>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -321,6 +351,7 @@ function Footer() {
 }
 
 function Home() {
+  const { hotspots, species, loading } = useData()
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
 
@@ -328,20 +359,31 @@ function Home() {
     setIsVisible(true)
   }, [])
 
-  const marineSites = useMemo(() => SITES.filter((site) => site.type === 'marine').length, [])
-  const terrestrialSites = useMemo(() => SITES.filter((site) => site.type === 'terrestrial').length, [])
+  const marineSites = useMemo(
+    () => hotspots.filter((site) => site.type === 'marine').length,
+    [hotspots]
+  )
+  const terrestrialSites = useMemo(
+    () => hotspots.filter((site) => site.type === 'terrestrial').length,
+    [hotspots]
+  )
   const discoveryGoal = 60
-  const discoveryProgress = Math.min(100, Math.round((SPECIES.length / discoveryGoal) * 100))
+  const speciesCount = species.length
+  const discoveryProgress = Math.min(100, Math.round(((speciesCount || 0) / discoveryGoal) * 100))
 
   const heroHighlights = [
     {
       title: 'Marine + terrestrial sync',
-      description: `${marineSites} marine / ${terrestrialSites} terrestrial locations keep the navbar counters alive.`,
+      description: loading
+        ? 'Hotspot data is syncing from the field dashboards. Final counts will appear shortly.'
+        : `${marineSites} marine / ${terrestrialSites} terrestrial locations keep the navbar counters alive.`,
       icon: <WaveIcon className="h-5 w-5 text-sky-500" />,
     },
     {
       title: 'Species ledger in the header',
-      description: `${SPECIES.length}+ species totals surface in the sticky header and throughout the home layout.`,
+      description: loading
+        ? 'We are lining up the species roster. Check back in a moment for the full ledger.'
+        : `${speciesCount}+ species totals surface in the sticky header and throughout the home layout.`,
       icon: <SpeciesIcon className="h-5 w-5 text-purple-500" />,
     },
     {
@@ -354,17 +396,17 @@ function Home() {
   const heroMetrics = [
     {
       label: 'Marine coverage',
-      value: `${marineSites} sites`,
+      value: loading ? '•••' : `${marineSites} sites`,
       gradient: 'from-cyan-500 to-sky-500',
     },
     {
       label: 'Terrestrial coverage',
-      value: `${terrestrialSites} sites`,
+      value: loading ? '•••' : `${terrestrialSites} sites`,
       gradient: 'from-emerald-500 to-lime-500',
     },
     {
       label: 'Species logged',
-      value: `${SPECIES.length}+`,
+      value: loading ? '•••' : `${speciesCount}+`,
       gradient: 'from-purple-500 to-fuchsia-500',
     },
   ]
@@ -427,11 +469,18 @@ function Home() {
     },
   } as const
 
+  const featuredSites = useMemo(() => hotspots.slice(0, 4), [hotspots])
+
   return (
     <div className="space-y-16 min-h-screen">
       <section className={`relative overflow-hidden rounded-[36px] border border-white/40 bg-white/80 shadow-2xl transition-all duration-700 dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-blue-500/10 to-purple-500/10" />
-        <div className="relative grid gap-12 p-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:p-16">
+        <Atmosphere variant="hero" className="hidden md:block" />
+        <div className="absolute -top-10 left-1/2 hidden -translate-x-1/2 items-center gap-3 rounded-full border border-white/50 bg-white/80 px-5 py-2 text-xs font-semibold text-emerald-600 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:text-emerald-300 md:flex">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400/80 to-blue-500/80 text-white shadow-md">✨</span>
+          <span>Fresh visual pass · Glass aurora surfaces · Smoother motion</span>
+        </div>
+        <div className="relative z-10 grid gap-12 p-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:p-16">
           <div className="space-y-10">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
               <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-blue-500" />
@@ -479,6 +528,7 @@ function Home() {
           </div>
           <aside className="relative overflow-hidden rounded-3xl border border-white/30 bg-white/75 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/15 via-blue-500/15 to-purple-500/20" />
+            <Atmosphere variant="soft" className="opacity-90" />
             <div className="relative z-10 space-y-6 p-8">
               <div className="space-y-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">Navbar data stream</p>
@@ -505,7 +555,7 @@ function Home() {
                   <div className="h-full rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500" style={{ width: `${discoveryProgress}%` }} />
                 </div>
                 <p className="mt-3 text-xs text-slate-500 dark:text-slate-300">
-                  Catalogued {SPECIES.length} of {discoveryGoal}+ priority species for Year&nbsp;1 AR experiences.
+                  Catalogued {loading ? '•••' : speciesCount} of {discoveryGoal}+ priority species for Year&nbsp;1 AR experiences.
                 </p>
               </div>
             </div>
@@ -519,12 +569,15 @@ function Home() {
           Every surface references the navbar: same gradients, counters, and action hierarchy. Cards reinforce the story so visitors know where to go next.
         </p>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {featureCards.map((card) => (
+          {featureCards.map((card, idx) => (
             <div key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-6 shadow-lg backdrop-blur transition-transform duration-300 hover:-translate-y-1 dark:border-white/15 dark:bg-slate-900/70">
+              <Atmosphere variant="soft" className={idx % 2 === 0 ? 'opacity-80' : 'opacity-60'} />
               <div className="absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <div className="text-3xl">{card.icon}</div>
-              <h4 className="mt-4 text-lg font-semibold text-slate-800 dark:text-white">{card.title}</h4>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{card.description}</p>
+              <div className="relative z-10">
+                <div className="text-3xl drop-shadow-sm">{card.icon}</div>
+                <h4 className="mt-4 text-lg font-semibold text-slate-800 dark:text-white">{card.title}</h4>
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{card.description}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -536,58 +589,85 @@ function Home() {
           These signatures appear in both the navbar counters and the map module. Cards inherit the same frosted gradients so the information feels connected.
         </p>
         <div className="mt-10 grid gap-8 md:grid-cols-2">
-          {SITES.map((site, index) => {
-            const meta = typeMeta[site.type]
-            return (
+          {loading &&
+            Array.from({ length: 4 }).map((_, index) => (
               <Card
-                key={site.id}
-                className={`group relative overflow-hidden border border-white/40 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-                style={{ transitionDelay: `${index * 120}ms` }}
+                key={`placeholder-${index}`}
+                className={`relative overflow-hidden border border-white/40 bg-white/70 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
               >
-                <div className={`absolute inset-x-6 top-0 h-1 rounded-full bg-gradient-to-r ${meta.gradient}`} />
-                <div className="flex items-start justify-between gap-4 pt-4">
-                  <div className="space-y-3">
-                    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${meta.chip}`}>
-                      <span className={`flex h-6 w-6 items-center justify-center rounded-full ${meta.iconBg}`}>{meta.icon}</span>
-                      {meta.label}
-                    </span>
-                    <h3 className="text-2xl font-semibold text-slate-900 transition-colors duration-300 group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300">
-                      {site.name}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">{site.summary}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-2 text-right text-xs text-slate-400 dark:text-slate-500">
-                    <span>{site.lat.toFixed(3)}°</span>
-                    <span>{site.lng.toFixed(3)}°</span>
-                  </div>
-                </div>
-                {site.image && (
-                  <MediaThumb src={site.image} alt={`${site.name} photo`} className="my-6 h-44 rounded-3xl" />
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {site.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 transition-colors duration-200 dark:bg-slate-700 dark:text-slate-200">
-                      #{tag}
-                    </span>
+                <div className="h-4 w-24 rounded-full bg-slate-200/60 dark:bg-slate-700/60" />
+                <div className="mt-4 h-6 w-3/4 rounded-full bg-slate-200/60 dark:bg-slate-700/60" />
+                <div className="mt-3 h-24 rounded-3xl bg-slate-200/40 dark:bg-slate-800" />
+                <div className="mt-4 flex gap-2">
+                  {Array.from({ length: 3 }).map((_, chipIndex) => (
+                    <span
+                      key={chipIndex}
+                      className="h-6 w-16 rounded-full bg-slate-200/50 dark:bg-slate-700/70"
+                    />
                   ))}
                 </div>
-                <div className="mt-6 flex items-center justify-between border-t border-white/40 pt-4 dark:border-white/10">
-                  <Link
-                    to={`/site/${site.id}`}
-                    className="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:gap-3 hover:shadow-xl"
-                  >
-                    Explore site
-                    <svg className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </Link>
-                  <Link to="/explore" className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
-                    Map view
-                  </Link>
-                </div>
               </Card>
-            )
-          })}
+            ))}
+
+          {!loading && featuredSites.length === 0 && (
+            <SoftCard className="col-span-full text-center text-slate-600 dark:text-slate-300">
+              🌱 Field teams are still drafting hotspot cards. Check back soon for featured locations.
+            </SoftCard>
+          )}
+
+          {!loading &&
+            featuredSites.map((site, index) => {
+              const meta = typeMeta[site.type]
+              return (
+                <Card
+                  key={site.id}
+                  className={`group relative overflow-hidden border border-white/40 bg-white/85 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                  style={{ transitionDelay: `${index * 120}ms` }}
+                >
+                  <div className={`absolute inset-x-6 top-0 h-1 rounded-full bg-gradient-to-r ${meta.gradient}`} />
+                  <div className="flex items-start justify-between gap-4 pt-4">
+                    <div className="space-y-3">
+                      <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${meta.chip}`}>
+                        <span className={`flex h-6 w-6 items-center justify-center rounded-full ${meta.iconBg}`}>{meta.icon}</span>
+                        {meta.label}
+                      </span>
+                      <h3 className="text-2xl font-semibold text-slate-900 transition-colors duration-300 group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-300">
+                        {site.name}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">{site.summary}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 text-right text-xs text-slate-400 dark:text-slate-500">
+                      <span>{site.lat.toFixed(3)}°</span>
+                      <span>{site.lng.toFixed(3)}°</span>
+                    </div>
+                  </div>
+                  {site.image && (
+                    <MediaThumb src={site.image} alt={`${site.name} photo`} className="my-6 h-44 rounded-3xl" />
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {site.tags.map((tag) => (
+                      <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 transition-colors duration-200 dark:bg-slate-700 dark:text-slate-200">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-6 flex items-center justify-between border-t border-white/40 pt-4 dark:border-white/10">
+                    <Link
+                      to={`/site/${site.id}`}
+                      className="group/link inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:gap-3 hover:shadow-xl"
+                    >
+                      Explore site
+                      <svg className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </Link>
+                    <Link to="/explore" className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
+                      Map view
+                    </Link>
+                  </div>
+                </Card>
+              )
+            })}
         </div>
       </section>
 
@@ -622,19 +702,24 @@ function Home() {
       </section>
 
       <section className={`transform transition-all duration-700 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
-        <div className="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 p-8 text-white shadow-2xl sm:flex-row sm:items-center sm:justify-between">
-          <div className="max-w-xl space-y-2">
+        <div className="relative overflow-hidden flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 p-8 text-white shadow-2xl sm:flex-row sm:items-center sm:justify-between">
+          <Atmosphere variant="cta" className="opacity-80" />
+          <div className="relative z-10 max-w-xl space-y-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-white" />
+              Compass mode
+            </span>
             <h3 className="text-2xl font-bold">Stay oriented with Mati ARBio</h3>
             <p className="text-sm text-white/80">
               The navbar is your compass—jump into the AR demo or continue exploring data-driven stories of Mati City’s biodiversity.
             </p>
           </div>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/ar" className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+          <div className="relative z-10 flex flex-wrap gap-4">
+            <Link to="/ar" className="inline-flex items-center gap-3 rounded-2xl bg-white/12 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
               <ARIcon className="h-4 w-4" />
               Launch AR
             </Link>
-            <Link to="/biodiversity" className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+            <Link to="/biodiversity" className="inline-flex items-center gap-3 rounded-2xl bg-white/12 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
               <SpeciesIcon className="h-4 w-4" />
               Browse species
             </Link>
@@ -646,37 +731,70 @@ function Home() {
 }
 
 function Explore() {
+  const { hotspots, loading: dataLoading } = useData()
   const [filter, setFilter] = useState<'all'|'marine'|'terrestrial'>('all')
-  const [isLoading, setIsLoading] = useState(true)
   const [isVisible, setIsVisible] = useState(false)
-  
+  const [mapLoading, setMapLoading] = useState(true)
+
   useEffect(() => {
     setIsVisible(true)
-    const timer = setTimeout(() => {
-      const map = L.map('map').setView([6.93, 126.2], 10)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-        maxZoom: 19, 
-        attribution: '&copy; OpenStreetMap contributors' 
+  }, [])
+
+  useEffect(() => {
+    if (hotspots.length === 0) {
+      if (!dataLoading) {
+        setMapLoading(false)
+      }
+      return
+    }
+
+    let map: L.Map | null = null
+    const timer = window.setTimeout(() => {
+      map = L.map('map').setView([6.93, 126.2], 10)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map)
-      
-      SITES.forEach((s) => {
+
+      hotspots.forEach((s) => {
         const icon = L.divIcon({
           html: `<div class="animate-bounce">${s.type === 'marine' ? '🌊' : '🏔️'}</div>`,
           className: 'custom-marker',
-          iconSize: [30, 30]
+          iconSize: [30, 30],
         })
-        L.marker([s.lat, s.lng], { icon }).addTo(map)
+        L.marker([s.lat, s.lng], { icon })
+          .addTo(map!)
           .bindPopup(`<div class="p-2"><b class="text-green-700">${s.name}</b><br/><span class="text-sm">${s.summary}</span></div>`)
       })
-      
-      setIsLoading(false)
-      return () => { map.remove() }
-    }, 500)
-    
-    return () => clearTimeout(timer)
-  }, [])
-  
-  const filtered = useMemo(() => SITES.filter(s => filter === 'all' ? true : s.type === filter), [filter])
+
+      setMapLoading(false)
+    }, 400)
+
+    return () => {
+      window.clearTimeout(timer)
+      map?.remove()
+    }
+  }, [hotspots, dataLoading])
+
+  const filtered = useMemo(
+    () => hotspots.filter((s) => (filter === 'all' ? true : s.type === filter)),
+    [filter, hotspots]
+  )
+
+  const counts = useMemo(
+    () => ({
+      all: hotspots.length,
+      marine: hotspots.filter((s) => s.type === 'marine').length,
+      terrestrial: hotspots.filter((s) => s.type === 'terrestrial').length,
+    }),
+    [hotspots]
+  )
+
+  const filterOptions: Array<{ key: 'all' | 'marine' | 'terrestrial'; label: string; icon: string; count: string }> = [
+    { key: 'all', label: 'All Sites', icon: '🌐', count: dataLoading ? '•••' : `${counts.all}` },
+    { key: 'marine', label: 'Marine', icon: '🌊', count: dataLoading ? '•••' : `${counts.marine}` },
+    { key: 'terrestrial', label: 'Terrestrial', icon: '🏔️', count: dataLoading ? '•••' : `${counts.terrestrial}` },
+  ]
   
   return (
     <div className="space-y-8">
@@ -693,11 +811,7 @@ function Explore() {
         
         <div className="flex justify-center">
           <div className="inline-flex items-center gap-2 p-2 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/30 dark:border-white/15 shadow-lg">
-            {[
-              { key: 'all', label: 'All Sites', icon: '🌐', count: SITES.length },
-              { key: 'marine', label: 'Marine', icon: '🌊', count: SITES.filter(s => s.type === 'marine').length },
-              { key: 'terrestrial', label: 'Terrestrial', icon: '🏔️', count: SITES.filter(s => s.type === 'terrestrial').length }
-            ].map((item) => (
+            {filterOptions.map((item) => (
               <button 
                 key={item.key}
                 className={`group relative px-6 py-3 rounded-xl font-semibold transition-all duration-500 transform hover:scale-105 ${
@@ -729,22 +843,23 @@ function Explore() {
       
       {/* Enhanced Map Container */}
       <div className={`relative rounded-3xl overflow-hidden border-4 border-white/30 shadow-2xl transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        {isLoading && (
-          <div className="absolute inset-0 z-10 bg-gradient-to-br from-green-50/90 to-blue-50/90 backdrop-blur-sm flex items-center justify-center">
+        <Atmosphere variant="hero" className="opacity-60" />
+  {mapLoading && (
+          <div className="absolute inset-0 z-20 bg-gradient-to-br from-green-50/90 to-blue-50/90 backdrop-blur-sm flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin text-5xl mb-4 text-green-600">⟳</div>
               <p className="text-xl font-semibold text-gray-700">Loading interactive map...</p>
             </div>
           </div>
         )}
-        <div id="map" style={{ height: '70vh', width: '100%' }} className="rounded-3xl" />
+        <div id="map" style={{ height: '70vh', width: '100%' }} className="relative z-10 rounded-3xl" />
         
         {/* Floating stats */}
         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg">
           <div className="text-sm font-semibold text-gray-700">
             <div className="flex items-center gap-2 mb-1">
               <span className="animate-pulse text-green-600">•</span>
-              Showing {filtered.length} sites
+              {dataLoading ? 'Syncing live hotspot data…' : `Showing ${filtered.length} sites`}
             </div>
             <div className="text-xs text-gray-500">Click markers for details</div>
           </div>
@@ -818,16 +933,37 @@ function Explore() {
 
 function SitePage() {
   const { id } = useParams()
-  const site = SITES.find((s) => s.id === id)
+  const { hotspots, species, loading } = useData()
 
-  if (!site) return <p>Site not found.</p>
+  const site = useMemo(() => hotspots.find((s) => s.id === id), [hotspots, id])
 
-  const highlightSpecies = SPECIES.filter((sp) => site.highlightSpeciesIds.includes(sp.id))
-  const flora = SPECIES.filter((sp) => site.floraIds.includes(sp.id))
-  const fauna = SPECIES.filter((sp) => site.faunaIds.includes(sp.id))
-  const associatedSpecies = SPECIES.filter((sp) => sp.siteIds.includes(site.id) && !site.highlightSpeciesIds.includes(sp.id) && !site.floraIds.includes(sp.id) && !site.faunaIds.includes(sp.id))
+  const highlightSpecies = useMemo(
+    () => (site ? species.filter((sp) => site.highlightSpeciesIds.includes(sp.id)) : []),
+    [site, species]
+  )
+  const flora = useMemo(
+    () => (site ? species.filter((sp) => site.floraIds.includes(sp.id)) : []),
+    [site, species]
+  )
+  const fauna = useMemo(
+    () => (site ? species.filter((sp) => site.faunaIds.includes(sp.id)) : []),
+    [site, species]
+  )
+  const associatedSpecies = useMemo(
+    () =>
+      site
+        ? species.filter(
+            (sp) =>
+              sp.siteIds.includes(site.id) &&
+              !site.highlightSpeciesIds.includes(sp.id) &&
+              !site.floraIds.includes(sp.id) &&
+              !site.faunaIds.includes(sp.id)
+          )
+        : [],
+    [site, species]
+  )
 
-  const locationText = [site.barangay, site.city, site.province].filter(Boolean).join(', ')
+  const locationText = site ? [site.barangay, site.city, site.province].filter(Boolean).join(', ') : ''
 
   const formatCoordinate = (value: number, axis: 'lat' | 'lng') => {
     const cardinal = axis === 'lat' ? (value >= 0 ? 'N' : 'S') : value >= 0 ? 'E' : 'W'
@@ -841,6 +977,33 @@ function SitePage() {
     NT: { label: 'Near Threatened', classes: 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border border-emerald-200/60' },
     LC: { label: 'Least Concern', classes: 'bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 border border-slate-200/60' },
     DD: { label: 'Data Deficient', classes: 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 border border-indigo-200/60' },
+  }
+
+  if (loading && !site) {
+    return (
+      <div className="py-20 text-center">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">Loading site profile…</p>
+      </div>
+    )
+  }
+
+  if (!site) {
+    return (
+      <SoftCard className="mx-auto my-20 max-w-2xl text-center text-slate-600 dark:text-slate-300">
+        <h2 className="mb-3 text-2xl font-bold text-slate-800 dark:text-white">Site not found</h2>
+        <p className="text-sm">We couldn’t locate that hotspot. It may have been renamed or isn’t part of the current dataset yet.</p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Link to="/explore" className="btn-primary inline-flex items-center gap-2">
+            <MapIcon className="h-4 w-4" />
+            Back to map
+          </Link>
+          <Link to="/" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-200 hover:text-emerald-600 dark:border-slate-700 dark:text-slate-200">
+            <ARIcon className="h-4 w-4" />
+            Home
+          </Link>
+        </div>
+      </SoftCard>
+    )
   }
 
   const typeBadge = site.type === 'marine'
@@ -1058,11 +1221,14 @@ function SitePage() {
 }
 
 function SpeciesList() {
+  const { species, hotspots, loading } = useData()
   const [isVisible, setIsVisible] = useState(false)
   
   useEffect(() => {
     setIsVisible(true)
   }, [])
+
+  const siteLookup = useMemo(() => new Map(hotspots.map((site) => [site.id, site])), [hotspots])
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -1089,7 +1255,25 @@ function SpeciesList() {
       </div>
       
       <div className={`grid sm:grid-cols-2 lg:grid-cols-3 gap-8 transform transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-        {SPECIES.map((sp, index) => (
+        {loading &&
+          Array.from({ length: 6 }).map((_, index) => (
+            <SoftCard key={`species-skeleton-${index}`} className="relative h-full p-6">
+              <div className="mb-4 h-48 rounded-3xl bg-slate-200/60 dark:bg-slate-800/60" />
+              <div className="space-y-3">
+                <div className="h-6 w-3/4 rounded-full bg-slate-200/70 dark:bg-slate-800/70" />
+                <div className="h-4 w-1/2 rounded-full bg-slate-200/60 dark:bg-slate-800/60" />
+                <div className="h-20 rounded-2xl bg-slate-100/60 dark:bg-slate-900/60" />
+              </div>
+            </SoftCard>
+          ))}
+
+        {!loading && species.length === 0 && (
+          <SoftCard className="col-span-full text-center text-slate-600 dark:text-slate-300">
+            🐾 Species cards are still syncing. Check back once the database has been hydrated.
+          </SoftCard>
+        )}
+
+        {!loading && species.map((sp, index) => (
           <SoftCard
             key={sp.id}
             className="group relative p-6 hover:-rotate-1 transform hover:scale-[1.02]"
@@ -1146,9 +1330,9 @@ function SpeciesList() {
                 
                 <div className="flex gap-1">
                   {sp.siteIds.map((siteId, i) => {
-                    const site = SITES.find(s => s.id === siteId)
+                    const site = siteLookup.get(siteId)
                     return site ? (
-                      <span key={i} className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors duration-200">
+                      <span key={`${sp.id}-${siteId}-${i}`} className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors duration-200">
                         {site.type === 'marine' ? <WaveIcon className="w-4 h-4" /> : <MountainIcon className="w-4 h-4" />}
                       </span>
                     ) : null
@@ -1165,9 +1349,37 @@ function SpeciesList() {
 
 function SpeciesPage() {
   const { id } = useParams()
-  const sp = SPECIES.find((x) => x.id === id)
-  if (!sp) return <p>Species not found.</p>
-  const where = SITES.filter((s) => sp.siteIds.includes(s.id))
+  const { species, hotspots, loading } = useData()
+  const sp = useMemo(() => species.find((x) => x.id === id), [species, id])
+  const where = useMemo(() => (sp ? hotspots.filter((s) => sp.siteIds.includes(s.id)) : []), [hotspots, sp])
+
+  if (loading && !sp) {
+    return (
+      <div className="py-16 text-center text-slate-500 dark:text-slate-400">
+        Loading species profile…
+      </div>
+    )
+  }
+
+  if (!sp) {
+    return (
+      <SoftCard className="mx-auto my-16 max-w-xl text-center text-slate-600 dark:text-slate-300">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Species not found</h2>
+        <p className="mt-2 text-sm">The species you’re looking for isn’t in this build. Try exploring the biodiversity gallery for available profiles.</p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Link to="/species" className="btn-primary inline-flex items-center gap-2">
+            <SpeciesIcon className="h-4 w-4" />
+            Browse species
+          </Link>
+          <Link to="/" className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-emerald-200 hover:text-emerald-600 dark:border-slate-700 dark:text-slate-200">
+            <ARIcon className="h-4 w-4" />
+            Home
+          </Link>
+        </div>
+      </SoftCard>
+    )
+  }
+
   return (
     <div className="space-y-3">
       <h2 className="text-2xl font-semibold">{sp.commonName}</h2>
@@ -1195,14 +1407,55 @@ function SpeciesPage() {
 }
 
 function ARDemo() {
+  const { isAdmin } = useAdmin()
   const [isVisible, setIsVisible] = useState(false)
   
   useEffect(() => {
     setIsVisible(true)
   }, [])
-  
+
+  if (!isAdmin) {
+    return (
+      <ComingSoon
+        icon={<ARIcon className="h-9 w-9" />}
+        title="Augmented reality module"
+        description="We’re polishing the AR field guide so MindAR models load quickly on mid-range devices. The experience will roll out once assets, targets, and accessibility checks are finalized."
+        highlight="Preview restricted to project admins"
+        items={[
+          {
+            label: 'Target image refresh',
+            status: 'in-progress',
+            detail: 'Compressing the MindAR target set and swapping in higher-contrast markers for classroom lighting.',
+          },
+          {
+            label: 'GLB asset optimization',
+            status: 'queued',
+            detail: 'Re-exporting species models with Draco compression for faster WebGL loads.',
+          },
+          {
+            label: 'Teacher pilot run',
+            status: 'queued',
+            detail: 'Schedule usability testing with STEM teachers before public launch.',
+          },
+        ]}
+        footer={
+          <p>
+            Authorized maintainers can unlock the preview via the secure admin link. Keep this route private to avoid sharing the password publicly.
+          </p>
+        }
+      />
+    )
+  }
+
   return (
     <div className="space-y-8 min-h-screen">
+      <SoftCard className="border border-emerald-400/40 bg-emerald-500/10 text-emerald-900 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-100">
+        <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <span className="font-semibold uppercase tracking-[0.3em]">Admin preview</span>
+          <span className="text-emerald-700 dark:text-emerald-200">Live models are visible only while you’re authenticated.</span>
+        </div>
+      </SoftCard>
+
       <div className={`space-y-8 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
         <div className="text-center">
           <h2 className="text-5xl font-black tracking-tight bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -1213,7 +1466,7 @@ function ARDemo() {
           </p>
         </div>
         
-  <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
+        <div className="relative rounded-3xl p-12 bg-gradient-to-br from-purple-100/50 to-pink-100/50 border-2 border-white/30 backdrop-blur-sm overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl"></div>
           
           <div className="relative z-10 space-y-6">
@@ -1259,6 +1512,165 @@ function ARDemo() {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function VirtualTour() {
+  const { isAdmin } = useAdmin()
+
+  return (
+    <ComingSoon
+      icon={<CameraIcon className="h-9 w-9" />}
+      title="Virtual tour"
+      description="We’re storyboarding the 360° journey so viewers can virtually hike the Hamiguitan range, snorkel Pujada Bay, and visit community-led mangrove wards—all without leaving the classroom."
+      highlight="Interactive scenes launch after media capture and narration" 
+      items={[
+        {
+          label: '360° field capture',
+          status: 'in-progress',
+          detail: 'Coordinating drone and underwater teams to capture core habitats at golden hour.',
+        },
+        {
+          label: 'Narration + overlays',
+          status: 'queued',
+          detail: 'Drafting bilingual scripts with the tourism office and layering H5P hotspots for trivia.',
+        },
+        {
+          label: 'Deployment QA',
+          status: 'queued',
+          detail: 'Testing mobile gyro support and bandwidth fallbacks before publishing the public tour.',
+        },
+      ]}
+      footer={
+        <p>
+          Want to contribute panoramas or narration? Sync with the content lead so assets follow the same color grading and accessibility standards.
+        </p>
+      }
+    >
+      {isAdmin && (
+        <SoftCard className="border border-blue-400/40 bg-blue-500/10 text-blue-900 dark:border-blue-400/30 dark:bg-blue-500/15 dark:text-blue-100">
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center gap-2">
+              <TargetIcon className="h-5 w-5" />
+              <span className="font-semibold uppercase tracking-[0.2em]">Admin notes</span>
+            </div>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>Upload stitched equirectangular assets to the private S3 bucket using the naming convention <code className="rounded bg-black/5 px-2 py-0.5 text-xs">scene-XX-location.webp</code>.</li>
+              <li>Publish draft tour nodes in the Notion checklist before toggling visibility in the production build.</li>
+              <li>Log device compatibility findings (gyro, touch, VR headset) so we can prioritize fallbacks.</li>
+            </ul>
+          </div>
+        </SoftCard>
+      )}
+    </ComingSoon>
+  )
+}
+
+function AdminPreview() {
+  const { isAdmin, login, logout, lastLoginAt } = useAdmin()
+  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+
+  const secretConfigured = Boolean(import.meta.env.VITE_ADMIN_PASS?.length)
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault()
+    if (submitting || password.trim().length === 0) return
+    setSubmitting(true)
+    const ok = await login({ password })
+    setSubmitting(false)
+    setPassword('')
+    if (ok) {
+      setStatus('success')
+      setMessage('Admin preview unlocked. You can now access protected pages in this session.')
+    } else {
+      setStatus('error')
+      setMessage(secretConfigured ? 'That passphrase did not match our records. Try again.' : 'No admin password is configured. Set VITE_ADMIN_PASS in your .env file.')
+    }
+  }
+
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col gap-6 py-16">
+      <SoftCard className="border border-white/50 bg-white/85 dark:border-white/10 dark:bg-slate-900/70">
+        <div className="space-y-4">
+          <div>
+            <Badge tone="status" className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 text-emerald-700 dark:text-emerald-200">
+              Internal preview gate
+            </Badge>
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white">Unlock admin mode</h1>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              Enter the shared passphrase to activate hidden previews (AR demo, upcoming virtual tour, and future database dashboards). Keep this link private—anyone with the passphrase will unlock admin tools in this browser.
+            </p>
+          </div>
+
+          {isAdmin && (
+            <SoftCard className="border border-emerald-400/40 bg-emerald-500/10 text-sm text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-100">
+              <p className="font-semibold uppercase tracking-[0.2em]">Admin mode active</p>
+              {lastLoginAt && (
+                <p>Granted at <span className="font-mono">{new Date(lastLoginAt).toLocaleString()}</span>.</p>
+              )}
+              <p>You can browse protected routes until you log out or clear storage.</p>
+            </SoftCard>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200" htmlFor="admin-pass">
+              Admin passphrase
+            </label>
+            <input
+              id="admin-pass"
+              type="password"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value)
+                if (status !== 'idle') {
+                  setStatus('idle')
+                  setMessage('')
+                }
+              }}
+              placeholder="Enter passphrase"
+              className="w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300/60 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100"
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <Button type="submit" disabled={submitting}>
+                {submitting ? 'Authenticating…' : isAdmin ? 'Refresh session' : 'Unlock preview'}
+              </Button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-rose-200 hover:text-rose-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-rose-400 dark:hover:text-rose-200"
+                >
+                  Log out
+                </button>
+              )}
+            </div>
+          </form>
+
+          {status !== 'idle' && (
+            <SoftCard
+              className={`border text-sm ${
+                status === 'success'
+                  ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-200'
+                  : 'border-rose-400/40 bg-rose-500/10 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-200'
+              }`}
+            >
+              {message}
+            </SoftCard>
+          )}
+
+          {!secretConfigured && (
+            <SoftCard className="border border-amber-400/40 bg-amber-500/10 text-sm text-amber-800 dark:border-amber-400/30 dark:bg-amber-500/15 dark:text-amber-200">
+              <p>
+                <strong>Heads up:</strong> The environment variable <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs">VITE_ADMIN_PASS</code> is not set. Add it to your <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs">.env.local</code> to enable real authentication.
+              </p>
+            </SoftCard>
+          )}
+        </div>
+      </SoftCard>
     </div>
   )
 }
@@ -1372,21 +1784,23 @@ export default function App() {
   // ensure hook initialized so initial theme applied early
   useTheme()
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-        {/* Animated background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-200/10 to-green-200/10 rounded-full blur-2xl animate-bounce"></div>
-        </div>
-        
-        <div className="app relative z-10">
-          <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
-          <Navbar />
-          <main id="main" className="pt-12 lg:pt-16">
-            <div className="w-full px-4 pb-16 sm:px-6 lg:px-12 xl:px-16">
-              <Routes>
+    <AdminProvider>
+      <DataProvider>
+        <BrowserRouter>
+          <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+            {/* Animated background elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-200/10 to-green-200/10 rounded-full blur-2xl animate-bounce"></div>
+            </div>
+            
+            <div className="app relative z-10">
+              <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-glow-green">Skip to content</a>
+              <Navbar />
+              <main id="main" className="pt-12 lg:pt-16">
+                <div className="w-full px-4 pb-16 sm:px-6 lg:px-12 xl:px-16">
+                  <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/site/:id" element={<SitePage />} />
@@ -1395,6 +1809,8 @@ export default function App() {
                 <Route path="/biodiversity" element={<BiodiversityExplorer />} />
                 <Route path="/biodiversity/:id" element={<SpeciesDetail />} />
                 <Route path="/ar" element={<ARDemo />} />
+                <Route path="/virtual-tour" element={<VirtualTour />} />
+                <Route path="/admin/preview" element={<AdminPreview />} />
                 <Route path="/about" element={<About />} />
                 <Route path="*" element={
                   <div className="text-center py-16">
@@ -1406,12 +1822,14 @@ export default function App() {
                     </Link>
                   </div>
                 } />
-              </Routes>
+                  </Routes>
+                </div>
+              </main>
+              <Footer />
             </div>
-          </main>
-          <Footer />
-        </div>
-      </div>
-    </BrowserRouter>
+          </div>
+        </BrowserRouter>
+      </DataProvider>
+    </AdminProvider>
   )
 }

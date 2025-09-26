@@ -2,6 +2,19 @@
 
 A colorful React + Vite + TypeScript app with Leaflet maps, species pages, and an AR demo scaffold (MindAR + A‑Frame).
 
+## Release snapshot
+
+- **Version:** v0.3.0
+- **Updated:** 2025-09-26 02:50 (UTC)
+
+### What changed in this drop
+
+- Introduced `DataContext` to centralize hotspot and species data with a unified helper API, replacing page-level static imports.
+- Added `AdminContext` with password-gated preview mode, persistent login, and a dedicated `/admin/preview` route.
+- Created a reusable `ComingSoon` component and wired AR/Virtual Tour navigation flows to show coming-soon messaging for non-admins.
+- Refined the desktop navbar: consistent pill spacing, enhanced active-state glow, and compact “Soon” badges for unreleased features.
+- Updated hero and stats sections to surface live counts from context data, aligning with the sticky header counters.
+
 ## Run locally
 
 Requirements: Node.js 18+ (tested on Node 20), npm 9+.

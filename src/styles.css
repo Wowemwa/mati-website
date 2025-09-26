@@ -51,6 +51,19 @@ body.dark .soft-surface{background:linear-gradient(145deg,rgba(30,41,59,.85),rgb
   100% { background-position: 200% 0; }
 }
 
+@keyframes auroraDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.6; }
+  25% { transform: translate3d(6%, -4%, 0) scale(1.05); opacity: 0.85; }
+  50% { transform: translate3d(-4%, 5%, 0) scale(1.02); opacity: 0.75; }
+  75% { transform: translate3d(3%, 4%, 0) scale(1.08); opacity: 0.9; }
+}
+
+@keyframes auroraNoise {
+  0% { transform: translate3d(0, 0, 0); opacity: .05; }
+  50% { transform: translate3d(5%, 2%, 0); opacity: .12; }
+  100% { transform: translate3d(-3%, -2%, 0); opacity: .05; }
+}
+
 @keyframes pulse-soft {
   0%, 100% { transform: scale(1); }
   40% { transform: scale(1.02); }
@@ -322,6 +335,52 @@ body.dark .hero-divider-fade{background:linear-gradient(to bottom,rgba(15,23,42,
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 3s ease infinite;
+}
+
+.aurora-container {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.aurora-noise {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.28), transparent 55%),
+              radial-gradient(circle at 80% 15%, rgba(16, 185, 129, 0.28), transparent 60%),
+              radial-gradient(circle at 50% 75%, rgba(59, 130, 246, 0.24), transparent 55%);
+  mix-blend-mode: screen;
+  filter: blur(42px);
+  opacity: 0.08;
+  animation: auroraNoise 18s ease-in-out infinite alternate;
+}
+
+.aurora-shape {
+  position: absolute;
+  background-image: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+  filter: blur(40px);
+  border-radius: 999px;
+  animation: auroraDrift 16s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.aurora-shape::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 65%);
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-noise,
+  .aurora-shape {
+    animation: none !important;
+  }
 }
 
 .animate-pulse-soft {
