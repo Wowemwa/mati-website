@@ -84,13 +84,17 @@ const Navbar = memo(function Navbar() {
   }, [location.pathname])
 
   return (
-    <header className={`sticky top-0 z-40 mx-2 mt-2 rounded-2xl overflow-hidden ${isMobileView ? 'mx-1 mt-1' : ''}`}>
+    <header className={`sticky top-0 z-40 transition-all duration-300 ${
+        isMobileView 
+          ? `mx-1 mt-1 ${deviceInfo.isIOS ? 'top-safe-area-inset-top' : ''}` 
+          : 'mx-2 mt-2 hover:mx-1 hover:mt-1'
+      } rounded-2xl overflow-hidden`}>
       <div
         className={`relative border transition-all duration-500 ${
           scrolled
             ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200/60 dark:border-white/20 shadow-xl backdrop-blur-md'
             : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/40 dark:border-white/10 backdrop-blur-sm shadow-lg'
-        } ${isMobileView ? 'rounded-xl' : ''}`}
+        } ${isMobileView ? 'rounded-xl' : 'rounded-2xl hover:rounded-3xl'}`}
       >
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-50/30 via-white/20 to-slate-100/40 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/25" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent dark:via-white/15" />
@@ -515,7 +519,10 @@ const Home = memo(function Home() {
       <section className={`relative overflow-hidden rounded-[24px] border transition-all duration-700 ${isMobileView ? 'border-blue-300/60 bg-blue-50/95 dark:border-blue-400/30 dark:bg-blue-950/85' : 'border-slate-300/60 bg-white/95 dark:border-white/20 dark:bg-slate-900/85'} backdrop-blur-sm shadow-2xl ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 via-white/30 to-slate-100/50 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/20" />
         <Atmosphere variant="hero" className="hidden md:block" />
-        <div className={`relative z-10 gap-8 p-6 lg:p-12 xl:p-16 ${isMobileView ? 'flex flex-col p-4 gap-4' : 'grid lg:grid-cols-[minmax(0,1fr)_380px]'}`}>
+        <div className={`relative z-10 ${isMobileView 
+            ? `flex flex-col gap-4 p-4 ${deviceInfo.isTablet ? 'p-6 gap-6' : ''} ${deviceInfo.isIOS ? 'pb-safe-area-inset-bottom' : ''}` 
+            : 'grid lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px] gap-8 p-6 lg:p-12 xl:p-16 2xl:p-20'
+          }`}>
           <div className="space-y-10">
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
@@ -531,31 +538,62 @@ const Home = memo(function Home() {
                 </span>
               )}
             </div>
-            <div className="space-y-6">
-              <AnimatedText as="h1" className={`font-black tracking-tight text-slate-900 dark:text-white ${isMobileView ? '!text-4xl text-center' : '!text-5xl lg:!text-7xl'}`} text="Mati ARBio" />
-              <AnimatedText as="div" className={`!font-semibold text-slate-800 dark:text-slate-100 ${isMobileView ? '!text-lg text-center' : '!text-xl lg:!text-2xl'}`} text="Explore biodiversity through maps, data, and AR experiences." />
-              <p className={`text-slate-600 dark:text-slate-300 max-w-2xl ${isMobileView ? 'text-base text-center mx-auto' : 'text-lg'}`}>
+            <div className={`space-y-6 ${isMobileView ? 'text-center' : ''}`}>
+              <AnimatedText 
+                as="h1" 
+                className={`font-black tracking-tight text-slate-900 dark:text-white ${
+                  isMobileView 
+                    ? `!text-4xl ${deviceInfo.isTablet ? '!text-5xl' : ''} ${deviceInfo.isIOS ? 'tracking-tighter' : ''}` 
+                    : '!text-5xl lg:!text-7xl xl:!text-8xl'
+                }`}
+                text="Mati ARBio" 
+              />
+              <AnimatedText 
+                as="div" 
+                className={`!font-semibold text-slate-800 dark:text-slate-100 ${
+                  isMobileView 
+                    ? `!text-lg ${deviceInfo.isTablet ? '!text-xl' : ''}` 
+                    : '!text-xl lg:!text-2xl xl:!text-3xl'
+                }`}
+                text="Explore biodiversity through maps, data, and AR experiences." 
+              />
+              <p className={`text-slate-600 dark:text-slate-300 ${
+                isMobileView 
+                  ? `text-base mx-auto max-w-md ${deviceInfo.isTablet ? 'text-lg max-w-lg' : ''}` 
+                  : 'text-lg max-w-2xl xl:text-xl xl:max-w-3xl'
+              }`}>
                 {isMobileView 
-                  ? 'Optimized mobile experience for biodiversity exploration on your phone or tablet.'
+                  ? `Experience ${deviceInfo.isIOS ? 'iOS-optimized' : deviceInfo.isAndroid ? 'Android-optimized' : 'mobile'} biodiversity exploration with touch-friendly interfaces and responsive design.`
                   : 'The redesigned interface takes cues from the navbar—glass surfaces, live counters, and AR-forward cues—to guide every visitor from orientation to action.'
                 }
               </p>
             </div>
-            <div className={`flex gap-4 ${isMobileView ? 'flex-col w-full' : 'flex-col sm:flex-row'}`}>
+            <div className={`flex gap-4 ${isMobileView ? 'flex-col w-full' : 'flex-col sm:flex-row lg:flex-row xl:gap-6'}`}>
               <Button
                 variant="primary"
                 onClick={() => navigate('/gis')}
-                className={`flex items-center gap-3 ${isMobileView ? 'w-full justify-center py-4 text-lg' : ''}`}
+                className={`flex items-center justify-center gap-3 transition-all duration-300 ${
+                  isMobileView 
+                    ? `w-full py-4 text-lg font-semibold rounded-2xl shadow-xl ${deviceInfo.isIOS ? 'active:scale-98' : 'active:scale-95'} ${deviceInfo.isAndroid ? 'min-h-[48px]' : 'min-h-[44px]'}` 
+                    : 'hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25 xl:px-8 xl:py-4 xl:text-lg'
+                }`}
               >
-                <span className="text-2xl">🌊</span>
+                <span className={`${isMobileView ? 'text-2xl' : 'text-2xl xl:text-3xl'}`}>🌊</span>
                 <span>{isMobileView ? 'Explore Map' : 'Explore the map'}</span>
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`${isMobileView ? 'h-5 w-5' : 'h-5 w-5 xl:h-6 xl:w-6'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Button>
               <Link to="/ar" className={isMobileView ? 'w-full' : ''}>
-                <Button variant="secondary" className={`flex items-center gap-3 ${isMobileView ? 'w-full justify-center py-4 text-lg' : ''}`}>
-                  <ARIcon className="h-5 w-5" />
+                <Button 
+                  variant="secondary" 
+                  className={`flex items-center justify-center gap-3 transition-all duration-300 ${
+                    isMobileView 
+                      ? `w-full py-4 text-lg font-semibold rounded-2xl shadow-lg ${deviceInfo.isIOS ? 'active:scale-98' : 'active:scale-95'} ${deviceInfo.isAndroid ? 'min-h-[48px]' : 'min-h-[44px]'}` 
+                      : 'hover:scale-105 hover:shadow-xl hover:shadow-blue-500/25 xl:px-8 xl:py-4 xl:text-lg'
+                  }`}
+                >
+                  <ARIcon className={`${isMobileView ? 'h-5 w-5' : 'h-5 w-5 xl:h-6 xl:w-6'}`} />
                   <span>{isMobileView ? 'AR Demo' : 'Launch AR demo'}</span>
                 </Button>
               </Link>
@@ -575,10 +613,10 @@ const Home = memo(function Home() {
             </div>
           </div>
           {!isMobileView && (
-            <aside className="relative overflow-hidden rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 via-white/20 to-slate-50/60 dark:from-slate-800/25 dark:via-slate-700/15 dark:to-slate-800/30" />
-            <Atmosphere variant="soft" className="opacity-90" />
-            <div className="relative z-10 space-y-4 p-6">
+            <aside className="relative overflow-hidden rounded-3xl border border-slate-300/50 bg-white/85 shadow-2xl backdrop-blur-xl dark:border-white/15 dark:bg-slate-900/85 transition-all duration-500 hover:shadow-3xl hover:scale-[1.01] group">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 via-white/20 to-slate-50/60 dark:from-slate-800/25 dark:via-slate-700/15 dark:to-slate-800/30 group-hover:from-slate-100/60 group-hover:via-white/30 group-hover:to-slate-50/80 transition-all duration-500" />
+            <Atmosphere variant="soft" className="opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 space-y-6 p-6 xl:p-8">
               <div className="space-y-3">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300">Navbar data stream</p>
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Stats mirrored in navigation</h3>
@@ -612,29 +650,40 @@ const Home = memo(function Home() {
           )}
           
           {isMobileView && (
-            <div className="w-full mt-6 p-4 rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
+            <div className={`w-full mt-6 rounded-2xl border border-blue-200/60 bg-blue-50/90 shadow-xl backdrop-blur dark:border-blue-400/30 dark:bg-blue-950/80 ${deviceInfo.isTablet ? 'p-6' : 'p-4'}`}>
               <div className="text-center space-y-4">
-                <div className="text-3xl">📱</div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Mobile Experience</h3>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
-                    <div className="font-semibold text-blue-700 dark:text-blue-300">Platform</div>
-                    <div className="text-blue-600 dark:text-blue-400">
+                <div className="flex items-center justify-center gap-2">
+                  <div className={`${deviceInfo.isIOS ? 'text-3xl' : deviceInfo.isAndroid ? 'text-3xl' : 'text-3xl'}`}>
+                    {deviceInfo.isIOS ? '📱' : deviceInfo.isAndroid ? '🤖' : '📱'}
+                  </div>
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+                <h3 className={`font-bold text-blue-900 dark:text-blue-100 ${deviceInfo.isTablet ? 'text-2xl' : 'text-xl'}`}>
+                  {deviceInfo.isIOS ? 'iOS Experience' : deviceInfo.isAndroid ? 'Android Experience' : 'Mobile Experience'}
+                </h3>
+                <div className={`grid gap-3 text-sm ${deviceInfo.isTablet ? 'grid-cols-4' : 'grid-cols-2'}`}>
+                  <div className="bg-blue-100/80 dark:bg-blue-900/40 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="font-semibold text-blue-800 dark:text-blue-200">Platform</div>
+                    <div className="text-blue-700 dark:text-blue-300 text-xs">
                       {deviceInfo.isIOS ? 'iOS' : deviceInfo.isAndroid ? 'Android' : 'Mobile'}
+                      {deviceInfo.isTablet ? ' • Tablet' : ''}
                     </div>
                   </div>
-                  <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-3">
-                    <div className="font-semibold text-green-700 dark:text-green-300">Screen</div>
-                    <div className="text-green-600 dark:text-green-400">{deviceInfo.screenWidth}×{deviceInfo.screenHeight}</div>
+                  <div className="bg-green-100/80 dark:bg-green-900/40 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="font-semibold text-green-800 dark:text-green-200">Display</div>
+                    <div className="text-green-700 dark:text-green-300 text-xs">{deviceInfo.screenWidth}×{deviceInfo.screenHeight}</div>
                   </div>
-                  <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-3">
-                    <div className="font-semibold text-purple-700 dark:text-purple-300">Species</div>
-                    <div className="text-purple-600 dark:text-purple-400">{species.length}+ documented</div>
+                  <div className="bg-purple-100/80 dark:bg-purple-900/40 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="font-semibold text-purple-800 dark:text-purple-200">Species</div>
+                    <div className="text-purple-700 dark:text-purple-300 text-xs">{species.length}+ documented</div>
                   </div>
-                  <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3">
-                    <div className="font-semibold text-orange-700 dark:text-orange-300">Hotspots</div>
-                    <div className="text-orange-600 dark:text-orange-400">{hotspots.length} locations</div>
+                  <div className="bg-orange-100/80 dark:bg-orange-900/40 rounded-xl p-3 backdrop-blur-sm">
+                    <div className="font-semibold text-orange-800 dark:text-orange-200">Hotspots</div>
+                    <div className="text-orange-700 dark:text-orange-300 text-xs">{hotspots.length} locations</div>
                   </div>
+                </div>
+                <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-100/50 dark:bg-blue-900/30 rounded-lg p-2">
+                  ✨ Touch-optimized interface with {deviceInfo.isIOS ? 'iOS' : deviceInfo.isAndroid ? 'Android' : 'mobile'} design patterns
                 </div>
               </div>
             </div>
@@ -647,15 +696,36 @@ const Home = memo(function Home() {
         <p className="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-300">
           Every surface references the navbar: same gradients, counters, and action hierarchy. Cards reinforce the story so visitors know where to go next.
         </p>
-        <div className={`mt-8 gap-6 ${isMobileView ? 'flex flex-col' : 'grid md:grid-cols-3'}`}>
+        <div className={`mt-8 gap-6 ${
+          isMobileView 
+            ? `flex flex-col ${deviceInfo.isTablet ? 'md:grid md:grid-cols-2' : ''}` 
+            : 'grid md:grid-cols-2 lg:grid-cols-3 xl:gap-8'
+        }`}>
           {featureCards.map((card, idx) => (
-            <div key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-6 shadow-lg backdrop-blur transition-transform duration-300 hover:-translate-y-1 dark:border-white/15 dark:bg-slate-900/70">
-              <Atmosphere variant="soft" className={idx % 2 === 0 ? 'opacity-80' : 'opacity-60'} />
-              <div className="absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div 
+              key={card.title} 
+              className={`group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 backdrop-blur shadow-lg transition-all duration-300 dark:border-white/15 dark:bg-slate-900/70 ${
+                isMobileView 
+                  ? `p-5 ${deviceInfo.isTablet ? 'p-6' : ''} active:scale-95 active:shadow-md ${deviceInfo.isAndroid ? 'active:bg-white/90 dark:active:bg-slate-900/80' : ''}` 
+                  : 'p-6 xl:p-8 hover:-translate-y-2 hover:shadow-2xl hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-slate-900/80'
+              }`}
+            >
+              <Atmosphere variant="soft" className={`${idx % 2 === 0 ? 'opacity-80' : 'opacity-60'} ${!isMobileView ? 'group-hover:opacity-100' : ''} transition-opacity duration-300`} />
+              <div className={`absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 transition-opacity duration-300 ${
+                isMobileView ? 'opacity-60' : 'opacity-0 group-hover:opacity-100'
+              }`} />
               <div className="relative z-10">
-                <div className="text-3xl drop-shadow-sm">{card.icon}</div>
-                <h4 className="mt-4 text-lg font-semibold text-slate-800 dark:text-white">{card.title}</h4>
-                <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{card.description}</p>
+                <div className={`drop-shadow-sm ${isMobileView && deviceInfo.isTablet ? 'text-4xl' : 'text-3xl xl:text-4xl'}`}>{card.icon}</div>
+                <h4 className={`mt-4 font-semibold text-slate-800 dark:text-white ${
+                  isMobileView ? `text-lg ${deviceInfo.isTablet ? 'text-xl' : ''}` : 'text-lg xl:text-xl'
+                }`}>
+                  {card.title}
+                </h4>
+                <p className={`mt-2 text-slate-500 dark:text-slate-300 ${
+                  isMobileView ? `text-sm ${deviceInfo.isTablet ? 'text-base' : ''}` : 'text-sm xl:text-base'
+                }`}>
+                  {card.description}
+                </p>
               </div>
             </div>
           ))}

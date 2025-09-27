@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getDeviceOptimizations, performanceUtils } from '../config/performance';
 
 export interface DeviceInfo {
   isMobile: boolean;
@@ -13,6 +14,8 @@ export interface DeviceInfo {
 interface DeviceContextType {
   deviceInfo: DeviceInfo;
   isMobileView: boolean;
+  optimizations: any;
+  prefersReducedMotion: boolean;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -38,17 +41,21 @@ export const DeviceProvider: React.FC<DeviceProviderProps> = ({ children }) => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      // Detect mobile platforms
+      // Enhanced mobile platform detection
       const isIOS = /iPad|iPhone|iPod/.test(userAgent);
       const isAndroid = /Android/.test(userAgent);
+      
+      // Better tablet detection
       const isTablet = /iPad/.test(userAgent) || 
         (isAndroid && !/Mobile/.test(userAgent)) ||
-        (screenWidth >= 768 && screenWidth <= 1024);
+        (screenWidth >= 768 && screenWidth <= 1280 && 
+         (screenHeight / screenWidth < 1.5 || screenWidth / screenHeight < 1.5));
       
-      // More comprehensive mobile detection
+      // Comprehensive mobile detection with better breakpoints
       const isMobileDevice = isIOS || isAndroid || 
         /webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) ||
-        screenWidth <= 768;
+        screenWidth <= 768 ||
+        (screenWidth <= 1024 && 'ontouchstart' in window);
 
       setDeviceInfo({
         isMobile: isMobileDevice,
@@ -73,10 +80,16 @@ export const DeviceProvider: React.FC<DeviceProviderProps> = ({ children }) => {
 
   // Use only automatic detection
   const isMobileView = deviceInfo.isMobile;
+  
+  // Get device-specific optimizations
+  const optimizations = getDeviceOptimizations(deviceInfo);
+  const prefersReducedMotion = performanceUtils.prefersReducedMotion();
 
   const value: DeviceContextType = {
     deviceInfo,
     isMobileView,
+    optimizations,
+    prefersReducedMotion,
   };
 
   return (

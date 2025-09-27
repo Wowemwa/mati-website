@@ -37,11 +37,11 @@ export const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   children,
   className = '',
 }) => {
-  const { isMobileView } = useDeviceDetection();
+  const { isMobileView, deviceInfo } = useDeviceDetection();
 
   const gridClasses = isMobileView
-    ? 'grid grid-cols-1 gap-4'
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+    ? `grid grid-cols-1 gap-4 ${deviceInfo.isTablet ? 'sm:grid-cols-2' : ''}`
+    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6';
 
   return (
     <div className={`${gridClasses} ${className}`}>
@@ -91,15 +91,17 @@ export const MobileCard: React.FC<MobileCardProps> = ({
   className = '',
   onClick,
 }) => {
-  const { isMobileView } = useDeviceDetection();
+  const { isMobileView, deviceInfo } = useDeviceDetection();
 
   const cardClasses = isMobileView
-    ? `bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200/60 
-       dark:border-white/10 rounded-2xl p-4 shadow-lg active:scale-95 transition-transform 
-       duration-200 ${onClick ? 'cursor-pointer' : ''}`
-    : `bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border border-slate-200/60 
-       dark:border-white/10 rounded-3xl p-6 shadow-xl hover:scale-105 transition-all 
-       duration-300 ${onClick ? 'cursor-pointer hover:shadow-2xl' : ''}`;
+    ? `bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg border border-slate-200/60 
+       dark:border-white/10 rounded-2xl shadow-lg transition-all duration-200
+       ${deviceInfo.isIOS ? 'p-5' : 'p-4'} 
+       ${onClick ? 'cursor-pointer active:scale-95 active:shadow-md' : ''}
+       ${deviceInfo.isAndroid ? 'active:bg-white/100 dark:active:bg-slate-800/100' : ''}`
+    : `bg-white/75 dark:bg-slate-800/75 backdrop-blur-xl border border-slate-200/60 
+       dark:border-white/10 rounded-3xl p-6 shadow-xl transition-all duration-300
+       ${onClick ? 'cursor-pointer hover:scale-[1.02] hover:shadow-2xl hover:bg-white/85 dark:hover:bg-slate-800/85' : ''}`;
 
   return (
     <div className={`${cardClasses} ${className}`} onClick={onClick}>
