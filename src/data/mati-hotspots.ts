@@ -307,7 +307,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Seagrass beds and coral reefs',
     blurb: 'Herbivorous sea turtle that feeds on seagrasses in Pujada Bay and nests on nearby beaches.',
     siteIds: ['pujada-bay-protected-seascape', 'dahican-beach-mayo-bay'],
-    highlights: ['Grazes on seagrass beds', 'Nests on sandy beaches', 'Temperature-dependent sex determination']
+    highlights: ['Grazes on seagrass beds', 'Nests on sandy beaches', 'Temperature-dependent sex determination'],
+    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Green_turtle_swimming_over_coral_reefs_in_Kona.jpg/800px-Green_turtle_swimming_over_coral_reefs_in_Kona.jpg']
   },
   {
     id: 'thalassia-hemprichii',
