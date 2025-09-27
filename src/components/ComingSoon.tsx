@@ -56,7 +56,7 @@ export default function ComingSoon({
               </span>
             )}
             <div className="space-y-3">
-              <Badge tone="status" className="mx-auto w-fit bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600 sm:mx-0 dark:bg-slate-900/70 dark:text-emerald-300">
+              <Badge tone="info" className="mx-auto w-fit bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-600 sm:mx-0 dark:bg-slate-900/70 dark:text-emerald-300">
                 Coming soon
               </Badge>
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">{title}</h1>
