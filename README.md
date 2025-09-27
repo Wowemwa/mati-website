@@ -37,6 +37,8 @@
 ### 🎨 **Modern UI/UX Design**
 - Glassmorphism design with backdrop blur effects
 - Dark/light theme with system preference detection
+- **Mobile/Desktop View Toggle** - Manual switching between layouts
+- **Intelligent Device Detection** - Auto-adapts to iOS, Android, Desktop
 - Fully responsive design for all devices
 - Progressive Web App (PWA) capabilities
 
@@ -81,10 +83,18 @@ VITE_ADMIN_PASS=your_secure_password_here
 ## 📱 Usage
 
 ### Public Access
-- **Homepage**: Interactive biodiversity overview
+- **Homepage**: Interactive biodiversity overview with adaptive layouts
 - **GIS Map**: `/gis` - Explore hotspots and species locations
 - **Species Explorer**: `/biodiversity` - Browse detailed species information
+- **View Toggle**: Mobile/Desktop switcher for optimal viewing experience
 - **About**: `/about` - Learn about the project and conservation efforts
+
+### 🔄 Mobile/Desktop View Toggle
+- **Automatic Detection**: Platform-aware adaptive layouts (iOS/Android/Desktop)
+- **Manual Override**: Click the floating button (bottom-right) to switch views
+- **Visual Feedback**: Dramatic layout changes with blue theme for mobile view
+- **Platform Indicators**: Shows device type, screen size, and platform info
+- **Touch Optimization**: Larger buttons and optimized spacing in mobile view
 
 ### Admin Access
 1. **Login**: Navigate to `/admin` or `/admin/preview`
@@ -128,16 +138,20 @@ mati-website/
 │   │   ├── AnimatedLogo.tsx  # Brand animations
 │   │   ├── ErrorBoundary.tsx # Error handling
 │   │   ├── LoadingSpinner.tsx# Loading states
+│   │   ├── MobileLayout.tsx  # Mobile-responsive components
+│   │   ├── ViewToggleButton.tsx # Mobile/Desktop switcher
 │   │   ├── PerformanceMonitor.tsx # Dev tools
 │   │   └── UI.tsx            # Core UI primitives
 │   ├── 📂 context/           # State management
 │   │   ├── AdminContext.tsx  # Authentication
-│   │   └── DataContext.tsx   # Data management
+│   │   ├── DataContext.tsx   # Data management
+│   │   └── DeviceContext.tsx # Device detection & view state
 │   ├── 📂 data/              # Biodiversity database
 │   │   ├── mati-hotspots.ts  # Hotspot definitions
 │   │   ├── hotspots.ts       # Species data
 │   │   └── schema.ts         # TypeScript interfaces
 │   ├── 📂 hooks/             # Custom React hooks
+│   │   └── useDeviceDetection.ts # Platform detection logic
 │   ├── 📂 pages/             # Page components
 │   ├── 📂 types/             # Type definitions
 │   └── 📂 utils/             # Utility functions
@@ -153,6 +167,8 @@ mati-website/
 - **Frontend Framework**: React 18.3.1 with TypeScript
 - **Build Tool**: Vite 5.4+ with HMR and optimization
 - **Styling**: Tailwind CSS with custom design system
+- **Device Detection**: Advanced platform recognition system
+- **Responsive Design**: Mobile/Desktop adaptive layouts
 - **Mapping**: Leaflet with custom tile layers
 - **AR Framework**: MindAR + A-Frame for WebXR
 - **State Management**: React Context with custom hooks
@@ -367,6 +383,8 @@ VITE_ANALYTICS_ID=your_analytics_id
 ## 🔮 Future Roadmap
 
 ### Short Term (Q1 2024)
+- [x] **Mobile/Desktop View Toggle** - Intelligent platform detection
+- [x] **Adaptive UI Components** - Platform-optimized layouts
 - [ ] Multi-language support (Filipino, Cebuano)
 - [ ] Enhanced AR model library
 - [ ] Offline PWA functionality

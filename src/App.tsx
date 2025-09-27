@@ -13,6 +13,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import PerformanceMonitor from './components/PerformanceMonitor'
 import { PageLoadingFallback, ComponentLoadingFallback, MapLoadingFallback } from './components/LoadingSpinner'
 import { initProgressiveEnhancement } from './utils/progressive-enhancement'
+import { DeviceProvider, useDeviceDetection } from './context/DeviceContext'
+import { ViewToggleButton } from './components/ViewToggleButton'
 
 // Lazy load all heavy components for better code splitting and performance
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
@@ -59,6 +61,7 @@ const Navbar = memo(function Navbar() {
   const [open, setOpen] = useState(false)
   const scrolled = useScrollPosition(8)
   const location = useLocation()
+  const { isMobileView, deviceInfo } = useDeviceDetection()
   const navItems = useMemo(() => [
     { to: '/gis', label: 'GIS Map', badge: '🗺️' },
     { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
@@ -82,13 +85,13 @@ const Navbar = memo(function Navbar() {
   }, [location.pathname])
 
   return (
-    <header className="sticky top-0 z-40 mx-2 mt-2 rounded-2xl overflow-hidden">
+    <header className={`sticky top-0 z-40 mx-2 mt-2 rounded-2xl overflow-hidden ${isMobileView ? 'mx-1 mt-1' : ''}`}>
       <div
         className={`relative border transition-all duration-500 ${
           scrolled
             ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200/60 dark:border-white/20 shadow-xl backdrop-blur-md'
             : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/40 dark:border-white/10 backdrop-blur-sm shadow-lg'
-        }`}
+        } ${isMobileView ? 'rounded-xl' : ''}`}
       >
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-50/30 via-white/20 to-slate-100/40 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/25" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent dark:via-white/15" />
@@ -113,7 +116,11 @@ const Navbar = memo(function Navbar() {
               </div>
               <div className="hidden sm:flex flex-col leading-tight text-left text-xs text-gray-500 dark:text-gray-400">
                 <span className="font-semibold">Biodiversity Explorer</span>
-                <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500">MindAR • Leaflet • Eco-tourism</span>
+                <span className="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                  {isMobileView ? 'Mobile • ' : ''}MindAR • Leaflet{isMobileView ? '' : ' • Eco-tourism'}
+                  {deviceInfo.isIOS && ' • iOS'}
+                  {deviceInfo.isAndroid && ' • Android'}
+                </span>
               </div>
             </Link>
 
@@ -244,7 +251,7 @@ const Navbar = memo(function Navbar() {
           </div>
 
           <div className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="space-y-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-slate-900/90">
+            <div className={`space-y-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-slate-900/90 ${isMobileView ? 'rounded-xl p-3 space-y-2' : ''}`}>
               {navItems.map((item) => {
                 const showSoon = item.comingSoon && !isAdmin
                 return (
@@ -386,6 +393,7 @@ const Home = memo(function Home() {
   const { hotspots, species, loading } = useData()
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
+  const { isMobileView, deviceInfo } = useDeviceDetection()
 
   useEffect(() => {
     setIsVisible(true)
@@ -505,56 +513,70 @@ const Home = memo(function Home() {
 
   return (
     <div className="space-y-8 min-h-screen">
-      <section className={`relative overflow-hidden rounded-[24px] border border-slate-300/60 bg-white/95 backdrop-blur-sm shadow-2xl transition-all duration-700 dark:border-white/20 dark:bg-slate-900/85 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+      <section className={`relative overflow-hidden rounded-[24px] border transition-all duration-700 ${isMobileView ? 'border-blue-300/60 bg-blue-50/95 dark:border-blue-400/30 dark:bg-blue-950/85' : 'border-slate-300/60 bg-white/95 dark:border-white/20 dark:bg-slate-900/85'} backdrop-blur-sm shadow-2xl ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 via-white/30 to-slate-100/50 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/20" />
         <Atmosphere variant="hero" className="hidden md:block" />
-        <div className="relative z-10 grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:p-12 xl:p-16">
+        <div className={`relative z-10 gap-8 p-6 lg:p-12 xl:p-16 ${isMobileView ? 'flex flex-col p-4 gap-4' : 'grid lg:grid-cols-[minmax(0,1fr)_380px]'}`}>
           <div className="space-y-10">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
-              <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-blue-500" />
-              Live beta experience
-            </span>
+            <div className="flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-emerald-600 shadow-sm dark:bg-slate-800/70 dark:text-emerald-300">
+                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-green-500 to-blue-500" />
+                Live beta experience
+              </span>
+              {isMobileView && (
+                <span className="inline-flex items-center gap-2 rounded-full bg-blue-50/70 px-4 py-2 text-sm font-semibold text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-300">
+                  <span className="text-xs">📱</span>
+                  Mobile optimized
+                  {deviceInfo.isIOS && ' • iOS'}
+                  {deviceInfo.isAndroid && ' • Android'}
+                </span>
+              )}
+            </div>
             <div className="space-y-6">
-              <AnimatedText as="h1" className="!text-5xl lg:!text-7xl font-black tracking-tight text-slate-900 dark:text-white" text="Mati ARBio" />
-              <AnimatedText as="div" className="!text-xl lg:!text-2xl !font-semibold text-slate-800 dark:text-slate-100" text="Explore biodiversity through maps, data, and AR experiences." />
-              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl">
-                The redesigned interface takes cues from the navbar—glass surfaces, live counters, and AR-forward cues—to guide every visitor from orientation to action.
+              <AnimatedText as="h1" className={`font-black tracking-tight text-slate-900 dark:text-white ${isMobileView ? '!text-4xl text-center' : '!text-5xl lg:!text-7xl'}`} text="Mati ARBio" />
+              <AnimatedText as="div" className={`!font-semibold text-slate-800 dark:text-slate-100 ${isMobileView ? '!text-lg text-center' : '!text-xl lg:!text-2xl'}`} text="Explore biodiversity through maps, data, and AR experiences." />
+              <p className={`text-slate-600 dark:text-slate-300 max-w-2xl ${isMobileView ? 'text-base text-center mx-auto' : 'text-lg'}`}>
+                {isMobileView 
+                  ? 'Optimized mobile experience for biodiversity exploration on your phone or tablet.'
+                  : 'The redesigned interface takes cues from the navbar—glass surfaces, live counters, and AR-forward cues—to guide every visitor from orientation to action.'
+                }
               </p>
             </div>
-            <div className="flex flex-col gap-4 sm:flex-row">
+            <div className={`flex gap-4 ${isMobileView ? 'flex-col w-full' : 'flex-col sm:flex-row'}`}>
               <Button
                 variant="primary"
                 onClick={() => navigate('/gis')}
-                className="flex items-center gap-3"
+                className={`flex items-center gap-3 ${isMobileView ? 'w-full justify-center py-4 text-lg' : ''}`}
               >
                 <span className="text-2xl">🌊</span>
-                <span>Explore the map</span>
+                <span>{isMobileView ? 'Explore Map' : 'Explore the map'}</span>
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Button>
-              <Link to="/ar">
-                <Button variant="secondary" className="flex items-center gap-3">
+              <Link to="/ar" className={isMobileView ? 'w-full' : ''}>
+                <Button variant="secondary" className={`flex items-center gap-3 ${isMobileView ? 'w-full justify-center py-4 text-lg' : ''}`}>
                   <ARIcon className="h-5 w-5" />
-                  <span>Launch AR demo</span>
+                  <span>{isMobileView ? 'AR Demo' : 'Launch AR demo'}</span>
                 </Button>
               </Link>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className={`gap-4 ${isMobileView ? 'flex flex-col' : 'grid sm:grid-cols-2'}`}>
               {heroHighlights.map((item) => (
-                <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 shadow-md backdrop-blur dark:border-white/20 dark:bg-slate-900/75">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-green-500/15 to-blue-500/25 text-lg">
+                <div key={item.title} className={`flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/90 shadow-md backdrop-blur dark:border-white/20 dark:bg-slate-900/75 ${isMobileView ? 'px-3 py-4' : 'px-4 py-3'}`}>
+                  <span className={`flex items-center justify-center rounded-xl bg-gradient-to-br from-green-500/15 to-blue-500/25 text-lg ${isMobileView ? 'h-12 w-12' : 'h-9 w-9'}`}>
                     {item.icon}
                   </span>
                   <div className="space-y-1">
-                    <h4 className="text-sm font-semibold text-slate-800 dark:text-white">{item.title}</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-300">{item.description}</p>
+                    <h4 className={`font-semibold text-slate-800 dark:text-white ${isMobileView ? 'text-base' : 'text-sm'}`}>{item.title}</h4>
+                    <p className={`text-slate-500 dark:text-slate-300 ${isMobileView ? 'text-sm' : 'text-xs'}`}>{item.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          <aside className="relative overflow-hidden rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
+          {!isMobileView && (
+            <aside className="relative overflow-hidden rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
             <div className="absolute inset-0 bg-gradient-to-br from-slate-100/40 via-white/20 to-slate-50/60 dark:from-slate-800/25 dark:via-slate-700/15 dark:to-slate-800/30" />
             <Atmosphere variant="soft" className="opacity-90" />
             <div className="relative z-10 space-y-4 p-6">
@@ -588,6 +610,36 @@ const Home = memo(function Home() {
               </div>
             </div>
           </aside>
+          )}
+          
+          {isMobileView && (
+            <div className="w-full mt-6 p-4 rounded-2xl border border-slate-300/50 bg-white/90 shadow-xl backdrop-blur dark:border-white/15 dark:bg-slate-900/80">
+              <div className="text-center space-y-4">
+                <div className="text-3xl">📱</div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Mobile Experience</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3">
+                    <div className="font-semibold text-blue-700 dark:text-blue-300">Platform</div>
+                    <div className="text-blue-600 dark:text-blue-400">
+                      {deviceInfo.isIOS ? 'iOS' : deviceInfo.isAndroid ? 'Android' : 'Mobile'}
+                    </div>
+                  </div>
+                  <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-3">
+                    <div className="font-semibold text-green-700 dark:text-green-300">Screen</div>
+                    <div className="text-green-600 dark:text-green-400">{deviceInfo.screenWidth}×{deviceInfo.screenHeight}</div>
+                  </div>
+                  <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-3">
+                    <div className="font-semibold text-purple-700 dark:text-purple-300">Species</div>
+                    <div className="text-purple-600 dark:text-purple-400">{species.length}+ documented</div>
+                  </div>
+                  <div className="bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3">
+                    <div className="font-semibold text-orange-700 dark:text-orange-300">Hotspots</div>
+                    <div className="text-orange-600 dark:text-orange-400">{hotspots.length} locations</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -596,7 +648,7 @@ const Home = memo(function Home() {
         <p className="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-300">
           Every surface references the navbar: same gradients, counters, and action hierarchy. Cards reinforce the story so visitors know where to go next.
         </p>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className={`mt-8 gap-6 ${isMobileView ? 'flex flex-col' : 'grid md:grid-cols-3'}`}>
           {featureCards.map((card, idx) => (
             <div key={card.title} className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-6 shadow-lg backdrop-blur transition-transform duration-300 hover:-translate-y-1 dark:border-white/15 dark:bg-slate-900/70">
               <Atmosphere variant="soft" className={idx % 2 === 0 ? 'opacity-80' : 'opacity-60'} />
@@ -1842,10 +1894,9 @@ function AdminPreview() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-600">
-                  {(dataView === 'hotspots' ? hotspots : species).map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                      {dataView === 'hotspots' ? (
-                        <>
+                  {dataView === 'hotspots' 
+                    ? hotspots.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
                           <td className="p-4">
                             <div className="font-medium text-slate-900 dark:text-white">{item.name}</div>
                             <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs">{item.summary}</div>
@@ -1857,10 +1908,29 @@ function AdminPreview() {
                           </td>
                           <td className="p-4 text-slate-700 dark:text-slate-300">{item.city}</td>
                           <td className="p-4 text-slate-700 dark:text-slate-300">{item.areaHectares?.toLocaleString() || 'N/A'}</td>
-                          <td className="p-4 text-slate-700 dark:text-slate-300">{item.floraIds?.length + item.faunaIds?.length || 0}</td>
-                        </>
-                      ) : (
-                        <>
+                          <td className="p-4 text-slate-700 dark:text-slate-300">{(item.floraIds?.length || 0) + (item.faunaIds?.length || 0)}</td>
+                          <td className="p-4">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setEditingItem(item)}
+                                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded"
+                                title="Edit hotspot"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded"
+                                title="Delete hotspot"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : species.map((item) => (
+                        <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
                           <td className="p-4">
                             <div className="font-medium text-slate-900 dark:text-white">{item.commonName}</div>
                             <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs">{item.blurb}</div>
@@ -1882,28 +1952,27 @@ function AdminPreview() {
                             </Badge>
                           </td>
                           <td className="p-4 text-slate-700 dark:text-slate-300">{item.siteIds?.length || 0}</td>
-                        </>
-                      )}
-                      <td className="p-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleEdit(item)}
-                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30 rounded-lg transition-all"
-                            title="Edit"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30 rounded-lg transition-all"
-                            title="Delete"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                          <td className="p-4">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setEditingItem(item)}
+                                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded"
+                                title="Edit species"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item.id)}
+                                className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded"
+                                title="Delete species"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                  }
                 </tbody>
               </table>
             </div>
@@ -2446,9 +2515,10 @@ export default function App() {
   
   return (
     <ErrorBoundary>
-      <AdminProvider>
-        <DataProvider>
-          <BrowserRouter>
+      <DeviceProvider>
+        <AdminProvider>
+          <DataProvider>
+            <BrowserRouter>
             <div className="min-h-screen w-full bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
               {/* Animated background elements */}
               <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -2522,10 +2592,14 @@ export default function App() {
               
               {/* Performance Monitor - only in development */}
               <PerformanceMonitor />
+              
+              {/* View Toggle Button - Mobile/Desktop Switcher */}
+              <ViewToggleButton />
             </div>
-          </BrowserRouter>
-        </DataProvider>
-      </AdminProvider>
+            </BrowserRouter>
+          </DataProvider>
+        </AdminProvider>
+      </DeviceProvider>
     </ErrorBoundary>
   )
 }
