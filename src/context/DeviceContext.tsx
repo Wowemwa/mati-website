@@ -13,10 +13,6 @@ export interface DeviceInfo {
 interface DeviceContextType {
   deviceInfo: DeviceInfo;
   isMobileView: boolean;
-  forceMobileView: boolean | null;
-  toggleMobileView: () => void;
-  resetToAutoDetect: () => void;
-  isAutoDetected: boolean;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
@@ -35,8 +31,6 @@ export const DeviceProvider: React.FC<DeviceProviderProps> = ({ children }) => {
     screenWidth: 0,
     screenHeight: 0,
   });
-
-  const [forceMobileView, setForceMobileView] = useState<boolean | null>(null);
 
   useEffect(() => {
     const updateDeviceInfo = () => {
@@ -77,24 +71,12 @@ export const DeviceProvider: React.FC<DeviceProviderProps> = ({ children }) => {
     };
   }, []);
 
-  // Determine the actual view mode
-  const isMobileView = forceMobileView !== null ? forceMobileView : deviceInfo.isMobile;
-
-  const toggleMobileView = () => {
-    setForceMobileView(prev => prev === null ? !deviceInfo.isMobile : !prev);
-  };
-
-  const resetToAutoDetect = () => {
-    setForceMobileView(null);
-  };
+  // Use only automatic detection
+  const isMobileView = deviceInfo.isMobile;
 
   const value: DeviceContextType = {
     deviceInfo,
     isMobileView,
-    forceMobileView,
-    toggleMobileView,
-    resetToAutoDetect,
-    isAutoDetected: forceMobileView === null,
   };
 
   return (

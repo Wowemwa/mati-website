@@ -14,7 +14,6 @@ import PerformanceMonitor from './components/PerformanceMonitor'
 import { PageLoadingFallback, ComponentLoadingFallback, MapLoadingFallback } from './components/LoadingSpinner'
 import { initProgressiveEnhancement } from './utils/progressive-enhancement'
 import { DeviceProvider, useDeviceDetection } from './context/DeviceContext'
-import { ViewToggleButton } from './components/ViewToggleButton'
 
 // Lazy load all heavy components for better code splitting and performance
 const BiodiversityExplorer = lazy(() => import('./pages/BiodiversityExplorer'))
@@ -526,7 +525,7 @@ const Home = memo(function Home() {
               {isMobileView && (
                 <span className="inline-flex items-center gap-2 rounded-full bg-blue-50/70 px-4 py-2 text-sm font-semibold text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-300">
                   <span className="text-xs">📱</span>
-                  Mobile optimized
+                  Auto-detected
                   {deviceInfo.isIOS && ' • iOS'}
                   {deviceInfo.isAndroid && ' • Android'}
                 </span>
@@ -2592,9 +2591,6 @@ export default function App() {
               
               {/* Performance Monitor - only in development */}
               <PerformanceMonitor />
-              
-              {/* View Toggle Button - Mobile/Desktop Switcher */}
-              <ViewToggleButton />
             </div>
             </BrowserRouter>
           </DataProvider>
