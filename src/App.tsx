@@ -1406,6 +1406,10 @@ function AdminPreview() {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [activeTab, setActiveTab] = useState<'login' | 'dashboard' | 'data' | 'system'>('login')
+  const [dataView, setDataView] = useState<'hotspots' | 'species'>('hotspots')
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   const secretConfigured = Boolean(import.meta.env.VITE_ADMIN_PASS?.length)
 
@@ -1446,6 +1450,72 @@ function AdminPreview() {
       vulnerable: species.filter(s => s.status === 'VU').length,
     }
   }, [hotspots, species, loading])
+
+  // CRUD Functions
+  const handleAdd = () => {
+    setEditingItem(null)
+    setShowForm(true)
+  }
+
+  const handleEdit = (item: any) => {
+    setEditingItem(item)
+    setShowForm(true)
+  }
+
+  const handleDelete = (id: string) => {
+    setDeleteConfirm(id)
+  }
+
+  const confirmDelete = () => {
+    if (deleteConfirm) {
+      // In a real app, this would call an API
+      alert(`Item ${deleteConfirm} would be deleted from the database`)
+      setDeleteConfirm(null)
+    }
+  }
+
+  const handleSave = (formData: any) => {
+    // In a real app, this would save to database/API
+    if (editingItem) {
+      alert(`Item ${editingItem.id} would be updated with: ${JSON.stringify(formData)}`)
+    } else {
+      alert(`New item would be created with: ${JSON.stringify(formData)}`)
+    }
+    setShowForm(false)
+    setEditingItem(null)
+  }
+
+  const exportData = (type: 'hotspots' | 'species', format: 'csv' | 'json') => {
+    const data = type === 'hotspots' ? hotspots : species
+    const filename = `mati-${type}-${new Date().toISOString().split('T')[0]}.${format}`
+    
+    if (format === 'json') {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(url)
+    } else {
+      // Simple CSV export
+      const headers = Object.keys(data[0] || {}).join(',')
+      const rows = data.map(item => Object.values(item).map(val => 
+        typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val
+      ).join(','))
+      const csv = [headers, ...rows].join('\n')
+      
+      const blob = new Blob([csv], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+    
+    alert(`${type} data exported as ${format.toUpperCase()}!`)
+  }
 
   if (!isAdmin) {
     return (
@@ -1677,62 +1747,165 @@ function AdminPreview() {
       {/* Data Management Tab */}
       {activeTab === 'data' && (
         <div className="space-y-6">
-          <SoftCard className="p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              🗄️ Data Management Tools
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Hotspots Database</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Total Locations:</span>
-                    <span className="font-mono">{stats?.totalHotspots}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Marine Sites:</span>
-                    <span className="font-mono">{stats?.marineHotspots}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Terrestrial Sites:</span>
-                    <span className="font-mono">{stats?.terrestrialHotspots}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-medium">
-                    Export CSV
-                  </button>
-                  <button className="px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium">
-                    Backup JSON
-                  </button>
-                </div>
+          {/* Data Management Header */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                🗄️ Data Management
+              </h2>
+              <p className="text-slate-600 dark:text-slate-300 text-sm">
+                Create, edit, and manage biodiversity data
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDataView('hotspots')}
+                className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+                  dataView === 'hotspots'
+                    ? 'bg-emerald-500 text-white shadow-lg'
+                    : 'bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/20'
+                }`}
+              >
+                🏔️ Hotspots ({stats?.totalHotspots})
+              </button>
+              <button
+                onClick={() => setDataView('species')}
+                className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
+                  dataView === 'species'
+                    ? 'bg-blue-500 text-white shadow-lg'
+                    : 'bg-white/60 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900/20'
+                }`}
+              >
+                🦎 Species ({stats?.totalSpecies})
+              </button>
+            </div>
+          </div>
+
+          {/* Data Table Controls */}
+          <SoftCard className="p-4 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleAdd}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl font-medium text-sm shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                >
+                  ➕ Add New {dataView === 'hotspots' ? 'Hotspot' : 'Species'}
+                </button>
+                <div className="h-6 w-px bg-slate-300 dark:bg-slate-600"></div>
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  {dataView === 'hotspots' ? hotspots.length : species.length} records
+                </span>
               </div>
               
-              <div className="space-y-4">
-                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Species Database</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Total Species:</span>
-                    <span className="font-mono">{stats?.totalSpecies}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Flora Records:</span>
-                    <span className="font-mono">{stats?.flora}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Fauna Records:</span>
-                    <span className="font-mono">{stats?.fauna}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-medium">
-                    Export CSV
-                  </button>
-                  <button className="px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium">
-                    Backup JSON
-                  </button>
-                </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => exportData(dataView, 'csv')}
+                  className="flex items-center gap-2 px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-sm font-medium transition-all"
+                >
+                  📊 Export CSV
+                </button>
+                <button
+                  onClick={() => exportData(dataView, 'json')}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium transition-all"
+                >
+                  💾 Export JSON
+                </button>
               </div>
+            </div>
+          </SoftCard>
+
+          {/* Data Table */}
+          <SoftCard className="border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-600">
+                  <tr>
+                    {dataView === 'hotspots' ? (
+                      <>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Name</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Type</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">City</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Area (ha)</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Species</th>
+                        <th className="text-center p-4 font-semibold text-slate-700 dark:text-slate-200">Actions</th>
+                      </>
+                    ) : (
+                      <>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Common Name</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Scientific Name</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Category</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Status</th>
+                        <th className="text-left p-4 font-semibold text-slate-700 dark:text-slate-200">Sites</th>
+                        <th className="text-center p-4 font-semibold text-slate-700 dark:text-slate-200">Actions</th>
+                      </>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-600">
+                  {(dataView === 'hotspots' ? hotspots : species).map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                      {dataView === 'hotspots' ? (
+                        <>
+                          <td className="p-4">
+                            <div className="font-medium text-slate-900 dark:text-white">{item.name}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs">{item.summary}</div>
+                          </td>
+                          <td className="p-4">
+                            <Badge className={`${item.type === 'marine' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'}`}>
+                              {item.type === 'marine' ? '🌊 Marine' : '🏔️ Terrestrial'}
+                            </Badge>
+                          </td>
+                          <td className="p-4 text-slate-700 dark:text-slate-300">{item.city}</td>
+                          <td className="p-4 text-slate-700 dark:text-slate-300">{item.areaHectares?.toLocaleString() || 'N/A'}</td>
+                          <td className="p-4 text-slate-700 dark:text-slate-300">{item.floraIds?.length + item.faunaIds?.length || 0}</td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="p-4">
+                            <div className="font-medium text-slate-900 dark:text-white">{item.commonName}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs">{item.blurb}</div>
+                          </td>
+                          <td className="p-4 text-slate-700 dark:text-slate-300 italic">{item.scientificName}</td>
+                          <td className="p-4">
+                            <Badge className={`${item.category === 'flora' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'}`}>
+                              {item.category === 'flora' ? '🌿 Flora' : '🦎 Fauna'}
+                            </Badge>
+                          </td>
+                          <td className="p-4">
+                            <Badge className={`${
+                              item.status === 'CR' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
+                              item.status === 'EN' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' :
+                              item.status === 'VU' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                              'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'
+                            }`}>
+                              {item.status}
+                            </Badge>
+                          </td>
+                          <td className="p-4 text-slate-700 dark:text-slate-300">{item.siteIds?.length || 0}</td>
+                        </>
+                      )}
+                      <td className="p-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30 rounded-lg transition-all"
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30 rounded-lg transition-all"
+                            title="Delete"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </SoftCard>
         </div>
@@ -1781,7 +1954,379 @@ function AdminPreview() {
           </SoftCard>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <SoftCard className="max-w-md w-full border border-red-200 dark:border-red-800 bg-white/95 dark:bg-slate-900/95">
+            <div className="p-6 space-y-4">
+              <div className="text-center">
+                <div className="text-4xl mb-2">⚠️</div>
+                <h3 className="text-xl font-bold text-red-600 dark:text-red-400">Confirm Deletion</h3>
+                <p className="text-slate-600 dark:text-slate-300 mt-2">
+                  Are you sure you want to delete this {dataView === 'hotspots' ? 'hotspot' : 'species'}? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-medium transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </SoftCard>
+        </div>
+      )}
+
+      {/* Add/Edit Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <SoftCard className="max-w-2xl w-full border border-white/40 bg-white/95 dark:bg-slate-900/95 my-8">
+            <div className="p-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                  {editingItem ? 'Edit' : 'Add New'} {dataView === 'hotspots' ? 'Hotspot' : 'Species'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowForm(false)
+                    setEditingItem(null)
+                  }}
+                  className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {dataView === 'hotspots' ? (
+                <HotspotForm
+                  initialData={editingItem}
+                  onSave={handleSave}
+                  onCancel={() => {
+                    setShowForm(false)
+                    setEditingItem(null)
+                  }}
+                />
+              ) : (
+                <SpeciesForm
+                  initialData={editingItem}
+                  onSave={handleSave}
+                  onCancel={() => {
+                    setShowForm(false)
+                    setEditingItem(null)
+                  }}
+                />
+              )}
+            </div>
+          </SoftCard>
+        </div>
+      )}
     </div>
+  )
+}
+
+// Form Components
+function HotspotForm({ initialData, onSave, onCancel }: { initialData?: any, onSave: (data: any) => void, onCancel: () => void }) {
+  const [formData, setFormData] = useState(initialData || {
+    id: '',
+    name: '',
+    type: 'terrestrial',
+    city: 'Mati City',
+    province: 'Davao Oriental',
+    designation: '',
+    areaHectares: '',
+    lat: '',
+    lng: '',
+    summary: '',
+    description: '',
+    features: [],
+    stewardship: '',
+    image: '',
+    tags: [],
+    highlightSpeciesIds: [],
+    floraIds: [],
+    faunaIds: [],
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Name *
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Type *
+          </label>
+          <select
+            required
+            value={formData.type}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="terrestrial">Terrestrial</option>
+            <option value="marine">Marine</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Latitude *
+          </label>
+          <input
+            type="number"
+            step="any"
+            required
+            value={formData.lat}
+            onChange={(e) => setFormData({ ...formData, lat: parseFloat(e.target.value) })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Longitude *
+          </label>
+          <input
+            type="number"
+            step="any"
+            required
+            value={formData.lng}
+            onChange={(e) => setFormData({ ...formData, lng: parseFloat(e.target.value) })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Area (hectares)
+          </label>
+          <input
+            type="number"
+            value={formData.areaHectares}
+            onChange={(e) => setFormData({ ...formData, areaHectares: parseInt(e.target.value) })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Image URL
+          </label>
+          <input
+            type="url"
+            value={formData.image}
+            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+          Summary *
+        </label>
+        <input
+          type="text"
+          required
+          value={formData.summary}
+          onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+          Description *
+        </label>
+        <textarea
+          required
+          rows={4}
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <div className="flex gap-3 justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-medium transition-all"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-all"
+        >
+          {initialData ? 'Update' : 'Create'} Hotspot
+        </button>
+      </div>
+    </form>
+  )
+}
+
+function SpeciesForm({ initialData, onSave, onCancel }: { initialData?: any, onSave: (data: any) => void, onCancel: () => void }) {
+  const [formData, setFormData] = useState(initialData || {
+    id: '',
+    category: 'flora',
+    commonName: '',
+    scientificName: '',
+    status: 'LC',
+    habitat: '',
+    blurb: '',
+    siteIds: [],
+    highlights: [],
+    images: [],
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Common Name *
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.commonName}
+            onChange={(e) => setFormData({ ...formData, commonName: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Scientific Name *
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.scientificName}
+            onChange={(e) => setFormData({ ...formData, scientificName: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 italic"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Category *
+          </label>
+          <select
+            required
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="flora">Flora</option>
+            <option value="fauna">Fauna</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+            Conservation Status *
+          </label>
+          <select
+            required
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="LC">Least Concern (LC)</option>
+            <option value="NT">Near Threatened (NT)</option>
+            <option value="VU">Vulnerable (VU)</option>
+            <option value="EN">Endangered (EN)</option>
+            <option value="CR">Critically Endangered (CR)</option>
+            <option value="DD">Data Deficient (DD)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+          Habitat *
+        </label>
+        <input
+          type="text"
+          required
+          value={formData.habitat}
+          onChange={(e) => setFormData({ ...formData, habitat: e.target.value })}
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+          Description *
+        </label>
+        <textarea
+          required
+          rows={4}
+          value={formData.blurb}
+          onChange={(e) => setFormData({ ...formData, blurb: e.target.value })}
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+          Image URL
+        </label>
+        <input
+          type="url"
+          value={formData.images?.[0] || ''}
+          onChange={(e) => setFormData({ ...formData, images: e.target.value ? [e.target.value] : [] })}
+          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <div className="flex gap-3 justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-medium transition-all"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-all"
+        >
+          {initialData ? 'Update' : 'Create'} Species
+        </button>
+      </div>
+    </form>
   )
 }
 
