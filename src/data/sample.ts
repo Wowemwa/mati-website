@@ -67,7 +67,14 @@ export const dataset: BiodiversityDataset = {
       distribution: [
         { siteId: 'mount-hamiguitan', habitatType: 'pygmy forest', elevationM: 1100 }
       ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Nepenthes_hamiguitanensis_ASE_001.jpg/800px-Nepenthes_hamiguitanensis_ASE_001.jpg',
+          caption: 'Nepenthes hamiguitanensis - Endemic pitcher plant of Mount Hamiguitan',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: {
         habitat: 'Ultramafic pygmy forest with stunted vegetation',
         diet: 'Insect prey captured via pitfall mechanism',
@@ -90,7 +97,14 @@ export const dataset: BiodiversityDataset = {
       description: 'Philippine national tree valued for hardwood and ecological role in lowland forests.',
       keyFacts: ['Nitrogen fixer', 'Culturally significant'],
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'lowland dipterocarp', elevationM: 200 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Pterocarpus_indicus_flowers_and_leaves.jpg/1200px-Pterocarpus_indicus_flowers_and_leaves.jpg',
+          caption: 'Pterocarpus indicus - Philippine National Tree (Narra) with characteristic yellow flowers',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Lowland to lower montane forest', ecosystemServices: ['Soil enrichment', 'Timber (regulated)'] },
       threats: { threats: ['Selective logging (historical)'], populationTrend: 'unknown' },
       references: ['DENR native tree list']
@@ -104,7 +118,14 @@ export const dataset: BiodiversityDataset = {
       status: 'VU',
       description: 'Commercial dipterocarp species forming part of mixed dipterocarp stands.',
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'dipterocarp forest', elevationM: 350 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Shorea_contorta_01.jpg/800px-Shorea_contorta_01.jpg',
+          caption: 'Shorea contorta - Vulnerable White Lauan dipterocarp tree',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Primary and residual dipterocarp forest', phenology: 'Flowering irregular, mast events', ecosystemServices: ['Carbon storage'] },
       threats: { threats: ['Habitat loss', 'Past logging'], populationTrend: 'decreasing' },
       references: ['IUCN Red List (regional context)']
@@ -116,7 +137,14 @@ export const dataset: BiodiversityDataset = {
       status: 'LC',
       description: 'Arborescent fern common in moist montane and disturbed forest edges.',
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'montane forest', elevationM: 900 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Cyathea_cooperi_kz1.jpg/800px-Cyathea_cooperi_kz1.jpg',
+          caption: 'Cyathea sp. - Tree ferns characteristic of humid montane forests',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Montane and secondary forest', ecosystemServices: ['Microhabitat structure'] },
       threats: { threats: ['Collection (ornamental)'], populationTrend: 'unknown' },
       references: ['General floristic surveys']
@@ -128,7 +156,14 @@ export const dataset: BiodiversityDataset = {
       status: 'DD',
       description: 'Representative epiphytic orchid occupying mossy branches in humid forest strata.',
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'mossy forest', elevationM: 1000 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Dendrobium_nobile_Orchi_001.jpg/800px-Dendrobium_nobile_Orchi_001.jpg',
+          caption: 'Dendrobium sp. - Epiphytic orchid typical of humid montane forests',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Epiphytic niches on mature trees', interactions: ['Pollination by insects'] },
       threats: { threats: ['Over-collection'], populationTrend: 'unknown' },
       references: ['Orchid hobbyist field notes (verification needed)']
@@ -155,7 +190,14 @@ export const dataset: BiodiversityDataset = {
       distribution: [
         { siteId: 'mount-hamiguitan', habitatType: 'montane forest', elevationM: 900 }
       ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PH_Eagle_PamarayegIII.jpg/1200px-PH_Eagle_PamarayegIII.jpg',
+          caption: 'Philippine Eagle (Pithecophaga jefferyi) - Critically endangered national bird of the Philippines',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: {
         habitat: 'Primary dipterocarp to montane forest',
         diet: 'Primarily small to medium mammals, birds, reptiles',
@@ -187,7 +229,14 @@ export const dataset: BiodiversityDataset = {
       distribution: [
         { siteId: 'pujada-bay', habitatType: 'seagrass', observer: 'local reports', notes: 'Opportunistic sightings' }
       ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Dugong_Red_Sea.jpg/1200px-Dugong_Red_Sea.jpg',
+          caption: 'Dugong dugon - Vulnerable marine mammal dependent on seagrass meadows',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: {
         habitat: 'Coastal seagrass meadows',
         diet: 'Seagrass species (e.g., Halophila, Halodule)',
@@ -207,7 +256,14 @@ export const dataset: BiodiversityDataset = {
       status: 'EN',
       description: 'Globally endangered marine turtle utilizing seagrass and coral reef habitats for feeding and developmental stages.',
       distribution: [ { siteId: 'pujada-bay', habitatType: 'coral reef', notes: 'Foraging juvenile sightings' } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Green_turtle_swimming_over_coral_reefs_in_Kona.jpg/1200px-Green_turtle_swimming_over_coral_reefs_in_Kona.jpg',
+          caption: 'Chelonia mydas - Endangered Green Sea Turtle in coral reef habitat',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Coral reefs and seagrass beds', diet: 'Algae and seagrass (adults)' },
       threats: { threats: ['Bycatch', 'Habitat degradation', 'Egg poaching'], populationTrend: 'decreasing' },
       references: ['IUCN Red List']
@@ -219,7 +275,14 @@ export const dataset: BiodiversityDataset = {
       status: 'CR',
       description: 'Critically endangered marine turtle associated with coral reef habitats; important for reef health via spongivory.',
       distribution: [ { siteId: 'pujada-bay', habitatType: 'coral reef', notes: 'Occasional reef patrol reports' } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Hawksbill_turtle_doeppne_060204.jpg/1200px-Hawksbill_turtle_doeppne_060204.jpg',
+          caption: 'Eretmochelys imbricata - Critically endangered Hawksbill Turtle',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Fringing and patch reefs', diet: 'Sponges and invertebrates' },
       threats: { threats: ['Illegal trade', 'Bycatch', 'Coral reef decline'], populationTrend: 'decreasing' },
       references: ['IUCN Red List']
@@ -231,7 +294,14 @@ export const dataset: BiodiversityDataset = {
       status: 'VU',
       description: 'Large reef-dwelling bivalve contributing to reef structure and water filtration.',
       distribution: [ { siteId: 'pujada-bay', habitatType: 'coral reef', notes: 'Transplanted/restored populations (verification needed)' } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Giant_clam_or_Tridacna_gigas.jpg/1200px-Giant_clam_or_Tridacna_gigas.jpg',
+          caption: 'Tridacna gigas - Vulnerable Giant Clam, important reef ecosystem engineer',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Shallow reef flats', ecosystemServices: ['Bio-reef building', 'Water filtration'] },
       threats: { threats: ['Overharvesting', 'Habitat loss'], conservationActions: ['Restocking programs'], populationTrend: 'decreasing' },
       references: ['Regional reef restoration notes']
@@ -243,7 +313,14 @@ export const dataset: BiodiversityDataset = {
       status: 'NT',
       description: 'Small forest hornbill important seed disperser in lowland to montane forests.',
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'montane forest', elevationM: 750 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Penelopides_affinis_-Avilon_Zoo%2C_Rodriguez%2C_Rizal%2C_Philippines_-male-8a.jpg/800px-Penelopides_affinis_-Avilon_Zoo%2C_Rodriguez%2C_Rizal%2C_Philippines_-male-8a.jpg',
+          caption: 'Penelopides affinis - Near-threatened Mindanao Hornbill, important seed disperser',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Primary and secondary forest', diet: 'Fruits, insects', ecosystemServices: ['Seed dispersal'] },
       threats: { threats: ['Habitat fragmentation', 'Hunting'], populationTrend: 'decreasing' },
       references: ['IUCN Red List']
@@ -255,7 +332,14 @@ export const dataset: BiodiversityDataset = {
       status: 'NT',
       description: 'Large fruit bat contributing to pollination and seed dispersal across forest landscapes.',
       distribution: [ { siteId: 'mount-hamiguitan', habitatType: 'lowland to montane ecotone', elevationM: 400 } ],
-      media: [],
+      media: [
+        {
+          type: 'image',
+          url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Large_Flying_Fox_-_Pteropus_vampyrus.jpg/1200px-Large_Flying_Fox_-_Pteropus_vampyrus.jpg',
+          caption: 'Pteropus vampyrus - Near-threatened Large Flying Fox, crucial for forest pollination',
+          credit: 'Wikimedia Commons'
+        }
+      ],
       ecology: { habitat: 'Roosts in large emergent trees', diet: 'Fruits and nectar', ecosystemServices: ['Pollination', 'Seed dispersal'] },
       threats: { threats: ['Roost disturbance', 'Hunting'], populationTrend: 'decreasing' },
       references: ['Regional chiropteran survey']

@@ -9,22 +9,28 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="group relative inline-flex items-center justify-center w-12 h-12 rounded-2xl border-2 border-white/40 dark:border-white/20 bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:scale-110 transition-all duration-500 shadow-lg hover:shadow-xl overflow-hidden"
+      className="group relative inline-flex items-center justify-center w-14 h-14 rounded-3xl border-2 border-white/50 dark:border-white/25 bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl hover:scale-110 hover:rotate-12 transition-all duration-700 ease-out shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/20 dark:hover:shadow-blue-500/20 overflow-hidden"
       aria-label="Toggle dark mode"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-orange-400/20 to-blue-600/20 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-slate-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="relative z-10 transition-all duration-500 group-hover:scale-110">
-        <div className={`text-2xl transition-all duration-700 ${
+      {/* Enhanced background effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/25 via-orange-400/20 via-pink-400/15 to-blue-600/25 dark:from-blue-600/25 dark:via-purple-600/20 dark:via-indigo-600/15 dark:to-slate-600/25 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div className="absolute inset-0 bg-[conic-gradient(from_0deg,rgba(251,191,36,0.3),rgba(249,115,22,0.2),rgba(59,130,246,0.3))] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-white/10 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <div className="relative z-10 transition-all duration-700 group-hover:scale-125 group-hover:rotate-180">
+        <div className={`text-3xl transition-all duration-700 ease-out ${
           theme === 'dark'
-            ? 'rotate-0 opacity-100'
-            : '-rotate-180 opacity-100'
+            ? 'rotate-0 opacity-100 scale-100'
+            : '-rotate-180 opacity-100 scale-100'
         }`}>
           {theme === 'dark' ? '🌙' : '☀️'}
         </div>
       </div>
-      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap">
-        {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-white"></div>
+      
+      {/* Enhanced tooltip */}
+      <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-white dark:to-slate-100 text-white dark:text-slate-900 text-xs font-bold px-4 py-2 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none whitespace-nowrap shadow-2xl backdrop-blur-xl">
+        {theme === 'dark' ? 'Switch to Light ☀️' : 'Switch to Dark 🌙'}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45 w-3 h-3 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-white dark:to-slate-100"></div>
       </div>
     </button>
   )

@@ -98,3 +98,51 @@ export const ConservationIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M24 42s14-8 14-20a8 8 0 0 0-14-5.5A8 8 0 0 0 10 22c0 12 14 20 14 20Z" strokeLinejoin="round" />
   </svg>
 )
+
+export const PlusIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="M12 5v14M5 12h14" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const EditIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="m11 4 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21 4 15 10l-4-4 6-6 4 4Z" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="m5 21 3-1-2-2-1 3Z" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const DeleteIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14ZM10 11v6M14 11v6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const SaveIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17 21v-8H7v8M7 3v5h8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const CancelIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="m18 6-12 12M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
+export const EyeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx={12} cy={12} r={3} />
+  </svg>
+)
+
+export const ImageIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} {...props}>
+    <rect x={3} y={3} width={18} height={18} rx={2} ry={2} strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx={9} cy={9} r={2} />
+    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)

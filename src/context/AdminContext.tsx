@@ -2,8 +2,11 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 
 type AdminContextValue = {
   isAdmin: boolean
+  isAdminPanelOpen: boolean
   login: (credentials: { password: string }) => Promise<boolean>
   logout: () => void
+  openAdminPanel: () => void
+  closeAdminPanel: () => void
   lastLoginAt?: string
 }
 
@@ -17,6 +20,7 @@ interface AdminProviderProps {
 
 export function AdminProvider({ children }: AdminProviderProps) {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false)
   const [lastLoginAt, setLastLoginAt] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -55,11 +59,30 @@ export function AdminProvider({ children }: AdminProviderProps) {
 
   const logout = () => {
     setIsAdmin(false)
+    setIsAdminPanelOpen(false)
     setLastLoginAt(undefined)
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  const value = useMemo<AdminContextValue>(() => ({ isAdmin, login, logout, lastLoginAt }), [isAdmin, lastLoginAt])
+  const openAdminPanel = () => {
+    if (isAdmin) {
+      setIsAdminPanelOpen(true)
+    }
+  }
+
+  const closeAdminPanel = () => {
+    setIsAdminPanelOpen(false)
+  }
+
+  const value = useMemo<AdminContextValue>(() => ({ 
+    isAdmin, 
+    isAdminPanelOpen,
+    login, 
+    logout, 
+    openAdminPanel,
+    closeAdminPanel,
+    lastLoginAt 
+  }), [isAdmin, isAdminPanelOpen, lastLoginAt])
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
 }

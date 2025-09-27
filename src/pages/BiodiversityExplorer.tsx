@@ -227,6 +227,29 @@ export default function BiodiversityExplorer() {
                   s.type === 'flora' ? 'bg-emerald-400' : 'bg-amber-400'
                 }`} />
 
+                {/* Species Photo */}
+                {s.media && s.media.length > 0 && s.media[0].type === 'image' && (
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={s.media[0].url} 
+                      alt={s.media[0].caption || s.commonName}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    <div className="absolute top-3 right-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
+                        s.type === 'flora' 
+                          ? 'bg-emerald-100/90 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300' 
+                          : 'bg-amber-100/90 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                      }`}>
+                        <span>{s.type === 'flora' ? '🌿' : '🐾'}</span>
+                        <span>{s.type}</span>
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="relative p-6 space-y-4">
                   {/* Header */}
                   <div className="flex items-start justify-between">
@@ -240,14 +263,17 @@ export default function BiodiversityExplorer() {
                     </div>
                     
                     <div className="flex flex-col items-end gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
-                        s.type === 'flora' 
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' 
-                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-                      }`}>
-                        <span>{s.type === 'flora' ? '🌿' : '🐾'}</span>
-                        <span>{s.type}</span>
-                      </span>
+                      {/* Only show type badge here if there's no image */}
+                      {(!s.media || s.media.length === 0 || s.media[0].type !== 'image') && (
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${
+                          s.type === 'flora' 
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' 
+                            : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+                        }`}>
+                          <span>{s.type === 'flora' ? '🌿' : '🐾'}</span>
+                          <span>{s.type}</span>
+                        </span>
+                      )}
                       
                       <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                         s.status === 'CR' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :

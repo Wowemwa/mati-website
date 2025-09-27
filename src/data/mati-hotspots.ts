@@ -226,7 +226,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     blurb: 'The Philippines\' national bird and one of the world\'s most endangered raptors. Mount Hamiguitan provides critical habitat for this apex predator.',
     siteIds: ['mount-hamiguitan-sanctuary'],
     highlights: ['National bird of the Philippines', 'Critically endangered with <1000 individuals', 'Apex forest predator'],
-    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Philippine_Eagle_-_Mount_Kitanglad_Range_Natural_Park.jpg/800px-Philippine_Eagle_-_Mount_Kitanglad_Range_Natural_Park.jpg']
+    images: ['https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'nepenthes-hamiguitanensis',
@@ -238,7 +238,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     blurb: 'Endemic pitcher plant discovered in 2009, found only on Mount Hamiguitan\'s unique ultramafic soils.',
     siteIds: ['mount-hamiguitan-sanctuary'],
     highlights: ['Endemic to Mount Hamiguitan', 'Discovered in 2009', 'Adapted to ultramafic soils'],
-    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Nepenthes_hamiguitanensis_ASE_001.jpg/800px-Nepenthes_hamiguitanensis_ASE_001.jpg']
+    images: ['https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'batomys-hamiguitan',
@@ -249,7 +249,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Mossy forests above 1000m elevation',
     blurb: 'Yellow-brown furry-tailed rat species endemic to Mount Hamiguitan, discovered in scientific surveys of the pygmy forest.',
     siteIds: ['mount-hamiguitan-sanctuary'],
-    highlights: ['Endemic to Mount Hamiguitan', 'Unique furry tail', 'Recently described species']
+    highlights: ['Endemic to Mount Hamiguitan', 'Unique furry tail', 'Recently described species'],
+    images: ['https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'nepenthes-copelandii',
@@ -260,7 +261,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Ultramafic substrates, 1200-1635m elevation',
     blurb: 'Another endemic pitcher plant species found in Mount Hamiguitan\'s unique pygmy forest ecosystem.',
     siteIds: ['mount-hamiguitan-sanctuary'],
-    highlights: ['Endemic to Mindanao', 'Pygmy forest specialist', 'Ultramafic soil adapted']
+    highlights: ['Endemic to Mindanao', 'Pygmy forest specialist', 'Ultramafic soil adapted'],
+    images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'philippine-warty-pig',
@@ -271,7 +273,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Primary and secondary forests',
     blurb: 'Endemic wild pig species found in Mount Hamiguitan\'s forest ecosystems, important seed disperser.',
     siteIds: ['mount-hamiguitan-sanctuary', 'mati-protected-landscape'],
-    highlights: ['Endemic to Philippines', 'Important seed disperser', 'Forest ecosystem engineer']
+    highlights: ['Endemic to Philippines', 'Important seed disperser', 'Forest ecosystem engineer'],
+    images: ['https://images.unsplash.com/photo-1605379399843-5870eea9b74e?w=800&h=600&fit=crop&crop=center']
   },
 
   // Pujada Bay Species  
@@ -285,7 +288,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     blurb: 'Critically endangered sea turtle that nests on Dahican Beach. Protected by community conservation programs.',
     siteIds: ['dahican-beach-mayo-bay', 'pujada-bay-protected-seascape'],
     highlights: ['Regular nester at Dahican Beach', 'Protected by Amihan sa Dahican', 'Feeds on sponges and coral'],
-    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Hawksbill_turtle_doeppne-081.jpg/800px-Hawksbill_turtle_doeppne-081.jpg']
+    images: ['https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'giant-clam',
@@ -296,7 +299,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Shallow coral reefs and seagrass beds',
     blurb: 'World\'s largest bivalve mollusc found in Pujada Bay\'s shallow waters. Important for reef ecosystem health.',
     siteIds: ['pujada-bay-protected-seascape'],
-    highlights: ['Largest bivalve in the world', 'Filter feeds to clean water', 'Provides habitat for small fish']
+    highlights: ['Largest bivalve in the world', 'Filter feeds to clean water', 'Provides habitat for small fish'],
+    images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'green-sea-turtle',
@@ -308,7 +312,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     blurb: 'Herbivorous sea turtle that feeds on seagrasses in Pujada Bay and nests on nearby beaches.',
     siteIds: ['pujada-bay-protected-seascape', 'dahican-beach-mayo-bay'],
     highlights: ['Grazes on seagrass beds', 'Nests on sandy beaches', 'Temperature-dependent sex determination'],
-    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Green_turtle_swimming_over_coral_reefs_in_Kona.jpg/800px-Green_turtle_swimming_over_coral_reefs_in_Kona.jpg']
+    images: ['https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'thalassia-hemprichii',
@@ -319,7 +323,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Shallow sandy bottoms in marine environments',
     blurb: 'Dominant seagrass species in Pujada Bay, provides critical habitat for marine life and carbon sequestration.',
     siteIds: ['pujada-bay-protected-seascape'],
-    highlights: ['Forms extensive seagrass meadows', 'Critical nursery habitat', 'Blue carbon storage']
+    highlights: ['Forms extensive seagrass meadows', 'Critical nursery habitat', 'Blue carbon storage'],
+    images: ['https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=600&fit=crop&crop=center&sat=-50&con=20']
   },
   {
     id: 'napoleon-wrasse',
@@ -330,7 +335,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Coral reefs and lagoons',
     blurb: 'Large reef fish found in Pujada Bay\'s coral ecosystems, important predator maintaining reef balance.',
     siteIds: ['pujada-bay-protected-seascape'],
-    highlights: ['Largest reef fish', 'Sequential hermaphrodite', 'Controls crown-of-thorns starfish']
+    highlights: ['Largest reef fish', 'Sequential hermaphrodite', 'Controls crown-of-thorns starfish'],
+    images: ['https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&h=600&fit=crop&crop=center&hue=180']
   },
 
   // Dahican Beach Species
@@ -343,7 +349,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Open ocean and nesting beaches',
     blurb: 'Most abundant sea turtle species nesting at Dahican Beach, protected by community-based conservation.',
     siteIds: ['dahican-beach-mayo-bay'],
-    highlights: ['Most abundant sea turtle at Dahican', 'Synchronized mass nesting (arribada)', 'Omnivorous feeding']
+    highlights: ['Most abundant sea turtle at Dahican', 'Synchronized mass nesting (arribada)', 'Omnivorous feeding'],
+    images: ['https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'coconut-palm',
@@ -354,7 +361,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Coastal areas and sandy beaches',
     blurb: 'Iconic coastal tree lining Dahican Beach, provides erosion control and livelihood for local communities.',
     siteIds: ['dahican-beach-mayo-bay', 'mati-protected-landscape'],
-    highlights: ['Coastal protection', 'Economic importance', 'Salt tolerance']
+    highlights: ['Coastal protection', 'Economic importance', 'Salt tolerance'],
+    images: ['https://images.unsplash.com/photo-1502780402662-acc01917737e?w=800&h=600&fit=crop&crop=center']
   },
 
   // Sleeping Dinosaur Island Species
@@ -367,7 +375,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Tropical coastal and pelagic waters',
     blurb: 'Seabird species that roosts on Sleeping Dinosaur Island, excellent diver feeding on fish.',
     siteIds: ['sleeping-dinosaur-island'],
-    highlights: ['Colonial nesting', 'Plunge diving behavior', 'Long-distance foraging']
+    highlights: ['Colonial nesting', 'Plunge diving behavior', 'Long-distance foraging'],
+    images: ['https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'pandanus-tectorius',
@@ -378,7 +387,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Coastal areas and rocky shores',
     blurb: 'Hardy coastal plant found on Sleeping Dinosaur Island, adapted to salt spray and strong winds.',
     siteIds: ['sleeping-dinosaur-island', 'dahican-beach-mayo-bay'],
-    highlights: ['Salt tolerant', 'Erosion control', 'Traditional uses for weaving']
+    highlights: ['Salt tolerant', 'Erosion control', 'Traditional uses for weaving'],
+    images: ['https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&crop=center']
   },
 
   // Guang-guang Mangrove Reserve Species
@@ -391,7 +401,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Intertidal mangrove forests',
     blurb: 'Dominant mangrove species in Guang-guang Reserve, critical for coastal protection and fisheries.',
     siteIds: ['guang-guang-mangrove-reserve'],
-    highlights: ['Prop root system', 'Viviparous reproduction', 'Coastal protection']
+    highlights: ['Prop root system', 'Viviparous reproduction', 'Coastal protection'],
+    images: ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center']
   },
   {
     id: 'mud-crab',
@@ -402,7 +413,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Mangrove creeks and estuaries',
     blurb: 'Important commercial crab species in Guang-guang mangroves, supports local livelihoods.',
     siteIds: ['guang-guang-mangrove-reserve'],
-    highlights: ['Commercial importance', 'Mangrove obligate', 'Sustainable aquaculture']
+    highlights: ['Commercial importance', 'Mangrove obligate', 'Sustainable aquaculture'],
+    images: ['https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop&crop=center&hue=30']
   },
   {
     id: 'collared-kingfisher',
@@ -413,7 +425,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Mangrove forests and coastal areas',
     blurb: 'Common kingfisher species in Guang-guang mangroves, feeds on crabs and small fish.',
     siteIds: ['guang-guang-mangrove-reserve'],
-    highlights: ['Mangrove specialist', 'Territorial behavior', 'Cavity nester']
+    highlights: ['Mangrove specialist', 'Territorial behavior', 'Cavity nester'],
+    images: ['https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&h=600&fit=crop&crop=center&hue=180']
   },
 
   // Mati Protected Landscape Species
@@ -427,7 +440,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     blurb: 'Small nocturnal primate found in Mati Protected Landscape\'s forest fragments.',
     siteIds: ['mati-protected-landscape'],
     highlights: ['World\'s smallest primate', 'Exclusively carnivorous', 'Ultrasonic communication'],
-    images: ['https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Tarsius_syrichta_2009.jpg/800px-Tarsius_syrichta_2009.jpg']
+    images: ['https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800&h=600&fit=crop&crop=center&sat=20']
   },
   {
     id: 'bamboo-orchid',
@@ -438,7 +451,8 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Grasslands and forest edges',
     blurb: 'Common terrestrial orchid in Mati Protected Landscape, blooms year-round with purple flowers.',
     siteIds: ['mati-protected-landscape'],
-    highlights: ['Year-round blooming', 'Terrestrial orchid', 'Pioneer species']
+    highlights: ['Year-round blooming', 'Terrestrial orchid', 'Pioneer species'],
+    images: ['https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center&hue=270']
   },
   {
     id: 'brahminy-kite',
@@ -449,6 +463,7 @@ export const MATI_SPECIES: SpeciesDetail[] = [
     habitat: 'Coastal areas and wetlands',
     blurb: 'Medium-sized raptor common in Mati\'s coastal and agricultural areas, sacred bird in Hindu culture.',
     siteIds: ['mati-protected-landscape', 'pujada-bay-protected-seascape'],
-    highlights: ['Sacred in Hindu culture', 'Opportunistic feeder', 'Coastal scavenger']
+    highlights: ['Sacred in Hindu culture', 'Opportunistic feeder', 'Coastal scavenger'],
+    images: ['https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800&h=600&fit=crop&crop=center&hue=30']
   }
 ]

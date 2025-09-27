@@ -516,8 +516,11 @@ const Home = memo(function Home() {
 
   return (
     <div className="space-y-8 min-h-screen">
-      <section className={`relative overflow-hidden rounded-[24px] border transition-all duration-700 ${isMobileView ? 'border-blue-300/60 bg-blue-50/95 dark:border-blue-400/30 dark:bg-blue-950/85' : 'border-slate-300/60 bg-white/95 dark:border-white/20 dark:bg-slate-900/85'} backdrop-blur-sm shadow-2xl ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 via-white/30 to-slate-100/50 dark:from-slate-800/20 dark:via-slate-700/10 dark:to-slate-800/20" />
+      <section className={`group relative overflow-hidden rounded-[32px] border transition-all duration-1000 ease-out ${isMobileView ? 'border-blue-400/50 bg-blue-50/90 dark:border-blue-500/40 dark:bg-blue-950/80' : 'border-white/60 bg-white/90 dark:border-white/30 dark:bg-slate-900/80'} backdrop-blur-2xl shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/10 dark:hover:shadow-blue-500/10 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'}`}>
+        {/* Enhanced glass morphism background with animated gradients */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-sky-50/40 via-purple-50/30 to-emerald-50/50 dark:from-slate-800/40 dark:via-slate-700/20 dark:to-slate-800/35 group-hover:from-white/70 group-hover:via-sky-50/50 group-hover:to-emerald-50/60 transition-all duration-700" />
+        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(16,185,129,0.1),rgba(59,130,246,0.08),rgba(147,51,234,0.1),rgba(6,182,212,0.08),rgba(16,185,129,0.1))] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/8 via-blue-500/6 to-purple-500/8 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <Atmosphere variant="hero" className="hidden md:block" />
         <div className={`relative z-10 ${isMobileView 
             ? `flex flex-col gap-4 p-4 ${deviceInfo.isTablet ? 'p-6 gap-6' : ''} ${deviceInfo.isIOS ? 'pb-safe-area-inset-bottom' : ''}` 
@@ -572,12 +575,16 @@ const Home = memo(function Home() {
               <Button
                 variant="primary"
                 onClick={() => navigate('/gis')}
-                className={`flex items-center justify-center gap-3 transition-all duration-300 ${
+                className={`group relative overflow-hidden flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-500 via-blue-500 via-purple-500 to-cyan-500 hover:from-emerald-600 hover:via-blue-600 hover:via-purple-600 hover:to-cyan-600 text-white font-bold shadow-2xl hover:shadow-3xl transition-all duration-700 ease-out ${
                   isMobileView 
-                    ? `w-full py-4 text-lg font-semibold rounded-2xl shadow-xl ${deviceInfo.isIOS ? 'active:scale-98' : 'active:scale-95'} ${deviceInfo.isAndroid ? 'min-h-[48px]' : 'min-h-[44px]'}` 
-                    : 'hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/25 xl:px-8 xl:py-4 xl:text-lg'
+                    ? `w-full py-6 text-lg rounded-3xl shadow-2xl ${deviceInfo.isIOS ? 'active:scale-[0.98]' : 'active:scale-[0.96]'} ${deviceInfo.isAndroid ? 'min-h-[56px]' : 'min-h-[52px]'}` 
+                    : 'hover:scale-110 hover:shadow-2xl hover:shadow-emerald-500/40 hover:-rotate-1 hover:-translate-y-1 xl:px-12 xl:py-6 xl:text-xl rounded-3xl'
                 }`}
               >
+                {/* Enhanced button visual effects */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-white/15 to-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg,rgba(255,255,255,0.3),transparent,rgba(255,255,255,0.3))] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <span className={`${isMobileView ? 'text-2xl' : 'text-2xl xl:text-3xl'}`}>🌊</span>
                 <span>{isMobileView ? 'Explore Map' : 'Explore the map'}</span>
                 <svg className={`${isMobileView ? 'h-5 w-5' : 'h-5 w-5 xl:h-6 xl:w-6'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -692,7 +699,15 @@ const Home = memo(function Home() {
       </section>
 
       <section className={`transform transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
-        <SectionTitle icon="🧭">Navigation-aligned experience</SectionTitle>
+        <div className="relative text-center">
+          <SectionTitle icon="🧭" className="text-center relative z-10">
+            <span className="bg-gradient-to-r from-emerald-600 via-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent font-black">Navigation-aligned experience</span>
+          </SectionTitle>
+          {/* Enhanced section visual effects */}
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-br from-emerald-500/10 via-blue-500/8 to-purple-500/10 rounded-full blur-2xl opacity-60 animate-pulse" />
+          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-emerald-500 via-blue-500 via-purple-500 to-cyan-500 rounded-full opacity-70 animate-pulse" />
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-0.5 bg-white/50 dark:bg-white/30 rounded-full" />
+        </div>
         <p className="mt-3 max-w-3xl text-sm text-slate-500 dark:text-slate-300">
           Every surface references the navbar: same gradients, counters, and action hierarchy. Cards reinforce the story so visitors know where to go next.
         </p>
@@ -704,12 +719,16 @@ const Home = memo(function Home() {
           {featureCards.map((card, idx) => (
             <div 
               key={card.title} 
-              className={`group relative overflow-hidden rounded-3xl border border-white/40 bg-white/80 backdrop-blur shadow-lg transition-all duration-300 dark:border-white/15 dark:bg-slate-900/70 ${
+              className={`group relative overflow-hidden rounded-3xl border border-white/60 bg-white/90 backdrop-blur-2xl shadow-2xl transition-all duration-700 ease-out dark:border-white/25 dark:bg-slate-900/85 ${
                 isMobileView 
-                  ? `p-5 ${deviceInfo.isTablet ? 'p-6' : ''} active:scale-95 active:shadow-md ${deviceInfo.isAndroid ? 'active:bg-white/90 dark:active:bg-slate-900/80' : ''}` 
-                  : 'p-6 xl:p-8 hover:-translate-y-2 hover:shadow-2xl hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-slate-900/80'
+                  ? `p-7 ${deviceInfo.isTablet ? 'p-8' : ''} active:scale-[0.98] active:shadow-xl ${deviceInfo.isAndroid ? 'active:bg-white/95 dark:active:bg-slate-900/90' : ''}` 
+                  : 'p-10 xl:p-12 hover:-translate-y-4 hover:shadow-3xl hover:shadow-emerald-500/25 dark:hover:shadow-blue-500/25 hover:scale-[1.05] hover:bg-white/95 dark:hover:bg-slate-900/90 hover:border-emerald-500/40 dark:hover:border-blue-500/40 hover:rotate-1'
               }`}
             >
+              {/* Enhanced card visual effects */}
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/12 via-blue-500/10 via-purple-500/8 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.2),rgba(59,130,246,0.15),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <div className="absolute inset-0 bg-[conic-gradient(from_45deg_at_50%_50%,rgba(16,185,129,0.1),rgba(59,130,246,0.08),rgba(147,51,234,0.1),rgba(6,182,212,0.08))] opacity-0 group-hover:opacity-100 transition-opacity duration-800" />
               <Atmosphere variant="soft" className={`${idx % 2 === 0 ? 'opacity-80' : 'opacity-60'} ${!isMobileView ? 'group-hover:opacity-100' : ''} transition-opacity duration-300`} />
               <div className={`absolute inset-x-4 top-0 h-1 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 transition-opacity duration-300 ${
                 isMobileView ? 'opacity-60' : 'opacity-0 group-hover:opacity-100'
@@ -821,7 +840,10 @@ const Home = memo(function Home() {
       </section>
 
       <section className={`transform transition-all duration-700 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
-        <div className="rounded-[32px] border border-white/40 bg-white/80 p-10 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+        <div className="group relative rounded-[40px] border border-white/50 bg-white/85 p-12 shadow-2xl backdrop-blur-2xl dark:border-white/20 dark:bg-slate-900/80 transition-all duration-500 hover:shadow-3xl hover:shadow-emerald-500/10 dark:hover:shadow-blue-500/10">
+          {/* Enhanced card background effects */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-blue-500/5 to-purple-500/5 rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,rgba(16,185,129,0.08),rgba(59,130,246,0.06),rgba(147,51,234,0.08),rgba(16,185,129,0.08))] rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-xl space-y-4">
               <SectionTitle icon="🌿">Mission pillars</SectionTitle>
@@ -1647,7 +1669,7 @@ function AdminPreview() {
               <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 flex items-center justify-center mb-4">
                 <span className="text-2xl">🔐</span>
               </div>
-              <Badge tone="status" className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 text-emerald-700 dark:text-emerald-200">
+              <Badge tone="success" className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 text-emerald-700 dark:text-emerald-200">
                 Admin Control Center
               </Badge>
               <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -2588,12 +2610,21 @@ export default function App() {
         <AdminProvider>
           <DataProvider>
             <BrowserRouter>
-            <div className="min-h-screen w-full bg-gradient-to-br from-blue-50/30 via-green-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-              {/* Animated background elements */}
+            <div className="min-h-screen w-full bg-gradient-to-br from-sky-50/40 via-indigo-50/30 via-purple-50/20 via-emerald-50/30 to-cyan-50/40 dark:from-slate-950 dark:via-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-x-hidden">
+              {/* Enhanced animated background with modern effects */}
               <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/20 to-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-200/10 to-green-200/10 rounded-full blur-2xl animate-bounce"></div>
+                {/* Primary floating orbs with enhanced gradients */}
+                <div className="absolute -top-20 -right-20 w-96 h-96 bg-gradient-to-br from-emerald-400/25 via-blue-400/20 to-purple-400/15 rounded-full blur-3xl animate-pulse opacity-60"></div>
+                <div className="absolute -bottom-20 -left-20 w-[30rem] h-[30rem] bg-gradient-to-br from-cyan-400/20 via-purple-400/15 to-pink-400/10 rounded-full blur-3xl animate-pulse opacity-50" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-gradient-to-br from-indigo-400/15 via-teal-400/12 to-emerald-400/10 rounded-full blur-2xl animate-bounce opacity-40" style={{animationDuration: '6s'}}></div>
+                
+                {/* Secondary floating elements */}
+                <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-gradient-to-br from-rose-400/10 via-orange-400/8 to-yellow-400/6 rounded-full blur-2xl animate-pulse opacity-30" style={{animationDelay: '2s'}}></div>
+                <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-gradient-to-br from-violet-400/12 via-fuchsia-400/10 to-cyan-400/8 rounded-full blur-2xl animate-bounce opacity-35" style={{animationDuration: '8s', animationDelay: '0.5s'}}></div>
+                
+                {/* Animated gradient mesh overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-blue-500/3 via-purple-500/4 to-cyan-500/5 animate-pulse opacity-50" style={{animationDuration: '4s'}}></div>
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_30%_70%,rgba(16,185,129,0.08),rgba(59,130,246,0.06),rgba(147,51,234,0.08),rgba(6,182,212,0.06),rgba(16,185,129,0.08))] animate-spin opacity-20" style={{animationDuration: '20s'}}></div>
               </div>
               
               <div className="app relative z-10">
@@ -2637,6 +2668,7 @@ export default function App() {
                         <Route path="/virtual-tour" element={<VirtualTour />} />
                         <Route path="/admin/preview" element={<AdminPreview />} />
                         <Route path="/admin" element={<AdminPreview />} />
+                        {/* Admin route removed - component not found */}
                         <Route path="/about" element={<About />} />
                         
                         <Route path="*" element={

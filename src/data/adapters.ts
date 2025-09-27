@@ -12,6 +12,7 @@ export interface UnifiedSpecies {
   description: string
   habitats: string[]
   siteIds: string[]
+  media?: { type: 'image', url: string, caption?: string, credit?: string }[]
 }
 
 // Convert Mati hotspots to SiteRecord format
@@ -70,7 +71,13 @@ export function getUnifiedSpecies(): UnifiedSpecies[] {
     },
     description: species.blurb,
     habitats: [species.habitat],
-    siteIds: species.siteIds
+    siteIds: species.siteIds,
+    media: species.images ? species.images.map(url => ({
+      type: 'image',
+      url,
+      caption: `${species.commonName} (${species.scientificName})`,
+      credit: 'Wikimedia Commons'
+    })) : undefined
   }))
 }
 

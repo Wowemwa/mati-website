@@ -87,6 +87,24 @@ export default function SpeciesDetail() {
           <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-purple-400/20 to-pink-400/20 rounded-full blur-2xl" />
           
           <div className="relative p-8 space-y-6">
+            {/* Species Image */}
+            {unifiedRecord?.media && unifiedRecord.media.length > 0 && unifiedRecord.media[0].type === 'image' && (
+              <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden rounded-2xl border border-white/30 dark:border-white/20 shadow-xl">
+                <img 
+                  src={unifiedRecord.media[0].url} 
+                  alt={unifiedRecord.media[0].caption || unifiedRecord.commonName}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white/90 text-sm bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2">
+                    {unifiedRecord.media[0].caption || `${unifiedRecord.commonName} (${unifiedRecord.scientificName})`}
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
               <div className="space-y-4 flex-1">
                 <div className="flex flex-wrap items-center gap-3">
