@@ -64,6 +64,7 @@ const Navbar = memo(function Navbar() {
     { to: '/biodiversity', label: 'Biodiversity', badge: '🌿' },
     { to: '/ar', label: 'AR Demo', badge: '✨', comingSoon: !isAdmin },
     { to: '/virtual-tour', label: 'Virtual Tour', badge: '🎥', comingSoon: true },
+    ...(isAdmin ? [{ to: '/admin', label: 'Admin', badge: '👑', adminOnly: true }] : []),
     { to: '/about', label: 'About', badge: '💡' },
   ], [isAdmin])
   
@@ -190,16 +191,21 @@ const Navbar = memo(function Navbar() {
               {navItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.to)
                 const showSoon = item.comingSoon && !isAdmin
+                const isAdminItem = 'adminOnly' in item && item.adminOnly
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
                     className={`group relative z-10 inline-flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-out ${
                       isActive
-                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 text-white shadow-lg scale-105'
+                        ? isAdminItem
+                          ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white shadow-lg scale-105'
+                          : 'bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500 text-white shadow-lg scale-105'
                         : showSoon 
                           ? 'text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                          : 'text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/60'
+                          : isAdminItem
+                            ? 'text-purple-700 dark:text-purple-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-100/80 dark:hover:bg-purple-900/60'
+                            : 'text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/80 dark:hover:bg-slate-700/60'
                     }`}
                   >
                     <span className={`flex h-8 w-8 items-center justify-center rounded-full text-base transition-all duration-300 ${
@@ -207,7 +213,9 @@ const Navbar = memo(function Navbar() {
                         ? 'bg-white/20 text-white'
                         : showSoon
                           ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
-                          : 'bg-white/60 dark:bg-slate-600/60 border border-white/80 dark:border-slate-500/60 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/30'
+                          : isAdminItem
+                            ? 'bg-purple-100/80 dark:bg-purple-900/40 border border-purple-200/80 dark:border-purple-700/60 group-hover:bg-purple-50 dark:group-hover:bg-purple-900/60'
+                            : 'bg-white/60 dark:bg-slate-600/60 border border-white/80 dark:border-slate-500/60 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/30'
                     }`}>
                       {item.badge}
                     </span>
@@ -1392,12 +1400,20 @@ function VirtualTour() {
 
 function AdminPreview() {
   const { isAdmin, login, logout, lastLoginAt } = useAdmin()
+  const { hotspots, species, loading } = useData()
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [activeTab, setActiveTab] = useState<'login' | 'dashboard' | 'data' | 'system'>('login')
 
   const secretConfigured = Boolean(import.meta.env.VITE_ADMIN_PASS?.length)
+
+  useEffect(() => {
+    if (isAdmin) {
+      setActiveTab('dashboard')
+    }
+  }, [isAdmin])
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault()
@@ -1409,91 +1425,362 @@ function AdminPreview() {
     if (ok) {
       setStatus('success')
       setMessage('Admin preview unlocked. You can now access protected pages in this session.')
+      setActiveTab('dashboard')
     } else {
       setStatus('error')
       setMessage(secretConfigured ? 'That passphrase did not match our records. Try again.' : 'No admin password is configured. Set VITE_ADMIN_PASS in your .env file.')
     }
   }
 
+  const stats = useMemo(() => {
+    if (loading) return null
+    return {
+      totalHotspots: hotspots.length,
+      marineHotspots: hotspots.filter(h => h.type === 'marine').length,
+      terrestrialHotspots: hotspots.filter(h => h.type === 'terrestrial').length,
+      totalSpecies: species.length,
+      flora: species.filter(s => s.category === 'flora').length,
+      fauna: species.filter(s => s.category === 'fauna').length,
+      criticallyEndangered: species.filter(s => s.status === 'CR').length,
+      endangered: species.filter(s => s.status === 'EN').length,
+      vulnerable: species.filter(s => s.status === 'VU').length,
+    }
+  }, [hotspots, species, loading])
+
+  if (!isAdmin) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col gap-6 py-16">
+        <SoftCard className="border border-white/50 bg-white/85 dark:border-white/10 dark:bg-slate-900/70">
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 flex items-center justify-center mb-4">
+                <span className="text-2xl">🔐</span>
+              </div>
+              <Badge tone="status" className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 text-emerald-700 dark:text-emerald-200">
+                Admin Control Center
+              </Badge>
+              <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+                <span className="bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Mati ARBio
+                </span>
+              </h1>
+              <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-200 mb-2">Admin Dashboard</h2>
+              <p className="text-slate-600 dark:text-slate-300">
+                Comprehensive biodiversity management system with advanced analytics and content management capabilities.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2" htmlFor="admin-pass">
+                  🔑 Administrator Passphrase
+                </label>
+                <input
+                  id="admin-pass"
+                  type="password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value)
+                    if (status !== 'idle') {
+                      setStatus('idle')
+                      setMessage('')
+                    }
+                  }}
+                  placeholder="Enter your secure passphrase"
+                  className="w-full rounded-2xl border border-slate-200/80 bg-white/95 px-6 py-4 text-sm shadow-lg focus:border-emerald-400 focus:outline-none focus:ring-4 focus:ring-emerald-300/40 dark:border-slate-700/80 dark:bg-slate-800/90 dark:text-slate-100 transition-all duration-300"
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                disabled={submitting}
+                className="w-full bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 hover:from-emerald-600 hover:via-blue-600 hover:to-purple-600 text-white font-semibold py-4 shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                {submitting ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Authenticating…
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    🚀 Access Admin Dashboard
+                  </span>
+                )}
+              </Button>
+            </form>
+
+            {status !== 'idle' && (
+              <SoftCard
+                className={`border text-sm animate-in slide-in-from-top-2 duration-300 ${
+                  status === 'success'
+                    ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-200'
+                    : 'border-rose-400/40 bg-rose-500/10 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-200'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {status === 'success' ? '✅' : '❌'}
+                  {message}
+                </div>
+              </SoftCard>
+            )}
+
+            {!secretConfigured && (
+              <SoftCard className="border border-amber-400/40 bg-amber-500/10 text-sm text-amber-800 dark:border-amber-400/30 dark:bg-amber-500/15 dark:text-amber-200">
+                <div className="flex items-start gap-2">
+                  <span className="text-base">⚠️</span>
+                  <div>
+                    <p className="font-medium mb-1">Environment Configuration Required</p>
+                    <p>
+                      Add <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs font-mono">VITE_ADMIN_PASS=your_password</code> to your <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs font-mono">.env.local</code> file.
+                    </p>
+                  </div>
+                </div>
+              </SoftCard>
+            )}
+          </div>
+        </SoftCard>
+      </div>
+    )
+  }
+
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col gap-6 py-16">
-      <SoftCard className="border border-white/50 bg-white/85 dark:border-white/10 dark:bg-slate-900/70">
-        <div className="space-y-4">
+    <div className="mx-auto max-w-7xl py-8 space-y-6">
+      {/* Admin Header */}
+      <div className="bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-500 rounded-3xl p-6 text-white shadow-2xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <Badge tone="status" className="bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 text-emerald-700 dark:text-emerald-200">
-              Internal preview gate
-            </Badge>
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white">Unlock admin mode</h1>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Enter the shared passphrase to activate hidden previews (AR demo, upcoming virtual tour, and future database dashboards). Keep this link private—anyone with the passphrase will unlock admin tools in this browser.
-            </p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <span className="text-xl">👑</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-black tracking-tight">Admin Dashboard</h1>
+                <p className="text-white/80 text-sm">Mati ARBio Control Center</p>
+              </div>
+            </div>
+            {lastLoginAt && (
+              <p className="text-white/70 text-xs">
+                Session started: {new Date(lastLoginAt).toLocaleString()}
+              </p>
+            )}
+          </div>
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+          >
+            🚪 Sign Out
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 bg-white/50 dark:bg-slate-800/50 p-2 rounded-2xl backdrop-blur-xl border border-white/30 dark:border-white/15">
+        {[
+          { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+          { id: 'data', label: 'Data Management', icon: '🗄️' },
+          { id: 'system', label: 'System Status', icon: '⚙️' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 ${
+              activeTab === tab.id
+                ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60'
+            }`}
+          >
+            <span>{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Dashboard Content */}
+      {activeTab === 'dashboard' && stats && (
+        <div className="space-y-6">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {[
+              { label: 'Biodiversity Hotspots', value: stats.totalHotspots, icon: '🏔️', color: 'emerald' },
+              { label: 'Species Documented', value: stats.totalSpecies, icon: '🦎', color: 'blue' },
+              { label: 'Flora Species', value: stats.flora, icon: '🌿', color: 'green' },
+              { label: 'Fauna Species', value: stats.fauna, icon: '🦅', color: 'purple' },
+            ].map((stat) => (
+              <SoftCard key={stat.label} className="text-center p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+                <div className="text-3xl mb-2">{stat.icon}</div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                  {stat.label}
+                </div>
+              </SoftCard>
+            ))}
           </div>
 
-          {isAdmin && (
-            <SoftCard className="border border-emerald-400/40 bg-emerald-500/10 text-sm text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-100">
-              <p className="font-semibold uppercase tracking-[0.2em]">Admin mode active</p>
-              {lastLoginAt && (
-                <p>Granted at <span className="font-mono">{new Date(lastLoginAt).toLocaleString()}</span>.</p>
-              )}
-              <p>You can browse protected routes until you log out or clear storage.</p>
-            </SoftCard>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200" htmlFor="admin-pass">
-              Admin passphrase
-            </label>
-            <input
-              id="admin-pass"
-              type="password"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value)
-                if (status !== 'idle') {
-                  setStatus('idle')
-                  setMessage('')
-                }
-              }}
-              placeholder="Enter passphrase"
-              className="w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300/60 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-100"
-            />
-            <div className="flex flex-wrap items-center gap-3">
-              <Button type="submit" disabled={submitting}>
-                {submitting ? 'Authenticating…' : isAdmin ? 'Refresh session' : 'Unlock preview'}
-              </Button>
-              {isAdmin && (
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-rose-200 hover:text-rose-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-rose-400 dark:hover:text-rose-200"
-                >
-                  Log out
-                </button>
-              )}
+          {/* Conservation Status */}
+          <SoftCard className="p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              🚨 Conservation Status Overview
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.criticallyEndangered}</div>
+                <div className="text-sm text-red-700 dark:text-red-300">Critically Endangered</div>
+              </div>
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.endangered}</div>
+                <div className="text-sm text-orange-700 dark:text-orange-300">Endangered</div>
+              </div>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.vulnerable}</div>
+                <div className="text-sm text-yellow-700 dark:text-yellow-300">Vulnerable</div>
+              </div>
             </div>
-          </form>
+          </SoftCard>
 
-          {status !== 'idle' && (
-            <SoftCard
-              className={`border text-sm ${
-                status === 'success'
-                  ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-200'
-                  : 'border-rose-400/40 bg-rose-500/10 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-200'
-              }`}
-            >
-              {message}
-            </SoftCard>
-          )}
-
-          {!secretConfigured && (
-            <SoftCard className="border border-amber-400/40 bg-amber-500/10 text-sm text-amber-800 dark:border-amber-400/30 dark:bg-amber-500/15 dark:text-amber-200">
-              <p>
-                <strong>Heads up:</strong> The environment variable <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs">VITE_ADMIN_PASS</code> is not set. Add it to your <code className="rounded bg-black/10 px-1.5 py-0.5 text-xs">.env.local</code> to enable real authentication.
-              </p>
-            </SoftCard>
-          )}
+          {/* Quick Actions */}
+          <SoftCard className="p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              ⚡ Quick Actions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {[
+                { label: 'AR Experience', path: '/ar', icon: '🥽', desc: 'Test AR features' },
+                { label: 'GIS Mapping', path: '/gis', icon: '🗺️', desc: 'Review hotspots' },
+                { label: 'Species Explorer', path: '/biodiversity', icon: '🔬', desc: 'Browse data' },
+                { label: 'Virtual Tour', path: '/virtual-tour', icon: '🎥', desc: 'Preview tours' },
+                { label: 'System Logs', path: '#', icon: '📋', desc: 'Check activity' },
+                { label: 'Data Export', path: '#', icon: '💾', desc: 'Download data' },
+              ].map((action) => (
+                <Link
+                  key={action.label}
+                  to={action.path}
+                  className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 bg-white/60 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-200 group"
+                >
+                  <div className="text-2xl">{action.icon}</div>
+                  <div>
+                    <div className="font-medium text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                      {action.label}
+                    </div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
+                      {action.desc}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </SoftCard>
         </div>
-      </SoftCard>
+      )}
+
+      {/* Data Management Tab */}
+      {activeTab === 'data' && (
+        <div className="space-y-6">
+          <SoftCard className="p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              🗄️ Data Management Tools
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Hotspots Database</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total Locations:</span>
+                    <span className="font-mono">{stats?.totalHotspots}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Marine Sites:</span>
+                    <span className="font-mono">{stats?.marineHotspots}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Terrestrial Sites:</span>
+                    <span className="font-mono">{stats?.terrestrialHotspots}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-medium">
+                    Export CSV
+                  </button>
+                  <button className="px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium">
+                    Backup JSON
+                  </button>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Species Database</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Total Species:</span>
+                    <span className="font-mono">{stats?.totalSpecies}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Flora Records:</span>
+                    <span className="font-mono">{stats?.flora}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Fauna Records:</span>
+                    <span className="font-mono">{stats?.fauna}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="px-3 py-2 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-medium">
+                    Export CSV
+                  </button>
+                  <button className="px-3 py-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium">
+                    Backup JSON
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SoftCard>
+        </div>
+      )}
+
+      {/* System Status Tab */}
+      {activeTab === 'system' && (
+        <div className="space-y-6">
+          <SoftCard className="p-6 border border-white/40 bg-white/80 dark:border-white/10 dark:bg-slate-800/80">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              ⚙️ System Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Application Status</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>Database Connection: Online</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>API Services: Operational</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>AR Module: Ready</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span>Virtual Tour: In Development</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="font-semibold text-slate-700 dark:text-slate-200">Environment</h4>
+                <div className="space-y-2 text-sm font-mono">
+                  <div>Mode: Development</div>
+                  <div>Version: v0.5.0</div>
+                  <div>Build: Latest</div>
+                  <div>Auth: {secretConfigured ? 'Configured' : 'Not Set'}</div>
+                </div>
+              </div>
+            </div>
+          </SoftCard>
+        </div>
+      )}
     </div>
   )
 }
@@ -1665,6 +1952,7 @@ export default function App() {
                         <Route path="/ar" element={<ARDemo />} />
                         <Route path="/virtual-tour" element={<VirtualTour />} />
                         <Route path="/admin/preview" element={<AdminPreview />} />
+                        <Route path="/admin" element={<AdminPreview />} />
                         <Route path="/about" element={<About />} />
                         
                         <Route path="*" element={
