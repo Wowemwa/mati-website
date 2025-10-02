@@ -91,6 +91,9 @@ npm run dev
 ```
 
 ### Environment Configuration
+_Assumption: Final defense is targeted either by **2025-11-30** (end of November) or **2025-12-15** (mid-December). The checklist below uses the **end-Nov (2025-11-30)** schedule by default. If you prefer the mid-December timeline, add **+2 weeks** to each target date (or tell me and I'll update all dates for you)._  
+
+_Important: This must be a full production-ready website for the final defense — all critical features should be implemented, tested, and deployed._
 
 Create `.env.local` in the project root:
 
@@ -98,6 +101,15 @@ Create `.env.local` in the project root:
 # Admin Authentication
 VITE_ADMIN_PASS=your_secure_password_here
 
+Timeline overview (default: end-Nov schedule, 6-week plan):
+- Week 1: 2025-10-02 → 2025-10-09
+- Week 2: 2025-10-10 → 2025-10-16
+- Week 3: 2025-10-17 → 2025-10-23
+- Week 4: 2025-10-24 → 2025-10-30
+- Week 5: 2025-10-31 → 2025-11-06
+- Week 6: 2025-11-07 → 2025-11-13
+- Buffer & Final Prep: 2025-11-14 → 2025-11-30 (Final Defense if end-Nov)
+- (Alternate Final Defense date: 2025-12-15 — add +2 weeks to the schedule above.)
 # Optional: Firebase Configuration (for future features)
 # VITE_FIREBASE_API_KEY=your_api_key
 # VITE_FIREBASE_AUTH_DOMAIN=your_domain
@@ -785,6 +797,79 @@ npm install
 - [ ] Social sharing and community features
 - [ ] Advanced analytics and conservation metrics
 - [ ] Integration with scientific research databases
+
+---
+
+---
+
+## 🎯 Final Defense Checklist & Targets
+
+_Assumption: Final defense scheduled for **2025-11-01**. If your defense date differs, update the target dates below accordingly._
+
+This checklist groups every major task we should complete before the official deployment and final defense. Each line has a clear success criterion and a suggested target date. Aim to mark items as Done/Blocked/In Progress in issues or a project board.
+
+Timeline overview (4-week plan):
+- Week 1: 2025-10-02 → 2025-10-09
+- Week 2: 2025-10-10 → 2025-10-16
+- Week 3: 2025-10-17 → 2025-10-23
+- Week 4: 2025-10-24 → 2025-10-30
+- Buffer & Final Prep: 2025-10-31 → 2025-11-01 (Final Defense)
+
+1) Project & Content
+- [ ] Finalize species dataset (photos, descriptions, taxonomy, IUCN) — Target: 2025-10-09 — Success: all species pages have required fields and at least one high-res image
+- [ ] Add / verify GPS coordinates for hotspots and test markers — Target: 2025-10-09 — Success: all map markers show correct coords and popup content
+- [ ] Curate hero content and simplified copy for presentation — Target: 2025-10-09 — Success: final hero text, 2–3 call-to-action buttons
+
+2) UI / UX / Accessibility
+- [ ] Mobile and tablet polish (spacing, touch targets, safe-area) — Target: 2025-10-12 — Success: manual check on at least two phone sizes
+- [ ] Keyboard navigation & focus states — Target: 2025-10-12 — Success: tab order logical, visible focus styles
+- [ ] WCAG checks (contrast, alt text, reduced-motion) — Target: 2025-10-12 — Success: pass basic Lighthouse accessibility checks
+
+3) AR & GIS Features
+- [ ] Test MindAR demo on target physical markers and multiple devices — Target: 2025-10-16 — Success: AR overlay appears and is stable on phones tested
+- [ ] Optimize Leaflet maps, clustering, and performance — Target: 2025-10-16 — Success: map loads under 2s on mid-tier devices; clustering works for dense hotspots
+- [ ] Prepare AR targets and add to `public/ar-demo/targets.mind` — Target: 2025-10-16 — Success: working compiled target file and README with test steps
+
+4) Backend & Auth (Firebase)
+- [ ] Finalize Firebase config (production API keys in environment, not committed) — Target: 2025-10-20 — Success: env var setup documented; no secrets in repo
+- [ ] Admin authentication and role checks — Target: 2025-10-20 — Success: secure admin login flow and protected routes
+- [ ] Data import script / migration for species & hotspots — Target: 2025-10-20 — Success: idempotent script to seed production DB
+
+5) Performance & Build
+- [ ] Remove unused assets and compress images (webp where possible) — Target: 2025-10-23 — Success: build size reduced; key pages < 500KB
+- [ ] Run production build, analyze bundle (`npm run build:analyze`) and fix large vendors — Target: 2025-10-23 — Success: no single chunk > 1MB; lazy-load heavy components
+- [ ] Lighthouse checks (Performance >= 90 target) — Target: 2025-10-23 — Success: acceptable scores on desktop and mobile
+
+6) Security & Privacy
+- [ ] Audit dependencies and apply non-breaking security fixes — Target: 2025-10-23 — Success: `npm audit` has no critical vulnerabilities; list outstanding moderate ones
+- [ ] Prepare privacy notice and data retention for any analytics or Firebase storage — Target: 2025-10-23 — Success: short privacy section added to README or site footer
+
+7) SEO & Social
+- [ ] Finalize meta tags, open graph images, and structured data (JSON-LD) — Target: 2025-10-26 — Success: social preview and basic structured metadata present
+- [ ] Create a concise sitemap.xml and robots.txt for deployment — Target: 2025-10-26 — Success: sitemap available in production
+
+8) Testing & QA
+- [ ] Manual QA checklist run (navigation, forms, maps, AR) — Target: 2025-10-27 — Success: QA checklist documented and test passes
+- [ ] Add unit/integration tests for critical components (map, auth, species list) — Target: 2025-10-27 — Success: basic tests in repo; CI runs them
+- [ ] Cross-browser testing and device testing (Chrome, Safari iOS, Firefox Android) — Target: 2025-10-27 — Success: screenshots or notes for major issues
+
+9) Deployment & CI/CD
+- [ ] Setup production hosting (Netlify / Vercel / Firebase Hosting) and preview deploys — Target: 2025-10-29 — Success: production URL ready; preview deploy for PRs
+- [ ] Create a simple CI to run build and tests on push (GitHub Actions) — Target: 2025-10-29 — Success: passing workflow for main branch
+- [ ] Configure environment variables for production and preview — Target: 2025-10-29 — Success: secrets in CI, not in repo
+
+10) Documentation & Presentation
+- [ ] Finalize `README.md` (this checklist + usage + deployment steps) — Target: 2025-10-30 — Success: README covers features, how to run locally, and deployment
+- [ ] Prepare demo script and slides for the final defense — Target: 2025-10-30 — Success: 10–15 minute demo script with talking points and backup plan
+- [ ] Create short demo video (60–90s) showing map, species page, and AR — Target: 2025-10-30 — Success: video file in `public/` and linked in README
+
+11) Launch & Contingency
+- [ ] Soft launch and sanity check on production — Target: 2025-10-31 — Success: basic workflow tested in production (map, species pages, admin login)
+- [ ] Final rehearsals and deploy freeze — Target: 2025-11-01 (Final Defense) — Success: site in stable state and team ready
+
+Buffer notes:
+- Reserve at least 2 days before defense for hotfixes (2025-10-30 → 2025-10-31).
+- If any critical bug appears, move non-essential polish to post-defense backlog.
 
 ---
 
